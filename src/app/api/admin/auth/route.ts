@@ -40,9 +40,15 @@ export async function POST(req: NextRequest) {
 
     const cleanEmail = email.trim().toLowerCase();
     const targetEmail = DEFAULT_ADMIN_EMAIL.trim().toLowerCase();
+    const targetUsername = targetEmail.split('@')[0];
 
-    // Validate credentials
-    if (cleanEmail === targetEmail && password === DEFAULT_ADMIN_PASSWORD) {
+    // Validate credentials: match full email or username
+    const isEmailOrUsernameMatch =
+      cleanEmail === targetEmail ||
+      cleanEmail === 'admin' ||
+      cleanEmail === targetUsername;
+
+    if (isEmailOrUsernameMatch && password === DEFAULT_ADMIN_PASSWORD) {
       const cookieStore = await cookies();
       cookieStore.set(SESSION_COOKIE_NAME, SESSION_TOKEN, {
         httpOnly: true,
@@ -55,12 +61,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         success: true,
         message: 'Admin authentication successful',
-        user: { email: cleanEmail, role: 'admin' },
+        user: { email: DEFAULT_ADMIN_EMAIL, role: 'admin' },
       });
     }
 
     return NextResponse.json(
-      { success: false, message: 'Invalid admin email or password' },
+      { success: false, message: 'Invalid admin email/username or password' },
       { status: 401 }
     );
   } catch (error) {

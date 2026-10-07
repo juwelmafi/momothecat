@@ -95,6 +95,35 @@ export default function AdminPage() {
   const [authLoading, setAuthLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  // Fetch all initial data
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const [prodRes, ordRes, leadRes, setRes] = await Promise.all([
+        fetch('/api/products?type=all'),
+        fetch('/api/orders'),
+        fetch('/api/leads'),
+        fetch('/api/settings'),
+      ]);
+
+      const [prodData, ordData, leadData, setData] = await Promise.all([
+        prodRes.json(),
+        ordRes.json(),
+        leadRes.json(),
+        setRes.json(),
+      ]);
+
+      if (prodData.success) setProducts(prodData.products);
+      if (ordData.success) setOrders(ordData.orders);
+      if (leadData.success) setLeads(leadData.leads);
+      if (setData.success) setSettings(setData.settings);
+    } catch (err) {
+      console.error('Error fetching admin data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Check auth status on mount
   useEffect(() => {
     const verifyAuth = async () => {
@@ -131,7 +160,7 @@ export default function AdminPage() {
         setIsAuthenticated(true);
         fetchData();
       } else {
-        setAuthError(data.message || 'Invalid email or password');
+        setAuthError(data.message || 'Invalid username/email or password');
       }
     } catch {
       setAuthError('An error occurred during login. Please try again.');
@@ -145,35 +174,6 @@ export default function AdminPage() {
       await fetch('/api/admin/auth', { method: 'DELETE' });
     } finally {
       setIsAuthenticated(false);
-    }
-  };
-
-  // Fetch all initial data
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const [prodRes, ordRes, leadRes, setRes] = await Promise.all([
-        fetch('/api/products?type=all'),
-        fetch('/api/orders'),
-        fetch('/api/leads'),
-        fetch('/api/settings'),
-      ]);
-
-      const [prodData, ordData, leadData, setData] = await Promise.all([
-        prodRes.json(),
-        ordRes.json(),
-        leadRes.json(),
-        setRes.json(),
-      ]);
-
-      if (prodData.success) setProducts(prodData.products);
-      if (ordData.success) setOrders(ordData.orders);
-      if (leadData.success) setLeads(leadData.leads);
-      if (setData.success) setSettings(setData.settings);
-    } catch (err) {
-      console.error('Error fetching admin data:', err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -405,22 +405,25 @@ export default function AdminPage() {
 
           {/* Login Form */}
           <form onSubmit={handleLogin} className="space-y-4 relative z-10">
-            {/* Email Field */}
+            {/* Email / Username Field */}
             <div className="space-y-1.5">
               <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700">
-                Admin Email
+                Admin Username or Email
               </label>
               <div className="relative">
                 <input
-                  type="email"
+                  type="text"
                   required
                   value={authEmail}
                   onChange={(e) => setAuthEmail(e.target.value)}
-                  placeholder="admin@momothecat.shop"
+                  placeholder="admin or admin@momothecat.shop"
                   className="w-full pl-11 pr-4 py-3 bg-[#FBF9F7] border border-slate-200 rounded-2xl text-xs font-semibold text-[#232121] outline-none focus:border-[#FF6B35] focus:bg-white transition-all"
                 />
                 <Mail className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
               </div>
+              <p className="text-[10px] text-slate-400">
+                You can enter <strong className="text-slate-600">admin</strong> or your full admin email.
+              </p>
             </div>
 
             {/* Password Field */}
