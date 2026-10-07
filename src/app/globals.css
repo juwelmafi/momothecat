@@ -1,0 +1,168 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-readex), 'Readex Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-heading: var(--font-fredoka), 'Fredoka One', 'Fredoka', cursive, sans-serif;
+
+  --color-pettie-primary: #FFC312;
+  --color-pettie-hero: #F2D70A;
+  --color-pettie-secondary: #FF6B35;
+  --color-pettie-hover: #FF9933;
+  --color-pettie-cyan: #2FA5FB;
+  --color-pettie-cyan-light: #D2EDF8;
+  --color-pettie-dark: #232121;
+  --color-pettie-card: #F6F6F4;
+  --color-pettie-body: #000000;
+  --color-pettie-muted: #555555;
+}
+
+:root {
+  --pettie-primary: #FFC312;
+  --pettie-hero: #F2D70A;
+  --pettie-secondary: #FF6B35;
+  --pettie-hover: #FF9933;
+  --pettie-cyan: #2FA5FB;
+  --pettie-dark: #232121;
+  --pettie-card: #F6F6F4;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: #000000;
+  background-color: #FFFFFF;
+}
+
+h1, h2, h3, h4, h5, h6, .font-display {
+  font-family: var(--font-heading);
+}
+
+/* Pettie custom container matching Elementor 1280px */
+.pettie-container {
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.pettie-container-wide {
+  max-width: 1540px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+/* Pettie button styling: 12px 42px, radius 2.5em */
+.pettie-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 42px;
+  border-radius: 2.5em;
+  font-family: var(--font-readex), 'Readex Pro', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.pettie-btn-primary {
+  background-color: #FF6B35;
+  color: #FFFFFF;
+}
+.pettie-btn-primary:hover {
+  background-color: #FF9933;
+  color: #FFFFFF;
+  transform: translateY(-2px);
+}
+
+.pettie-btn-dark {
+  background-color: #232121;
+  color: #FFFFFF;
+}
+.pettie-btn-dark:hover {
+  background-color: #FF6B35;
+  color: #FFFFFF;
+  transform: translateY(-2px);
+}
+
+.pettie-btn-yellow {
+  background-color: #FFC312;
+  color: #232121;
+}
+.pettie-btn-yellow:hover {
+  background-color: #FF6B35;
+  color: #FFFFFF;
+  transform: translateY(-2px);
+}
+
+/* Section Title with 3 decorative dashes matching Pettie */
+.pettie-section-heading {
+  font-family: var(--font-fredoka), cursive;
+  font-size: 48px;
+  line-height: 1.25;
+  font-weight: 700;
+  color: #232121;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .pettie-section-heading {
+    font-size: 32px;
+  }
+}
+
+/* Wavy underline decoration from Pettie theme */
+.pettie-wavy-underline {
+  position: relative;
+  display: inline-block;
+}
+.pettie-wavy-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 100%;
+  height: 8px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M0 10 Q 25 20, 50 10 T 100 10' fill='none' stroke='%23FF6B35' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-size: 35px 8px;
+}
+
+/* 3-stroke sparkle decoration from Pettie theme */
+.pettie-sparkle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.pettie-sparkle::before {
+  content: '\\ | /';
+  font-family: var(--font-readex), sans-serif;
+  font-size: 14px;
+  font-weight: 900;
+  color: #FF6B35;
+  letter-spacing: 3px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
