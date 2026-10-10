@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { RealProduct, MergedProduct } from '@/lib/types';
+import { RealProduct, MergedProduct, StoreMode } from '@/lib/types';
 
 export interface CartItem {
   product: RealProduct;
@@ -36,11 +36,20 @@ interface CartContextType {
   // Toast notifications
   toastMessage: string | null;
   showToast: (msg: string) => void;
+  // Storefront Architecture Mode
+  storeMode: StoreMode;
+  setStoreMode: (mode: StoreMode) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-export function CartProvider({ children }: { children: React.ReactNode }) {
+export function CartProvider({
+  children,
+  initialStoreMode = 'hybrid',
+}: {
+  children: React.ReactNode;
+  initialStoreMode?: StoreMode;
+}) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [wishlist, setWishlist] = useState<string[]>([]);
@@ -48,6 +57,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [discountPercent, setDiscountPercent] = useState(0);
   const [quickViewProduct, setQuickViewProduct] = useState<MergedProduct | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [storeMode, setStoreMode] = useState<StoreMode>(initialStoreMode);
+
+  // Sync mode and load from localStorage on mount
+  useEffect(() => {
+    fetch('/api/settings')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.settings?.storeMode) {
+          setStoreMode(data.settings.storeMode);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -91,6 +113,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const addToCart = (product: RealProduct, quantity = 1) => {
+    if (storeMode === 'affiliate_only') {
+      showToast('⚠️ Store is currently in Affiliate Mode. In-house cart is disabled.');
+      return;
+    }
+
     if (product.stockQuantity <= 0) {
       showToast(`⚠️ Sorry, ${product.name} is currently out of stock!`);
       return;
@@ -204,6 +231,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setQuickViewProduct,
         toastMessage,
         showToast,
+        storeMode,
+        setStoreMode,
       }}
     >
       {children}

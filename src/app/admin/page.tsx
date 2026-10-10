@@ -88,6 +88,7 @@ export default function AdminPage() {
   // Phase 2 Flip confirmation
   const [flipConfirmOpen, setFlipConfirmOpen] = useState(false);
   const [flipMessage, setFlipMessage] = useState('');
+  const [modeUpdating, setModeUpdating] = useState(false);
 
   // Admin Login & Session State
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -102,7 +103,7 @@ export default function AdminPage() {
     setLoading(true);
     try {
       const [prodRes, ordRes, leadRes, setRes] = await Promise.all([
-        fetch('/api/products?type=all'),
+        fetch('/api/products?type=all&ignoreStoreMode=true'),
         fetch('/api/orders'),
         fetch('/api/leads'),
         fetch('/api/settings'),
@@ -390,6 +391,7 @@ export default function AdminPage() {
 
   // Handle Mode Change
   const handleModeChange = async (mode: StoreSettings['storeMode']) => {
+    setModeUpdating(true);
     try {
       const res = await fetch('/api/settings', {
         method: 'PUT',
@@ -399,10 +401,22 @@ export default function AdminPage() {
       const data = await res.json();
       if (data.success) {
         setSettings(data.settings);
+        const modeLabel =
+          mode === 'affiliate_only'
+            ? 'Affiliate Mode'
+            : mode === 'retail_only'
+            ? 'Real Product Mode'
+            : 'Dual Mode';
+        setFlipMessage(`Storefront architecture successfully switched to: ${modeLabel}`);
+        setTimeout(() => setFlipMessage(''), 6000);
         fetchData();
+      } else {
+        alert(data.error || 'Failed to update store mode');
       }
     } catch (err) {
       alert('Failed to update store mode');
+    } finally {
+      setModeUpdating(false);
     }
   };
 
@@ -593,16 +607,22 @@ export default function AdminPage() {
               <h1 className="text-2xl font-black text-slate-900 tracking-tight">
                 Momo Command Center
               </h1>
-              <span className="text-[11px] font-extrabold uppercase bg-orange-100 text-orange-800 px-2.5 py-0.5 rounded-full">
-                {settings?.storeMode === 'hybrid'
-                  ? 'Hybrid Mode'
+              <span className={`text-[11px] font-extrabold uppercase px-2.5 py-0.5 rounded-full ${
+                settings?.storeMode === 'affiliate_only'
+                  ? 'bg-amber-100 text-amber-800'
                   : settings?.storeMode === 'retail_only'
-                  ? 'Phase 2: Retail Only'
-                  : 'Phase 1: Affiliate Only'}
+                  ? 'bg-teal-100 text-teal-800'
+                  : 'bg-orange-100 text-orange-800'
+              }`}>
+                {settings?.storeMode === 'affiliate_only'
+                  ? 'Affiliate Mode'
+                  : settings?.storeMode === 'retail_only'
+                  ? 'Real Product Mode'
+                  : 'Dual Mode'}
               </span>
             </div>
             <p className="text-xs text-slate-500 font-medium">
-              Dual-Schema Catalog, Stripe Orders, Leads & Phase 2 Transition Hub
+              Dual-Schema Catalog, Stripe Orders, Leads & Multi-Mode Storefront Hub
             </p>
           </div>
         </div>
@@ -634,6 +654,172 @@ export default function AdminPage() {
             <span>Log Out</span>
           </button>
         </div>
+      </div>
+
+      {/* STOREFRONT ARCHITECTURE MODE CONTROLLER */}
+      <div className="bg-gradient-to-r from-slate-900 via-[#181528] to-slate-900 text-white rounded-3xl p-5 sm:p-6 shadow-xl border border-slate-800 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">🎛️</span>
+              <h2 className="text-base sm:text-lg font-black tracking-tight text-white">
+                Storefront Architecture Mode Controller
+              </h2>
+              <span className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full shadow-xs ${
+                settings?.storeMode === 'affiliate_only'
+                  ? 'bg-amber-400 text-black'
+                  : settings?.storeMode === 'retail_only'
+                  ? 'bg-teal-400 text-black'
+                  : 'bg-orange-500 text-white'
+              }`}>
+                {modeUpdating
+                  ? 'Updating...'
+                  : settings?.storeMode === 'affiliate_only'
+                  ? '● Live: Affiliate Mode'
+                  : settings?.storeMode === 'retail_only'
+                  ? '● Live: Real Product Mode'
+                  : '● Live: Dual Mode'}
+              </span>
+            </div>
+            <p className="text-xs text-slate-300 font-medium">
+              Select an architecture mode to instantly switch the public storefront&apos;s product catalog, navigation, and purchasing actions.
+            </p>
+          </div>
+
+          <a
+            href="/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="self-start sm:self-auto px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold flex items-center gap-1.5 transition-colors border border-white/15"
+          >
+            <span>Preview Live Storefront</span>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
+        </div>
+
+        {/* 3 Interactive Toggle Buttons */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+          {/* 1. Affiliate Mode */}
+          <button
+            onClick={() => handleModeChange('affiliate_only')}
+            disabled={modeUpdating}
+            className={`group relative p-4 rounded-2xl border-2 text-left transition-all duration-200 flex flex-col justify-between cursor-pointer ${
+              settings?.storeMode === 'affiliate_only'
+                ? 'bg-gradient-to-br from-amber-500/20 to-orange-500/20 border-amber-400 shadow-lg shadow-amber-500/10'
+                : 'bg-white/5 border-white/10 hover:border-white/30 hover:bg-white/10'
+            }`}
+          >
+            <div className="flex items-center justify-between w-full mb-2.5">
+              <div className="flex items-center gap-2">
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-colors ${
+                  settings?.storeMode === 'affiliate_only'
+                    ? 'bg-amber-400 text-black font-bold'
+                    : 'bg-white/10 text-amber-300'
+                }`}>
+                  <Flame className="w-4 h-4 fill-current" />
+                </div>
+                <span className="font-extrabold text-sm text-white">Affiliate Mode</span>
+              </div>
+              {settings?.storeMode === 'affiliate_only' ? (
+                <span className="flex items-center gap-1 text-[11px] font-bold text-amber-300 bg-amber-400/20 px-2.5 py-0.5 rounded-full border border-amber-400/40">
+                  <Check className="w-3.5 h-3.5 stroke-[3]" /> Active
+                </span>
+              ) : (
+                <span className="text-[11px] font-semibold text-slate-400 group-hover:text-white">Click to Select</span>
+              )}
+            </div>
+            <p className="text-[11px] text-slate-300 leading-relaxed">
+              All real product actions and functionalities are <strong className="text-amber-300">HIDDEN</strong> from storefront. Customers only see Amazon affiliate items with outbound links. In-house cart is hidden.
+            </p>
+          </button>
+
+          {/* 2. Real Product Mode */}
+          <button
+            onClick={() => handleModeChange('retail_only')}
+            disabled={modeUpdating}
+            className={`group relative p-4 rounded-2xl border-2 text-left transition-all duration-200 flex flex-col justify-between cursor-pointer ${
+              settings?.storeMode === 'retail_only'
+                ? 'bg-gradient-to-br from-teal-500/20 to-emerald-500/20 border-teal-400 shadow-lg shadow-teal-500/10'
+                : 'bg-white/5 border-white/10 hover:border-white/30 hover:bg-white/10'
+            }`}
+          >
+            <div className="flex items-center justify-between w-full mb-2.5">
+              <div className="flex items-center gap-2">
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-colors ${
+                  settings?.storeMode === 'retail_only'
+                    ? 'bg-teal-400 text-black font-bold'
+                    : 'bg-white/10 text-teal-300'
+                }`}>
+                  <Package className="w-4 h-4" />
+                </div>
+                <span className="font-extrabold text-sm text-white">Real Product Mode</span>
+              </div>
+              {settings?.storeMode === 'retail_only' ? (
+                <span className="flex items-center gap-1 text-[11px] font-bold text-teal-300 bg-teal-400/20 px-2.5 py-0.5 rounded-full border border-teal-400/40">
+                  <Check className="w-3.5 h-3.5 stroke-[3]" /> Active
+                </span>
+              ) : (
+                <span className="text-[11px] font-semibold text-slate-400 group-hover:text-white">Click to Select</span>
+              )}
+            </div>
+            <p className="text-[11px] text-slate-300 leading-relaxed">
+              All Amazon affiliate links, Prime spotlights, and badges are <strong className="text-teal-300">HIDDEN</strong>. Storefront serves 100% in-house Momo items with full Add to Cart and Stripe checkout.
+            </p>
+          </button>
+
+          {/* 3. Dual Mode */}
+          <button
+            onClick={() => handleModeChange('hybrid')}
+            disabled={modeUpdating}
+            className={`group relative p-4 rounded-2xl border-2 text-left transition-all duration-200 flex flex-col justify-between cursor-pointer ${
+              settings?.storeMode === 'hybrid'
+                ? 'bg-gradient-to-br from-orange-500/20 to-pink-500/20 border-orange-400 shadow-lg shadow-orange-500/10'
+                : 'bg-white/5 border-white/10 hover:border-white/30 hover:bg-white/10'
+            }`}
+          >
+            <div className="flex items-center justify-between w-full mb-2.5">
+              <div className="flex items-center gap-2">
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center transition-colors ${
+                  settings?.storeMode === 'hybrid'
+                    ? 'bg-orange-500 text-white font-bold'
+                    : 'bg-white/10 text-orange-300'
+                }`}>
+                  <Sparkles className="w-4 h-4" />
+                </div>
+                <span className="font-extrabold text-sm text-white">Dual Mode</span>
+              </div>
+              {settings?.storeMode === 'hybrid' ? (
+                <span className="flex items-center gap-1 text-[11px] font-bold text-orange-300 bg-orange-400/20 px-2.5 py-0.5 rounded-full border border-orange-400/40">
+                  <Check className="w-3.5 h-3.5 stroke-[3]" /> Active
+                </span>
+              ) : (
+                <span className="text-[11px] font-semibold text-slate-400 group-hover:text-white">Click to Select</span>
+              )}
+            </div>
+            <p className="text-[11px] text-slate-300 leading-relaxed">
+              Showcases <strong className="text-orange-300">BOTH</strong> functionalities side-by-side. Customers can buy Momo Originals via cart/checkout AND click outbound to Amazon for affiliate items.
+            </p>
+          </button>
+        </div>
+
+        {/* Dynamic Status Feedback Banner */}
+        {flipMessage ? (
+          <div className="p-3 bg-emerald-500/20 border border-emerald-500/40 rounded-xl text-emerald-200 text-xs font-bold flex items-center gap-2 animate-fade-in">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>{flipMessage}</span>
+          </div>
+        ) : (
+          <div className="text-[11px] text-slate-400 bg-white/5 border border-white/10 rounded-xl p-2.5 flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+            <span>
+              {settings?.storeMode === 'affiliate_only'
+                ? 'Storefront currently enforcing Affiliate Mode: In-house shopping cart and real product checkout are completely hidden.'
+                : settings?.storeMode === 'retail_only'
+                ? 'Storefront currently enforcing Real Product Mode: Outbound Amazon links and Prime banners are completely hidden.'
+                : 'Storefront currently enforcing Dual Mode: Customers have full access to both Amazon affiliate picks and in-house retail purchases.'}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* KPI Cards Row */}
@@ -1133,59 +1319,62 @@ export default function AdminPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
               <button
-                onClick={() => handleModeChange('hybrid')}
-                className={`p-4 rounded-2xl border-2 text-left space-y-1 transition-all ${
-                  settings?.storeMode === 'hybrid'
-                    ? 'border-orange-500 bg-orange-50/30'
-                    : 'border-slate-200 hover:border-slate-300'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs text-slate-900">Hybrid Mode</span>
-                  {settings?.storeMode === 'hybrid' && (
-                    <Check className="w-4 h-4 text-orange-600" />
-                  )}
-                </div>
-                <p className="text-[11px] text-slate-500">
-                  Affiliate Amazon picks + Momo Originals side-by-side.
-                </p>
-              </button>
-
-              <button
                 onClick={() => handleModeChange('affiliate_only')}
-                className={`p-4 rounded-2xl border-2 text-left space-y-1 transition-all ${
+                disabled={modeUpdating}
+                className={`p-4 rounded-2xl border-2 text-left space-y-1 transition-all cursor-pointer ${
                   settings?.storeMode === 'affiliate_only'
-                    ? 'border-amber-500 bg-amber-50/30'
+                    ? 'border-amber-500 bg-amber-50/40 shadow-sm'
                     : 'border-slate-200 hover:border-slate-300'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs text-slate-900">Phase 1: Affiliate</span>
+                  <span className="font-bold text-xs text-slate-900">Affiliate Mode</span>
                   {settings?.storeMode === 'affiliate_only' && (
                     <Check className="w-4 h-4 text-amber-600" />
                   )}
                 </div>
                 <p className="text-[11px] text-slate-500">
-                  Hides cart. All clicks outbound to Amazon.
+                  Hides cart. All clicks outbound to Amazon. Real product actions are hidden.
                 </p>
               </button>
 
               <button
                 onClick={() => handleModeChange('retail_only')}
-                className={`p-4 rounded-2xl border-2 text-left space-y-1 transition-all ${
+                disabled={modeUpdating}
+                className={`p-4 rounded-2xl border-2 text-left space-y-1 transition-all cursor-pointer ${
                   settings?.storeMode === 'retail_only'
-                    ? 'border-teal-500 bg-teal-50/30'
+                    ? 'border-teal-500 bg-teal-50/40 shadow-sm'
                     : 'border-slate-200 hover:border-slate-300'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs text-slate-900">Phase 2: Retail</span>
+                  <span className="font-bold text-xs text-slate-900">Real Product Mode</span>
                   {settings?.storeMode === 'retail_only' && (
                     <Check className="w-4 h-4 text-teal-600" />
                   )}
                 </div>
                 <p className="text-[11px] text-slate-500">
-                  100% In-House Momo products with active Stripe cart.
+                  100% In-House Momo products with active Stripe cart. Affiliate actions hidden.
+                </p>
+              </button>
+
+              <button
+                onClick={() => handleModeChange('hybrid')}
+                disabled={modeUpdating}
+                className={`p-4 rounded-2xl border-2 text-left space-y-1 transition-all cursor-pointer ${
+                  settings?.storeMode === 'hybrid'
+                    ? 'border-orange-500 bg-orange-50/40 shadow-sm'
+                    : 'border-slate-200 hover:border-slate-300'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-xs text-slate-900">Dual Mode</span>
+                  {settings?.storeMode === 'hybrid' && (
+                    <Check className="w-4 h-4 text-orange-600" />
+                  )}
+                </div>
+                <p className="text-[11px] text-slate-500">
+                  Affiliate Amazon picks + Momo Originals showcased side-by-side.
                 </p>
               </button>
             </div>

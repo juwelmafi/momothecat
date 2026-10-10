@@ -19,6 +19,7 @@ import {
 export default function CheckoutPage() {
   const router = useRouter();
   const {
+    storeMode,
     cart,
     subtotal,
     shippingFee,
@@ -46,6 +47,27 @@ export default function CheckoutPage() {
   const [promoInput, setPromoInput] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  if (storeMode === 'affiliate_only') {
+    return (
+      <div className="max-w-2xl mx-auto py-16 text-center space-y-6">
+        <div className="w-20 h-20 rounded-3xl bg-amber-100 flex items-center justify-center text-4xl mx-auto">
+          📦
+        </div>
+        <h1 className="text-2xl font-black text-slate-900">Affiliate Mode Active</h1>
+        <p className="text-sm text-slate-500">
+          In-house checkout is disabled in Affiliate Mode. All items are fulfilled directly via Amazon Prime.
+        </p>
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-extrabold rounded-2xl text-xs transition-all shadow-md shadow-orange-500/20"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Return to Storefront</span>
+        </Link>
+      </div>
+    );
+  }
 
   if (cart.length === 0) {
     return (

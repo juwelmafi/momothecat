@@ -72,6 +72,14 @@ export async function getStoreSettings(): Promise<StoreSettings> {
 }
 
 export async function updateStoreSettings(newSettings: Partial<StoreSettings>): Promise<StoreSettings> {
+  // Normalize storeMode aliases if provided
+  if (newSettings.storeMode) {
+    const rawMode = newSettings.storeMode as string;
+    if (rawMode === 'affiliate') newSettings.storeMode = 'affiliate_only';
+    else if (rawMode === 'real') newSettings.storeMode = 'retail_only';
+    else if (rawMode === 'dual') newSettings.storeMode = 'hybrid';
+  }
+
   const db = await connectToDatabase();
   if (db) {
     try {
@@ -100,6 +108,7 @@ export async function getMergedProducts(options?: {
   search?: string;
   type?: 'all' | 'affiliate' | 'real';
   featuredOnly?: boolean;
+  ignoreStoreMode?: boolean;
 }): Promise<MergedProduct[]> {
   const db = await connectToDatabase();
   let affiliateList: AffiliateProduct[] = [];
@@ -169,9 +178,11 @@ export async function getMergedProducts(options?: {
 
   const settings = await getStoreSettings();
 
-  // Respect storeMode
+  // Respect storeMode unless explicitly ignored (e.g. for admin catalog management)
   let merged: MergedProduct[] = [];
-  if (settings.storeMode === 'affiliate_only') {
+  if (options?.ignoreStoreMode) {
+    merged = [...realList, ...affiliateList];
+  } else if (settings.storeMode === 'affiliate_only') {
     merged = [...affiliateList];
   } else if (settings.storeMode === 'retail_only') {
     merged = [...realList];

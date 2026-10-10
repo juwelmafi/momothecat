@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 
 export default function QuickViewModal() {
-  const { quickViewProduct, setQuickViewProduct, addToCart } = useCart();
+  const { quickViewProduct, setQuickViewProduct, addToCart, storeMode } = useCart();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [qty, setQty] = useState(1);
 
@@ -149,50 +149,62 @@ export default function QuickViewModal() {
             {/* Actions */}
             <div className="pt-6 border-t border-slate-100 mt-6 space-y-3">
               {isReal ? (
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs font-bold text-slate-700">Quantity:</span>
-                    <div className="flex items-center border border-slate-200 rounded-xl bg-slate-50">
-                      <button
-                        onClick={() => setQty((q) => Math.max(1, q - 1))}
-                        className="p-2 text-slate-500 hover:text-orange-600"
-                      >
-                        <Minus className="w-3.5 h-3.5" />
-                      </button>
-                      <span className="px-3 text-xs font-bold text-slate-800">{qty}</span>
-                      <button
-                        onClick={() => setQty((q) => Math.min(realProd?.stockQuantity || 10, q + 1))}
-                        disabled={qty >= (realProd?.stockQuantity || 1)}
-                        className="p-2 text-slate-500 hover:text-orange-600 disabled:opacity-30"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
+                storeMode === 'affiliate_only' ? (
+                  <div className="p-3 bg-amber-50 text-amber-800 text-xs font-semibold rounded-xl text-center border border-amber-200">
+                    Real product ordering is disabled in Affiliate Mode.
                   </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs font-bold text-slate-700">Quantity:</span>
+                      <div className="flex items-center border border-slate-200 rounded-xl bg-slate-50">
+                        <button
+                          onClick={() => setQty((q) => Math.max(1, q - 1))}
+                          className="p-2 text-slate-500 hover:text-orange-600"
+                        >
+                          <Minus className="w-3.5 h-3.5" />
+                        </button>
+                        <span className="px-3 text-xs font-bold text-slate-800">{qty}</span>
+                        <button
+                          onClick={() => setQty((q) => Math.min(realProd?.stockQuantity || 10, q + 1))}
+                          disabled={qty >= (realProd?.stockQuantity || 1)}
+                          className="p-2 text-slate-500 hover:text-orange-600 disabled:opacity-30"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
 
-                  <button
-                    onClick={handleAddToCart}
-                    disabled={isOutOfStock}
-                    className={`w-full py-3 rounded-xl font-extrabold text-xs flex items-center justify-center gap-2 shadow-md transition-all ${
-                      isOutOfStock
-                        ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                        : 'bg-orange-500 hover:bg-orange-600 text-white shadow-orange-500/25'
-                    }`}
-                  >
-                    <ShoppingBag className="w-4 h-4" />
-                    <span>{isOutOfStock ? 'Sold Out' : 'Add to Cart'}</span>
-                  </button>
-                </div>
+                    <button
+                      onClick={handleAddToCart}
+                      disabled={isOutOfStock}
+                      className={`w-full py-3 rounded-xl font-extrabold text-xs flex items-center justify-center gap-2 shadow-md transition-all ${
+                        isOutOfStock
+                          ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                          : 'bg-orange-500 hover:bg-orange-600 text-white shadow-orange-500/25'
+                      }`}
+                    >
+                      <ShoppingBag className="w-4 h-4" />
+                      <span>{isOutOfStock ? 'Sold Out' : 'Add to Cart'}</span>
+                    </button>
+                  </div>
+                )
               ) : (
-                <a
-                  href={affProd?.affiliateLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl font-extrabold text-xs flex items-center justify-center gap-2 shadow-md shadow-orange-500/20 transition-all"
-                >
-                  <span>Buy on Amazon</span>
-                  <ExternalLink className="w-4 h-4" />
-                </a>
+                storeMode === 'retail_only' ? (
+                  <div className="p-3 bg-slate-100 text-slate-600 text-xs font-semibold rounded-xl text-center border border-slate-200">
+                    Amazon affiliate links are disabled in Real Product Mode.
+                  </div>
+                ) : (
+                  <a
+                    href={affProd?.affiliateLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl font-extrabold text-xs flex items-center justify-center gap-2 shadow-md shadow-orange-500/20 transition-all"
+                  >
+                    <span>Buy on Amazon</span>
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                )
               )}
 
               <div className="flex items-center justify-center gap-4 text-[11px] text-slate-400 pt-1">

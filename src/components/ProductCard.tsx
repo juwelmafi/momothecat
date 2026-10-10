@@ -18,7 +18,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const { addToCart, toggleWishlist, isWishlisted, setQuickViewProduct } = useCart();
+  const { storeMode, addToCart, toggleWishlist, isWishlisted, setQuickViewProduct } = useCart();
   const isReal = product.type === 'real';
   const isAffiliate = product.type === 'affiliate';
 
@@ -104,7 +104,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         {/* Hover Quick Action Overlay */}
         <div className="absolute inset-x-3 bottom-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-2">
-          {isAffiliate ? (
+          {isAffiliate && storeMode !== 'retail_only' ? (
             <a
               href={affProd?.affiliateLink}
               target="_blank"
@@ -114,7 +114,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               <span>View on Amazon</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
-          ) : (
+          ) : isReal && storeMode !== 'affiliate_only' ? (
             <button
               onClick={() => addToCart(realProd!)}
               disabled={isOutOfStock}
@@ -123,7 +123,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               <ShoppingBag className="w-3.5 h-3.5" />
               <span>{isOutOfStock ? 'Out of Stock' : 'Add to Cart'}</span>
             </button>
-          )}
+          ) : null}
 
           <button
             onClick={(e) => {

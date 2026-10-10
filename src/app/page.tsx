@@ -35,6 +35,7 @@ export default async function HomePage({ searchParams }: PageProps) {
         activeCategory={category}
         searchQuery={search}
         activeFilter={filter}
+        storeMode={settings.storeMode}
       />
     </div>
   );

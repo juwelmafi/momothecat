@@ -20,7 +20,7 @@ import { CATEGORIES } from '@/lib/initialData';
 
 export default function Header() {
   const router = useRouter();
-  const { itemCount, subtotal, setIsCartOpen, wishlist } = useCart();
+  const { storeMode, itemCount, subtotal, setIsCartOpen, wishlist } = useCart();
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -145,13 +145,23 @@ export default function Header() {
               Home
             </Link>
 
-            <Link
-              href="/#products-section"
-              className="hover:text-[#FF6B35] transition-colors py-1 flex items-center gap-1"
-            >
-              <Flame className="w-3.5 h-3.5 fill-[#FF6B35] text-[#FF6B35]" />
-              <span>Amazon Picks</span>
-            </Link>
+            {storeMode !== 'retail_only' ? (
+              <Link
+                href="/#products-section"
+                className="hover:text-[#FF6B35] transition-colors py-1 flex items-center gap-1"
+              >
+                <Flame className="w-3.5 h-3.5 fill-[#FF6B35] text-[#FF6B35]" />
+                <span>Amazon Picks</span>
+              </Link>
+            ) : (
+              <Link
+                href="/#products-section"
+                className="hover:text-[#FF6B35] transition-colors py-1 flex items-center gap-1"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-[#2FA5FB]" />
+                <span>Momo Originals</span>
+              </Link>
+            )}
 
             <Link
               href="/#curated-collections"
@@ -215,22 +225,24 @@ export default function Header() {
               )}
             </Link>
 
-            {/* Cart Button */}
-            <button
-              onClick={() => setIsCartOpen(true)}
-              className="shrink-0 flex items-center gap-2 bg-white/80 hover:bg-white border border-black/15 hover:border-[#232121] text-[#232121] px-2.5 sm:px-3.5 py-2 rounded-full transition-all group shadow-2xs"
-              aria-label="Open Shopping Cart"
-            >
-              <div className="relative">
-                <ShoppingBag className="w-4 h-4 text-[#232121] group-hover:text-[#FF6B35] transition-colors" />
-                <span className="absolute -top-1.5 -right-2 w-4 h-4 bg-[#FF6B35] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
-                  {itemCount}
+            {/* Cart Button: Hidden in Affiliate Mode */}
+            {storeMode !== 'affiliate_only' && (
+              <button
+                onClick={() => setIsCartOpen(true)}
+                className="shrink-0 flex items-center gap-2 bg-white/80 hover:bg-white border border-black/15 hover:border-[#232121] text-[#232121] px-2.5 sm:px-3.5 py-2 rounded-full transition-all group shadow-2xs"
+                aria-label="Open Shopping Cart"
+              >
+                <div className="relative">
+                  <ShoppingBag className="w-4 h-4 text-[#232121] group-hover:text-[#FF6B35] transition-colors" />
+                  <span className="absolute -top-1.5 -right-2 w-4 h-4 bg-[#FF6B35] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                    {itemCount}
+                  </span>
+                </div>
+                <span className="hidden sm:inline text-xs font-bold text-[#232121]">
+                  ${subtotal.toFixed(2)}
                 </span>
-              </div>
-              <span className="hidden sm:inline text-xs font-bold text-[#232121]">
-                ${subtotal.toFixed(2)}
-              </span>
-            </button>
+              </button>
+            )}
 
             {/* Mobile Hamburger Button */}
             <button
@@ -285,17 +297,31 @@ export default function Header() {
               <span className="text-xs text-[#FF6B35]">🐾</span>
             </Link>
 
-            <Link
-              href="/#products-section"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-[#FFF9DE] transition-colors text-[#FF6B35]"
-            >
-              <div className="flex items-center gap-2">
-                <Flame className="w-4 h-4 fill-[#FF6B35]" />
-                <span>Amazon Picks</span>
-              </div>
-              <span className="text-[10px] bg-[#FFEFEA] px-2 py-0.5 rounded-full font-bold">HOT</span>
-            </Link>
+            {storeMode !== 'retail_only' ? (
+              <Link
+                href="/#products-section"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-[#FFF9DE] transition-colors text-[#FF6B35]"
+              >
+                <div className="flex items-center gap-2">
+                  <Flame className="w-4 h-4 fill-[#FF6B35]" />
+                  <span>Amazon Picks</span>
+                </div>
+                <span className="text-[10px] bg-[#FFEFEA] px-2 py-0.5 rounded-full font-bold">HOT</span>
+              </Link>
+            ) : (
+              <Link
+                href="/#products-section"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-[#FFF9DE] transition-colors text-[#2FA5FB]"
+              >
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-[#2FA5FB]" />
+                  <span className="font-bold">Momo Originals</span>
+                </div>
+                <span className="text-[10px] bg-[#E8F5FE] text-[#0284C7] px-2 py-0.5 rounded-full font-bold">IN-HOUSE</span>
+              </Link>
+            )}
 
             <Link
               href="/#curated-collections"

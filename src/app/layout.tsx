@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
 import QuickViewModal from '@/components/QuickViewModal';
 import Toast from '@/components/Toast';
+import { getStoreSettings } from '@/lib/store';
 
 const fredoka = Fredoka({
   subsets: ['latin'],
@@ -41,15 +42,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const settings = await getStoreSettings();
+
   return (
     <html lang="en" className={`${fredoka.variable} ${readexPro.variable} scroll-smooth`}>
       <body className="min-h-screen flex flex-col bg-white text-[#000000] antialiased selection:bg-[#FF6B35] selection:text-white">
-        <CartProvider>
+        <CartProvider initialStoreMode={settings.storeMode}>
           <Header />
           <main className="flex-1 w-full">
             {children}

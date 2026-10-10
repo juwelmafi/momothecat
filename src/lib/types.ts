@@ -79,8 +79,10 @@ export interface Lead {
   createdAt: string;
 }
 
+export type StoreMode = 'hybrid' | 'affiliate_only' | 'retail_only';
+
 export interface StoreSettings {
-  storeMode: 'hybrid' | 'affiliate_only' | 'retail_only';
+  storeMode: StoreMode;
   affiliateTag: string;
   freeShippingThreshold: number;
   announcementText: string;

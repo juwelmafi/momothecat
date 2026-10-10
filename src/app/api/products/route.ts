@@ -9,12 +9,14 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get('search') || undefined;
     const type = (searchParams.get('type') as 'all' | 'affiliate' | 'real') || 'all';
     const featuredOnly = searchParams.get('featured') === 'true';
+    const ignoreStoreMode = searchParams.get('ignoreStoreMode') === 'true';
 
     const products = await getMergedProducts({
       category,
       search,
       type,
       featuredOnly,
+      ignoreStoreMode,
     });
 
     return NextResponse.json({ success: true, products });

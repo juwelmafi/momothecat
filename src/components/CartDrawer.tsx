@@ -20,6 +20,7 @@ import {
 export default function CartDrawer() {
   const router = useRouter();
   const {
+    storeMode,
     cart,
     isCartOpen,
     setIsCartOpen,
@@ -37,7 +38,7 @@ export default function CartDrawer() {
 
   const [promoInput, setPromoInput] = useState('');
 
-  if (!isCartOpen) return null;
+  if (!isCartOpen || storeMode === 'affiliate_only') return null;
 
   const progress = Math.min(100, Math.round((subtotal / freeShippingThreshold) * 100));
   const remainingForFreeShipping = Math.max(0, freeShippingThreshold - subtotal);

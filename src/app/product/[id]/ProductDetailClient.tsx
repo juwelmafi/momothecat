@@ -24,7 +24,7 @@ interface Props {
 
 export default function ProductDetailClient({ product }: Props) {
   const router = useRouter();
-  const { addToCart, toggleWishlist, isWishlisted } = useCart();
+  const { storeMode, addToCart, toggleWishlist, isWishlisted } = useCart();
   const [selectedImgIndex, setSelectedImgIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<'desc' | 'specs' | 'shipping'>('desc');
@@ -187,69 +187,83 @@ export default function ProductDetailClient({ product }: Props) {
         {/* Purchase Controls */}
         <div className="pt-2 space-y-4">
           {isReal && realProd ? (
-            <div className="space-y-3">
-              <div className="flex items-center gap-4">
-                <span className="text-xs font-bold text-slate-700">Quantity:</span>
-                <div className="flex items-center border border-slate-200 rounded-xl bg-white shadow-xs">
+            storeMode === 'affiliate_only' ? (
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-amber-800 text-xs font-semibold text-center space-y-2">
+                <p>⚠️ Storefront is currently in <strong>Affiliate Mode</strong>.</p>
+                <p className="text-[11px] text-amber-700">In-house ordering for Momo Originals is temporarily disabled.</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <div className="flex items-center gap-4">
+                  <span className="text-xs font-bold text-slate-700">Quantity:</span>
+                  <div className="flex items-center border border-slate-200 rounded-xl bg-white shadow-xs">
+                    <button
+                      onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                      className="p-2.5 text-slate-500 hover:text-orange-600"
+                    >
+                      <Minus className="w-4 h-4" />
+                    </button>
+                    <span className="px-4 text-sm font-extrabold text-slate-900">{quantity}</span>
+                    <button
+                      onClick={() => setQuantity((q) => Math.min(realProd.stockQuantity || 10, q + 1))}
+                      disabled={quantity >= realProd.stockQuantity}
+                      className="p-2.5 text-slate-500 hover:text-orange-600 disabled:opacity-30"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                   <button
-                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                    className="p-2.5 text-slate-500 hover:text-orange-600"
+                    onClick={handleAddToCart}
+                    disabled={isOutOfStock}
+                    className={`py-3.5 px-6 rounded-2xl font-black text-sm flex items-center justify-center gap-2 shadow-lg transition-all active:scale-[0.98] ${
+                      isOutOfStock
+                        ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                        : 'bg-orange-500 hover:bg-orange-600 text-white shadow-orange-500/25'
+                    }`}
                   >
-                    <Minus className="w-4 h-4" />
+                    <ShoppingBag className="w-5 h-5" />
+                    <span>{isOutOfStock ? 'Sold Out' : 'Add to Cart'}</span>
                   </button>
-                  <span className="px-4 text-sm font-extrabold text-slate-900">{quantity}</span>
+
                   <button
-                    onClick={() => setQuantity((q) => Math.min(realProd.stockQuantity || 10, q + 1))}
-                    disabled={quantity >= realProd.stockQuantity}
-                    className="p-2.5 text-slate-500 hover:text-orange-600 disabled:opacity-30"
+                    onClick={handleBuyNow}
+                    disabled={isOutOfStock}
+                    className={`py-3.5 px-6 rounded-2xl font-black text-sm flex items-center justify-center gap-2 border-2 transition-all ${
+                      isOutOfStock
+                        ? 'border-slate-200 text-slate-300 cursor-not-allowed'
+                        : 'border-slate-900 bg-slate-900 text-white hover:bg-black shadow-md'
+                    }`}
                   >
-                    <Plus className="w-4 h-4" />
+                    <span>Instant Checkout</span>
                   </button>
                 </div>
               </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                <button
-                  onClick={handleAddToCart}
-                  disabled={isOutOfStock}
-                  className={`py-3.5 px-6 rounded-2xl font-black text-sm flex items-center justify-center gap-2 shadow-lg transition-all active:scale-[0.98] ${
-                    isOutOfStock
-                      ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                      : 'bg-orange-500 hover:bg-orange-600 text-white shadow-orange-500/25'
-                  }`}
-                >
-                  <ShoppingBag className="w-5 h-5" />
-                  <span>{isOutOfStock ? 'Sold Out' : 'Add to Cart'}</span>
-                </button>
-
-                <button
-                  onClick={handleBuyNow}
-                  disabled={isOutOfStock}
-                  className={`py-3.5 px-6 rounded-2xl font-black text-sm flex items-center justify-center gap-2 border-2 transition-all ${
-                    isOutOfStock
-                      ? 'border-slate-200 text-slate-300 cursor-not-allowed'
-                      : 'border-slate-900 bg-slate-900 text-white hover:bg-black shadow-md'
-                  }`}
-                >
-                  <span>Instant Checkout</span>
-                </button>
-              </div>
-            </div>
+            )
           ) : (
-            <div>
-              <a
-                href={affProd?.affiliateLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-4 px-6 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-2xl font-black text-base flex items-center justify-center gap-2.5 shadow-xl shadow-orange-500/25 transition-all hover:scale-[1.01] active:scale-[0.98]"
-              >
-                <span>Buy Now on Amazon</span>
-                <ExternalLink className="w-5 h-5" />
-              </a>
-              <p className="text-[11px] text-slate-400 text-center mt-2 font-medium">
-                Routes directly to Amazon with Prime 1-day or 2-day delivery benefits.
-              </p>
-            </div>
+            storeMode === 'retail_only' ? (
+              <div className="p-4 bg-slate-100 border border-slate-200 rounded-2xl text-slate-700 text-xs font-semibold text-center space-y-2">
+                <p>ℹ️ Storefront is currently in <strong>Real Product Mode</strong>.</p>
+                <p className="text-[11px] text-slate-500">Outbound Amazon links are currently disabled.</p>
+              </div>
+            ) : (
+              <div>
+                <a
+                  href={affProd?.affiliateLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-4 px-6 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-2xl font-black text-base flex items-center justify-center gap-2.5 shadow-xl shadow-orange-500/25 transition-all hover:scale-[1.01] active:scale-[0.98]"
+                >
+                  <span>Buy Now on Amazon</span>
+                  <ExternalLink className="w-5 h-5" />
+                </a>
+                <p className="text-[11px] text-slate-400 text-center mt-2 font-medium">
+                  Routes directly to Amazon with Prime 1-day or 2-day delivery benefits.
+                </p>
+              </div>
+            )
           )}
         </div>
 
