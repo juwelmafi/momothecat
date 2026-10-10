@@ -2007,7 +2007,7 @@ export default function AdminPage() {
                   <span className="text-xs font-black uppercase tracking-wider text-[#FF6B35] bg-[#FFEFEA] px-3 py-1 rounded-full">
                     Slide 1: Fresh Flavoured Dog & Cat Food
                   </span>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 pt-1">
                     <CloudinaryImageUploader
                       label="Slide 1: Pet Portrait Cutout"
                       description="Cute Golden Retriever dog or cat portrait cutout on left."
@@ -2060,7 +2060,7 @@ export default function AdminPage() {
                   <span className="text-xs font-black uppercase tracking-wider text-teal-700 bg-teal-50 px-3 py-1 rounded-full">
                     Slide 2: Nutrition Rich Pure Cat Treats
                   </span>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 pt-1">
                     <CloudinaryImageUploader
                       label="Slide 2: Pet Portrait Cutout"
                       description="Happy cat cutout portrait on left of slide 2."
@@ -2120,7 +2120,7 @@ export default function AdminPage() {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                   <CloudinaryImageUploader
                     label="Arch 1: Treats & Food"
                     description="Dog/cat portrait inside soft blue arch."
@@ -2220,7 +2220,7 @@ export default function AdminPage() {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                   <CloudinaryImageUploader
                     label="Customer 1: Jaden - Cat Lover"
                     description="Portrait for first testimonial review."
@@ -3221,7 +3221,7 @@ export default function AdminPage() {
                       <label className="text-slate-700 font-bold text-xs">Product Image</label>
                       <label className="inline-flex items-center gap-1 text-[11px] font-bold text-[#FF6B35] hover:text-[#e65a25] cursor-pointer bg-orange-50 hover:bg-orange-100 px-2.5 py-1 rounded-lg transition-colors">
                         <UploadCloud className="w-3.5 h-3.5" />
-                        <span>{productUploading ? 'Uploading...' : 'Upload to Cloudinary'}</span>
+                        <span>{productUploading ? 'Uploading...' : 'Upload'}</span>
                         <input
                           type="file"
                           accept="image/*"
@@ -3262,7 +3262,7 @@ export default function AdminPage() {
                       <label className="text-slate-700 font-bold text-xs">Gallery Images (comma-separated)</label>
                       <label className="inline-flex items-center gap-1 text-[11px] font-bold text-teal-600 hover:text-teal-700 cursor-pointer bg-teal-50 hover:bg-teal-100 px-2.5 py-1 rounded-lg transition-colors">
                         <UploadCloud className="w-3.5 h-3.5" />
-                        <span>{productUploading ? 'Uploading...' : '+ Add Image via Cloudinary'}</span>
+                        <span>{productUploading ? 'Uploading...' : '+ Add Image'}</span>
                         <input
                           type="file"
                           accept="image/*"
