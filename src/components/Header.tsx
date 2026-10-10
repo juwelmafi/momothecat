@@ -167,12 +167,6 @@ export default function Header() {
               Deals & Offers
             </Link>
 
-            <Link
-              href="/#testimonials-section"
-              className="hover:text-[#FF6B35] transition-colors py-1"
-            >
-              Reviews
-            </Link>
 
             <Link
               href="/#instagram-section"
@@ -321,14 +315,6 @@ export default function Header() {
               <span className="text-[10px] bg-[#FFC312] text-[#232121] px-2 py-0.5 rounded-full font-bold">20% OFF</span>
             </Link>
 
-            <Link
-              href="/#testimonials-section"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-[#FFF9DE] transition-colors text-[#232121]"
-            >
-              <span>Customer Reviews</span>
-              <span className="text-xs">⭐⭐⭐⭐⭐</span>
-            </Link>
 
             <Link
               href="/#instagram-section"

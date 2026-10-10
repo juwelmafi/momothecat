@@ -29,6 +29,7 @@ import {
   EyeOff,
   LogOut,
   Key,
+  Pencil,
 } from 'lucide-react';
 import {
   MergedProduct,
@@ -52,8 +53,9 @@ export default function AdminPage() {
   const [productSearch, setProductSearch] = useState('');
   const [productTypeFilter, setProductTypeFilter] = useState<'all' | 'affiliate' | 'real'>('all');
 
-  // Add Product Modal State
+  // Add/Edit Product Modal State
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
   const [newProductType, setNewProductType] = useState<'affiliate' | 'real'>('affiliate');
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
@@ -184,8 +186,60 @@ export default function AdminPage() {
     }
   };
 
-  // Handle Add Product Submit
-  const handleAddProduct = async (e: React.FormEvent) => {
+  // Open Add Product Modal
+  const handleOpenAddModal = () => {
+    setEditingProductId(null);
+    setNewProductType('affiliate');
+    setProductForm({
+      name: '',
+      price: '',
+      originalPrice: '',
+      category: 'Cat Toys',
+      description: '',
+      badge: "Amazon's Choice",
+      isFeatured: false,
+      imageUrl: 'https://images.unsplash.com/photo-1545249390-6bdfa286032f?auto=format&fit=crop&w=800&q=80',
+      affiliateLink: 'https://www.amazon.com/dp/B08XJ893Q1?tag=momothecat-20',
+      images: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80',
+      stockQuantity: '25',
+      sku: `MMC-${Math.floor(100 + Math.random() * 900)}`,
+      weightInOunces: '16',
+    });
+    setFormError('');
+    setFormSuccess('');
+    setIsAddModalOpen(true);
+  };
+
+  // Open Edit Product Modal
+  const handleOpenEditModal = (p: MergedProduct) => {
+    setEditingProductId(p._id);
+    setNewProductType(p.type);
+    const isAff = p.type === 'affiliate';
+    const aff = isAff ? (p as AffiliateProduct) : null;
+    const real = !isAff ? (p as RealProduct) : null;
+
+    setProductForm({
+      name: p.name,
+      price: p.price.toString(),
+      originalPrice: p.originalPrice ? p.originalPrice.toString() : '',
+      category: p.category,
+      description: p.description || '',
+      badge: p.badge || (isAff ? "Amazon's Choice" : 'Momo Original'),
+      isFeatured: Boolean(p.isFeatured),
+      imageUrl: aff?.imageUrl || '',
+      affiliateLink: aff?.affiliateLink || '',
+      images: real?.images ? real.images.join(', ') : '',
+      stockQuantity: real?.stockQuantity !== undefined ? real.stockQuantity.toString() : '0',
+      sku: real?.sku || '',
+      weightInOunces: real?.weightInOunces !== undefined ? real.weightInOunces.toString() : '16',
+    });
+    setFormError('');
+    setFormSuccess('');
+    setIsAddModalOpen(true);
+  };
+
+  // Handle Save Product (Add or Edit) Submit
+  const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError('');
     setFormSuccess('');
@@ -228,40 +282,63 @@ export default function AdminPage() {
         };
       }
 
-      const res = await fetch('/api/products', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json();
-      if (!data.success) {
-        throw new Error(data.error || 'Failed to create product');
-      }
-
-      setFormSuccess(`Successfully created ${newProductType} product: ${productForm.name}`);
-      setTimeout(() => {
-        setIsAddModalOpen(false);
-        setFormSuccess('');
-        setProductForm({
-          name: '',
-          price: '',
-          originalPrice: '',
-          category: 'Cat Toys',
-          description: '',
-          badge: "Amazon's Choice",
-          isFeatured: false,
-          imageUrl: 'https://images.unsplash.com/photo-1545249390-6bdfa286032f?auto=format&fit=crop&w=800&q=80',
-          affiliateLink: 'https://www.amazon.com/dp/B08XJ893Q1?tag=momothecat-20',
-          images: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80',
-          stockQuantity: '25',
-          sku: `MMC-${Math.floor(100 + Math.random() * 900)}`,
-          weightInOunces: '16',
+      if (editingProductId) {
+        // Edit existing product
+        const res = await fetch(`/api/products/${editingProductId}?type=${newProductType}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
         });
-        fetchData();
-      }, 1000);
+
+        if (res.status === 401) {
+          setIsAuthenticated(false);
+          setFormError('Session expired. Please log in again.');
+          return;
+        }
+
+        const data = await res.json();
+        if (!data.success) {
+          throw new Error(data.error || 'Failed to update product');
+        }
+
+        setFormSuccess(`Successfully updated ${productForm.name}`);
+        setProducts((prev) =>
+          prev.map((item) => (item._id === editingProductId ? data.product : item))
+        );
+        setTimeout(() => {
+          setIsAddModalOpen(false);
+          setEditingProductId(null);
+          setFormSuccess('');
+          fetchData();
+        }, 800);
+      } else {
+        // Create new product
+        const res = await fetch('/api/products', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        if (res.status === 401) {
+          setIsAuthenticated(false);
+          setFormError('Session expired. Please log in again.');
+          return;
+        }
+
+        const data = await res.json();
+        if (!data.success) {
+          throw new Error(data.error || 'Failed to create product');
+        }
+
+        setFormSuccess(`Successfully created ${newProductType} product: ${productForm.name}`);
+        setTimeout(() => {
+          setIsAddModalOpen(false);
+          setFormSuccess('');
+          fetchData();
+        }, 800);
+      }
     } catch (err: any) {
-      setFormError(err.message || 'Error creating product');
+      setFormError(err.message || 'Error saving product');
     } finally {
       setFormSubmitting(false);
     }
@@ -532,7 +609,7 @@ export default function AdminPage() {
 
         <div className="flex items-center gap-2.5">
           <button
-            onClick={() => setIsAddModalOpen(true)}
+            onClick={handleOpenAddModal}
             className="px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-xs font-black flex items-center gap-2 shadow-md shadow-orange-500/20 transition-all"
           >
             <Plus className="w-4 h-4" />
@@ -806,7 +883,16 @@ export default function AdminPage() {
                         </td>
 
                         <td className="py-3.5 px-4">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1.5">
+                            {/* Edit Product Button */}
+                            <button
+                              onClick={() => handleOpenEditModal(p)}
+                              className="p-1.5 text-slate-400 hover:text-orange-600 rounded-lg hover:bg-orange-50 transition-colors"
+                              title="Edit Product"
+                            >
+                              <Pencil className="w-4 h-4" />
+                            </button>
+
                             {isAff ? (
                               <a
                                 href={aff?.affiliateLink}
@@ -1134,19 +1220,29 @@ export default function AdminPage() {
         <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 sm:p-6">
           <div
             className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"
-            onClick={() => setIsAddModalOpen(false)}
+            onClick={() => {
+              setIsAddModalOpen(false);
+              setEditingProductId(null);
+            }}
           />
 
           <div className="relative bg-white rounded-3xl max-w-2xl w-full shadow-2xl p-6 sm:p-8 z-10 space-y-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <h3 className="text-lg font-black text-slate-900">Add New Product</h3>
+                <h3 className="text-lg font-black text-slate-900">
+                  {editingProductId ? 'Edit Product Details' : 'Add New Product'}
+                </h3>
                 <p className="text-xs text-slate-500">
-                  Select product type to toggle between Affiliate or In-House Real inventory.
+                  {editingProductId
+                    ? `Updating ${newProductType === 'affiliate' ? 'Amazon Affiliate' : 'In-House Momo Real'} product record.`
+                    : 'Select product type to toggle between Affiliate or In-House Real inventory.'}
                 </p>
               </div>
               <button
-                onClick={() => setIsAddModalOpen(false)}
+                onClick={() => {
+                  setIsAddModalOpen(false);
+                  setEditingProductId(null);
+                }}
                 className="text-slate-400 hover:text-slate-700 text-sm font-bold"
               >
                 Cancel
@@ -1157,7 +1253,9 @@ export default function AdminPage() {
             <div className="p-1.5 bg-slate-100 rounded-2xl flex gap-2">
               <button
                 type="button"
+                disabled={Boolean(editingProductId)}
                 onClick={() => {
+                  if (editingProductId) return;
                   setNewProductType('affiliate');
                   setProductForm((prev) => ({
                     ...prev,
@@ -1168,7 +1266,7 @@ export default function AdminPage() {
                   newProductType === 'affiliate'
                     ? 'bg-amber-500 text-white shadow-md'
                     : 'text-slate-600 hover:text-slate-900'
-                }`}
+                } ${editingProductId ? 'cursor-default opacity-85' : ''}`}
               >
                 <Flame className="w-3.5 h-3.5 fill-current" />
                 <span>Affiliate Product (Phase 1)</span>
@@ -1176,7 +1274,9 @@ export default function AdminPage() {
 
               <button
                 type="button"
+                disabled={Boolean(editingProductId)}
                 onClick={() => {
+                  if (editingProductId) return;
                   setNewProductType('real');
                   setProductForm((prev) => ({
                     ...prev,
@@ -1187,7 +1287,7 @@ export default function AdminPage() {
                   newProductType === 'real'
                     ? 'bg-teal-600 text-white shadow-md'
                     : 'text-slate-600 hover:text-slate-900'
-                }`}
+                } ${editingProductId ? 'cursor-default opacity-85' : ''}`}
               >
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>Real Product (Phase 2 & Hybrid)</span>
@@ -1195,7 +1295,7 @@ export default function AdminPage() {
             </div>
 
             {/* Dynamic Form */}
-            <form onSubmit={handleAddProduct} className="space-y-4 text-xs font-semibold">
+            <form onSubmit={handleSaveProduct} className="space-y-4 text-xs font-semibold">
               <div className="space-y-1">
                 <label className="text-slate-700">Product Title</label>
                 <input
@@ -1408,7 +1508,13 @@ export default function AdminPage() {
                   disabled={formSubmitting}
                   className="w-full py-3.5 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-extrabold text-xs shadow-md transition-all disabled:opacity-50"
                 >
-                  {formSubmitting ? 'Creating Product...' : 'Publish Product to Store'}
+                  {formSubmitting
+                    ? editingProductId
+                      ? 'Saving Changes...'
+                      : 'Creating Product...'
+                    : editingProductId
+                    ? 'Save Product Changes'
+                    : 'Publish Product to Store'}
                 </button>
               </div>
             </form>

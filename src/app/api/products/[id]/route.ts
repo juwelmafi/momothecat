@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getProductById, deleteProduct } from '@/lib/store';
+import { getProductById, deleteProduct, updateProduct } from '@/lib/store';
 import { verifyAdminSession } from '@/lib/auth';
 
 export async function GET(
@@ -13,6 +13,36 @@ export async function GET(
       return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
     }
     return NextResponse.json({ success: true, product });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}
+
+// PUT: Update product (Protected Admin Endpoint)
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await verifyAdminSession(req);
+    if (!session.authenticated) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized: Admin access required' },
+        { status: 401 }
+      );
+    }
+
+    const { id } = await params;
+    const body = await req.json();
+    const { searchParams } = new URL(req.url);
+    const type = (searchParams.get('type') as 'affiliate' | 'real') || body.type || 'affiliate';
+
+    const updated = await updateProduct(id, type, body);
+    if (!updated) {
+      return NextResponse.json({ success: false, error: 'Product not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true, product: updated });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }

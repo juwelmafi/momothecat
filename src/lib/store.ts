@@ -352,6 +352,188 @@ export async function createRealProduct(
   return newProduct;
 }
 
+export interface UpdateProductData {
+  name?: string;
+  price?: number;
+  originalPrice?: number;
+  category?: string;
+  badge?: string;
+  description?: string;
+  isFeatured?: boolean;
+  imageUrl?: string;
+  affiliateLink?: string;
+  images?: string[] | string;
+  stockQuantity?: number;
+  sku?: string;
+  weightInOunces?: number;
+  status?: 'active' | 'draft' | 'archived';
+}
+
+export async function updateProduct(
+  id: string,
+  type: 'affiliate' | 'real',
+  data: UpdateProductData
+): Promise<MergedProduct | null> {
+  const db = await connectToDatabase();
+  if (db && mongoose.Types.ObjectId.isValid(id)) {
+    try {
+      if (type === 'affiliate') {
+        const updateData: any = {};
+        if (data.name !== undefined) updateData.name = data.name.trim();
+        if (data.price !== undefined) updateData.price = Number(data.price);
+        if (data.originalPrice !== undefined)
+          updateData.originalPrice = data.originalPrice ? Number(data.originalPrice) : undefined;
+        if (data.category !== undefined) updateData.category = data.category;
+        if (data.imageUrl !== undefined) updateData.imageUrl = data.imageUrl;
+        if (data.affiliateLink !== undefined) updateData.affiliateLink = data.affiliateLink;
+        if (data.badge !== undefined) updateData.badge = data.badge;
+        if (data.description !== undefined) updateData.description = data.description;
+        if (data.isFeatured !== undefined) updateData.isFeatured = Boolean(data.isFeatured);
+
+        const updated = await AffiliateProductModel.findByIdAndUpdate(
+          id,
+          { $set: updateData },
+          { new: true }
+        ).lean();
+
+        if (updated) {
+          const formatted: AffiliateProduct = {
+            _id: (updated as any)._id.toString(),
+            name: updated.name,
+            price: updated.price,
+            originalPrice: updated.originalPrice,
+            category: updated.category,
+            imageUrl: updated.imageUrl,
+            affiliateLink: updated.affiliateLink,
+            rating: updated.rating || 4.8,
+            reviewCount: updated.reviewCount || 0,
+            badge: updated.badge,
+            description: updated.description || '',
+            isFeatured: updated.isFeatured,
+            createdAt: updated.createdAt?.toISOString() || new Date().toISOString(),
+            type: 'affiliate',
+          };
+          const idx = mem.affiliateProducts.findIndex((p) => p._id === id);
+          if (idx !== -1) mem.affiliateProducts[idx] = formatted;
+          return formatted;
+        }
+      } else {
+        const updateData: any = {};
+        if (data.name !== undefined) updateData.name = data.name.trim();
+        if (data.price !== undefined) updateData.price = Number(data.price);
+        if (data.originalPrice !== undefined)
+          updateData.originalPrice = data.originalPrice ? Number(data.originalPrice) : undefined;
+        if (data.category !== undefined) updateData.category = data.category;
+        if (data.images !== undefined) {
+          updateData.images = Array.isArray(data.images) ? data.images : [data.images];
+        }
+        if (data.stockQuantity !== undefined) updateData.stockQuantity = Number(data.stockQuantity);
+        if (data.sku !== undefined) updateData.sku = String(data.sku).trim().toUpperCase();
+        if (data.weightInOunces !== undefined) updateData.weightInOunces = Number(data.weightInOunces);
+        if (data.badge !== undefined) updateData.badge = data.badge;
+        if (data.description !== undefined) updateData.description = data.description;
+        if (data.isFeatured !== undefined) updateData.isFeatured = Boolean(data.isFeatured);
+        if (data.status !== undefined) updateData.status = data.status;
+
+        const updated = await RealProductModel.findByIdAndUpdate(
+          id,
+          { $set: updateData },
+          { new: true }
+        ).lean();
+
+        if (updated) {
+          const formatted: RealProduct = {
+            _id: (updated as any)._id.toString(),
+            name: updated.name,
+            price: updated.price,
+            originalPrice: updated.originalPrice,
+            category: updated.category,
+            images: updated.images,
+            stockQuantity: updated.stockQuantity,
+            sku: updated.sku,
+            weightInOunces: updated.weightInOunces,
+            rating: updated.rating || 5,
+            reviewCount: updated.reviewCount || 0,
+            badge: updated.badge,
+            description: updated.description,
+            isFeatured: updated.isFeatured,
+            status: updated.status,
+            createdAt: updated.createdAt?.toISOString() || new Date().toISOString(),
+            type: 'real',
+          };
+          const idx = mem.realProducts.findIndex((p) => p._id === id);
+          if (idx !== -1) mem.realProducts[idx] = formatted;
+          return formatted;
+        }
+      }
+    } catch (e) {
+      console.error('DB updateProduct error:', e);
+    }
+  }
+
+  // Memory fallback
+  if (type === 'affiliate') {
+    const idx = mem.affiliateProducts.findIndex((p) => p._id === id);
+    if (idx !== -1) {
+      const existing = mem.affiliateProducts[idx];
+      const updated: AffiliateProduct = {
+        ...existing,
+        name: data.name !== undefined ? data.name : existing.name,
+        price: data.price !== undefined ? Number(data.price) : existing.price,
+        originalPrice:
+          data.originalPrice !== undefined
+            ? data.originalPrice
+              ? Number(data.originalPrice)
+              : undefined
+            : existing.originalPrice,
+        category: data.category !== undefined ? data.category : existing.category,
+        imageUrl: data.imageUrl !== undefined ? data.imageUrl : existing.imageUrl,
+        affiliateLink: data.affiliateLink !== undefined ? data.affiliateLink : existing.affiliateLink,
+        badge: data.badge !== undefined ? data.badge : existing.badge,
+        description: data.description !== undefined ? data.description : existing.description,
+        isFeatured: data.isFeatured !== undefined ? Boolean(data.isFeatured) : existing.isFeatured,
+      };
+      mem.affiliateProducts[idx] = updated;
+      return updated;
+    }
+  } else {
+    const idx = mem.realProducts.findIndex((p) => p._id === id);
+    if (idx !== -1) {
+      const existing = mem.realProducts[idx];
+      const updated: RealProduct = {
+        ...existing,
+        name: data.name !== undefined ? data.name : existing.name,
+        price: data.price !== undefined ? Number(data.price) : existing.price,
+        originalPrice:
+          data.originalPrice !== undefined
+            ? data.originalPrice
+              ? Number(data.originalPrice)
+              : undefined
+            : existing.originalPrice,
+        category: data.category !== undefined ? data.category : existing.category,
+        images:
+          data.images !== undefined
+            ? Array.isArray(data.images)
+              ? data.images
+              : [data.images]
+            : existing.images,
+        stockQuantity: data.stockQuantity !== undefined ? Number(data.stockQuantity) : existing.stockQuantity,
+        sku: data.sku !== undefined ? String(data.sku).trim().toUpperCase() : existing.sku,
+        weightInOunces:
+          data.weightInOunces !== undefined ? Number(data.weightInOunces) : existing.weightInOunces,
+        badge: data.badge !== undefined ? data.badge : existing.badge,
+        description: data.description !== undefined ? data.description : existing.description,
+        isFeatured: data.isFeatured !== undefined ? Boolean(data.isFeatured) : existing.isFeatured,
+        status: data.status !== undefined ? data.status : existing.status,
+      };
+      mem.realProducts[idx] = updated;
+      return updated;
+    }
+  }
+
+  return null;
+}
+
 export async function deleteProduct(id: string, type: 'affiliate' | 'real'): Promise<boolean> {
   const db = await connectToDatabase();
   if (db) {
