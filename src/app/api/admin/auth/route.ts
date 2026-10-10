@@ -36,25 +36,12 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const ip = getClientIp(req);
-
-    // 1. Rate Limiting Check (Brute-Force Protection)
-    const rateLimit = checkLoginRateLimit(ip);
-    if (!rateLimit.allowed) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: `Too many failed login attempts. Please try again in ${rateLimit.remainingSeconds || 900} seconds.`,
-        },
-        { status: 429 }
-      );
-    }
-
     const body = await req.json();
     const { email, password } = body;
 
     if (!email || !password) {
       return NextResponse.json(
-        { success: false, message: 'Please provide both email/username and password' },
+        { success: false, error: 'Please provide both email/username and password', message: 'Please provide both email/username and password' },
         { status: 400 }
       );
     }
@@ -70,10 +57,10 @@ export async function POST(req: NextRequest) {
       timingSafeCompare(cleanInput, targetUsername);
 
     // Validate password using timing-safe comparison to prevent timing attacks
-    const isPasswordMatch = timingSafeCompare(String(password), DEFAULT_ADMIN_PASSWORD);
+    const isPasswordMatch = timingSafeCompare(String(password).trim(), DEFAULT_ADMIN_PASSWORD.trim());
 
     if (isEmailOrUsernameMatch && isPasswordMatch) {
-      // Clear failed rate limit attempts
+      // Clear failed rate limit attempts immediately upon successful login
       resetLoginRateLimit(ip);
 
       // Generate signed, tamper-proof session token
@@ -95,19 +82,32 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // Rate Limiting Check on failed credentials
+    const rateLimit = checkLoginRateLimit(ip);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Too many failed login attempts. Please wait ${rateLimit.remainingSeconds || 60}s.`,
+          message: `Too many failed login attempts. Please wait ${rateLimit.remainingSeconds || 60}s.`,
+        },
+        { status: 429 }
+      );
+    }
+
     // Record failed attempt
     const failedStatus = recordFailedLoginAttempt(ip);
     const errorMsg = failedStatus.locked
       ? `Too many failed attempts. Account temporarily locked for 15 minutes.`
-      : 'Invalid admin credentials';
+      : 'Invalid admin credentials. Please check your username and password.';
 
     return NextResponse.json(
-      { success: false, message: errorMsg },
+      { success: false, error: errorMsg, message: errorMsg },
       { status: failedStatus.locked ? 429 : 401 }
     );
   } catch {
     return NextResponse.json(
-      { success: false, message: 'An internal error occurred during login' },
+      { success: false, error: 'An internal error occurred during login', message: 'An internal error occurred during login' },
       { status: 500 }
     );
   }

@@ -207,7 +207,7 @@ export default function AdminPage() {
         setIsAuthenticated(true);
         fetchData();
       } else {
-        setAuthError(data.error || 'Invalid credentials');
+        setAuthError(data.error || data.message || 'Invalid credentials');
       }
     } catch {
       setAuthError('Connection error. Please try again.');
