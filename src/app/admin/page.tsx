@@ -2450,68 +2450,24 @@ export default function AdminPage() {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Website Favicon */}
-                  <div className="space-y-3 p-4 sm:p-5 rounded-2xl bg-[#FBF9F7] border border-slate-200/80">
-                    <div className="flex items-center justify-between">
-                      <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                        <ImageIcon className="w-4 h-4 text-orange-500" /> Website Favicon URL
-                      </label>
-                      {cmsForm.websiteFavicon && (
-                        <div className="flex items-center gap-2 bg-white px-2 py-1 rounded-lg border border-slate-200">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={cmsForm.websiteFavicon}
-                            alt="Favicon preview"
-                            className="w-5 h-5 object-contain"
-                          />
-                          <span className="text-[10px] text-slate-500 font-bold">Preview</span>
-                        </div>
-                      )}
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <CloudinaryImageUploader
+                    label="Website Browser Favicon"
+                    description="Square icon displayed on browser tabs. Standard: 32x32px or 64x64px."
+                    recommendedSize="32x32 PNG / ICO"
+                    value={cmsForm.websiteFavicon || ''}
+                    defaultValue={INITIAL_SETTINGS.websiteFavicon}
+                    onChange={(url) => setCmsForm({ ...cmsForm, websiteFavicon: url })}
+                  />
 
-                    <input
-                      type="url"
-                      value={cmsForm.websiteFavicon ?? ''}
-                      onChange={(e) => setCmsForm({ ...cmsForm, websiteFavicon: e.target.value })}
-                      placeholder="https://.../favicon.png"
-                      className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
-                    />
-                    <p className="text-[10px] text-slate-400">
-                      Standard size: 32x32px or 64x64px .png or .ico format.
-                    </p>
-                  </div>
-
-                  {/* Website Logo */}
-                  <div className="space-y-3 p-4 sm:p-5 rounded-2xl bg-[#FBF9F7] border border-slate-200/80">
-                    <div className="flex items-center justify-between">
-                      <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                        <ImageIcon className="w-4 h-4 text-teal-600" /> Website Logo URL
-                      </label>
-                      {cmsForm.websiteLogo && (
-                        <div className="flex items-center gap-2 bg-white px-2 py-1 rounded-lg border border-slate-200">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={cmsForm.websiteLogo}
-                            alt="Logo preview"
-                            className="h-5 w-auto object-contain max-w-[80px]"
-                          />
-                          <span className="text-[10px] text-slate-500 font-bold">Preview</span>
-                        </div>
-                      )}
-                    </div>
-
-                    <input
-                      type="url"
-                      value={cmsForm.websiteLogo ?? ''}
-                      onChange={(e) => setCmsForm({ ...cmsForm, websiteLogo: e.target.value })}
-                      placeholder="https://.../logo.png"
-                      className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
-                    />
-                    <p className="text-[10px] text-slate-400">
-                      Transparent PNG or SVG image recommended.
-                    </p>
-                  </div>
+                  <CloudinaryImageUploader
+                    label="Website Logo"
+                    description="Main logo shown on top header and footer. Transparent PNG or SVG recommended."
+                    recommendedSize="240x60 PNG / SVG"
+                    value={cmsForm.websiteLogo || ''}
+                    defaultValue={INITIAL_SETTINGS.websiteLogo}
+                    onChange={(url) => setCmsForm({ ...cmsForm, websiteLogo: url })}
+                  />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
