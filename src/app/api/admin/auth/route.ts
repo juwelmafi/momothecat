@@ -1,60 +1,90 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-
-const DEFAULT_ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@momothecat.shop';
-const DEFAULT_ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'momo2026admin';
-const SESSION_COOKIE_NAME = 'momo_admin_session';
-const SESSION_TOKEN = 'momo_cat_authenticated_admin_session_token';
+import {
+  SESSION_COOKIE_NAME,
+  SESSION_MAX_AGE_SECONDS,
+  DEFAULT_ADMIN_EMAIL,
+  DEFAULT_ADMIN_PASSWORD,
+  generateAdminSessionToken,
+  verifyAdminSession,
+  timingSafeCompare,
+  checkLoginRateLimit,
+  recordFailedLoginAttempt,
+  resetLoginRateLimit,
+  getClientIp,
+} from '@/lib/auth';
 
 // GET: Check current admin authentication status
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const cookieStore = await cookies();
-    const session = cookieStore.get(SESSION_COOKIE_NAME);
+    const session = await verifyAdminSession(req);
 
-    if (session && session.value === SESSION_TOKEN) {
+    if (session.authenticated) {
       return NextResponse.json({
         authenticated: true,
-        user: { email: DEFAULT_ADMIN_EMAIL, role: 'admin' },
+        user: { email: session.email || DEFAULT_ADMIN_EMAIL, role: 'admin' },
       });
     }
 
     return NextResponse.json({ authenticated: false });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ authenticated: false });
   }
 }
 
-// POST: Log in with email & password
+// POST: Log in with email/username & password
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
+
+    // 1. Rate Limiting Check (Brute-Force Protection)
+    const rateLimit = checkLoginRateLimit(ip);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: `Too many failed login attempts. Please try again in ${rateLimit.remainingSeconds || 900} seconds.`,
+        },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
     const { email, password } = body;
 
     if (!email || !password) {
       return NextResponse.json(
-        { success: false, message: 'Please provide both email and password' },
+        { success: false, message: 'Please provide both email/username and password' },
         { status: 400 }
       );
     }
 
-    const cleanEmail = email.trim().toLowerCase();
+    const cleanInput = String(email).trim().toLowerCase();
     const targetEmail = DEFAULT_ADMIN_EMAIL.trim().toLowerCase();
     const targetUsername = targetEmail.split('@')[0];
 
-    // Validate credentials: match full email or username
+    // Validate email or username
     const isEmailOrUsernameMatch =
-      cleanEmail === targetEmail ||
-      cleanEmail === 'admin' ||
-      cleanEmail === targetUsername;
+      timingSafeCompare(cleanInput, targetEmail) ||
+      timingSafeCompare(cleanInput, 'admin') ||
+      timingSafeCompare(cleanInput, targetUsername);
 
-    if (isEmailOrUsernameMatch && password === DEFAULT_ADMIN_PASSWORD) {
+    // Validate password using timing-safe comparison to prevent timing attacks
+    const isPasswordMatch = timingSafeCompare(String(password), DEFAULT_ADMIN_PASSWORD);
+
+    if (isEmailOrUsernameMatch && isPasswordMatch) {
+      // Clear failed rate limit attempts
+      resetLoginRateLimit(ip);
+
+      // Generate signed, tamper-proof session token
+      const token = generateAdminSessionToken(DEFAULT_ADMIN_EMAIL);
+
       const cookieStore = await cookies();
-      cookieStore.set(SESSION_COOKIE_NAME, SESSION_TOKEN, {
+      cookieStore.set(SESSION_COOKIE_NAME, token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         path: '/',
-        maxAge: 60 * 60 * 24 * 7, // 7 days
+        maxAge: SESSION_MAX_AGE_SECONDS,
         sameSite: 'lax',
       });
 
@@ -65,11 +95,17 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // Record failed attempt
+    const failedStatus = recordFailedLoginAttempt(ip);
+    const errorMsg = failedStatus.locked
+      ? `Too many failed attempts. Account temporarily locked for 15 minutes.`
+      : 'Invalid admin credentials';
+
     return NextResponse.json(
-      { success: false, message: 'Invalid admin email/username or password' },
-      { status: 401 }
+      { success: false, message: errorMsg },
+      { status: failedStatus.locked ? 429 : 401 }
     );
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { success: false, message: 'An internal error occurred during login' },
       { status: 500 }
@@ -77,7 +113,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// DELETE: Log out
+// DELETE: Log out admin
 export async function DELETE() {
   try {
     const cookieStore = await cookies();
@@ -87,7 +123,7 @@ export async function DELETE() {
       success: true,
       message: 'Admin logged out successfully',
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ success: false, message: 'Logout failed' }, { status: 500 });
   }
 }

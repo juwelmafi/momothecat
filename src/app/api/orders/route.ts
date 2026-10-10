@@ -1,8 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getOrders, createOrder } from '@/lib/store';
+import { verifyAdminSession } from '@/lib/auth';
 
-export async function GET() {
+// GET: Fetch all customer orders (Protected Admin Endpoint)
+export async function GET(req: NextRequest) {
   try {
+    const session = await verifyAdminSession(req);
+    if (!session.authenticated) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized: Admin access required' },
+        { status: 401 }
+      );
+    }
+
     const orders = await getOrders();
     return NextResponse.json({ success: true, orders });
   } catch (error: any) {
@@ -10,6 +20,7 @@ export async function GET() {
   }
 }
 
+// POST: Place a new order (Public Customer Checkout)
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();

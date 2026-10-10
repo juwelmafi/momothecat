@@ -1,8 +1,18 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getLeads } from '@/lib/store';
+import { verifyAdminSession } from '@/lib/auth';
 
-export async function GET() {
+// GET: Export leads database as CSV (Protected Admin Endpoint)
+export async function GET(req: NextRequest) {
   try {
+    const session = await verifyAdminSession(req);
+    if (!session.authenticated) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized: Admin access required' },
+        { status: 401 }
+      );
+    }
+
     const leads = await getLeads();
 
     // Generate CSV

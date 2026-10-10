@@ -1,8 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getLeads, createLead } from '@/lib/store';
+import { verifyAdminSession } from '@/lib/auth';
 
-export async function GET() {
+// GET: Fetch all leads (Protected Admin Endpoint)
+export async function GET(req: NextRequest) {
   try {
+    const session = await verifyAdminSession(req);
+    if (!session.authenticated) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized: Admin access required' },
+        { status: 401 }
+      );
+    }
+
     const leads = await getLeads();
     return NextResponse.json({ success: true, leads });
   } catch (error: any) {
@@ -10,6 +20,7 @@ export async function GET() {
   }
 }
 
+// POST: Subscribe new lead (Public Customer Opt-in)
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();

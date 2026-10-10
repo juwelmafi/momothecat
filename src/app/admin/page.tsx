@@ -106,6 +106,12 @@ export default function AdminPage() {
         fetch('/api/settings'),
       ]);
 
+      if (ordRes.status === 401 || leadRes.status === 401 || prodRes.status === 401) {
+        setIsAuthenticated(false);
+        setLoading(false);
+        return;
+      }
+
       const [prodData, ordData, leadData, setData] = await Promise.all([
         prodRes.json(),
         ordRes.json(),
@@ -158,6 +164,7 @@ export default function AdminPage() {
       const data = await res.json();
       if (res.ok && data.success) {
         setIsAuthenticated(true);
+        setAuthPassword('');
         fetchData();
       } else {
         setAuthError(data.message || 'Invalid username/email or password');
@@ -473,9 +480,9 @@ export default function AdminPage() {
 
           {/* Hint & Storefront Link */}
           <div className="mt-8 pt-6 border-t border-slate-100 text-center space-y-3 relative z-10">
-            <div className="bg-[#FFF9DE] text-[#232121] text-[11px] font-medium p-3 rounded-2xl border border-[#FFC312]/40">
-              <span className="font-bold text-[#FF6B35]">Credentials:</span>{' '}
-              admin@momothecat.shop / momo2026admin
+            <div className="bg-slate-50 text-slate-500 text-[11px] font-medium p-3 rounded-2xl border border-slate-200/80 flex items-center justify-center gap-2">
+              <Lock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+              <span>Restricted Area: Authorized administrative personnel only</span>
             </div>
 
             <Link

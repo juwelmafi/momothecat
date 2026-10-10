@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getProductById, deleteProduct } from '@/lib/store';
+import { verifyAdminSession } from '@/lib/auth';
 
 export async function GET(
   req: NextRequest,
@@ -17,11 +18,20 @@ export async function GET(
   }
 }
 
+// DELETE: Delete product (Protected Admin Endpoint)
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await verifyAdminSession(req);
+    if (!session.authenticated) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized: Admin access required' },
+        { status: 401 }
+      );
+    }
+
     const { id } = await params;
     const { searchParams } = new URL(req.url);
     const type = (searchParams.get('type') as 'affiliate' | 'real') || 'affiliate';

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getMergedProducts, createAffiliateProduct, createRealProduct } from '@/lib/store';
+import { verifyAdminSession } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   try {
@@ -26,8 +27,17 @@ export async function GET(req: NextRequest) {
   }
 }
 
+// POST: Create product (Protected Admin Endpoint)
 export async function POST(req: NextRequest) {
   try {
+    const session = await verifyAdminSession(req);
+    if (!session.authenticated) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized: Admin access required' },
+        { status: 401 }
+      );
+    }
+
     const body = await req.json();
     const { type } = body;
 
