@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import {
   ShoppingBag,
   Search,
@@ -20,6 +20,11 @@ import { CATEGORIES } from '@/lib/initialData';
 
 export default function Header() {
   const router = useRouter();
+  const pathname = usePathname();
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
+
   const { storeMode, itemCount, subtotal, setIsCartOpen, wishlist, settings } = useCart();
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');

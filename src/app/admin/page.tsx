@@ -40,10 +40,13 @@ import {
   RotateCcw,
   Settings as SettingsIcon,
   ChevronRight,
+  ChevronLeft,
   Phone,
   MapPin,
   HelpCircle,
   Layers,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
 import {
   MergedProduct,
@@ -532,8 +535,8 @@ export default function AdminPage() {
   // 1. Checking Session State
   if (isAuthenticated === null) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
-        <div className="w-16 h-16 rounded-full bg-[#FFC312] flex items-center justify-center text-3xl shadow-md animate-bounce">
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-[#F8F9FA]">
+        <div className="w-16 h-16 rounded-3xl bg-[#FFC312] flex items-center justify-center text-3xl shadow-lg animate-bounce">
           🐱
         </div>
         <h2 className="mt-4 font-display font-bold text-xl text-[#232121]">
@@ -547,7 +550,7 @@ export default function AdminPage() {
   // 2. Admin Login Form Screen
   if (isAuthenticated === false) {
     return (
-      <div className="min-h-[85vh] flex items-center justify-center p-4 sm:p-6">
+      <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 bg-gradient-to-br from-[#1A1825] via-[#231F36] to-[#12101C]">
         <div className="w-full max-w-md bg-white rounded-[32px] p-7 sm:p-10 shadow-2xl border border-slate-200/80 relative overflow-hidden">
           <div className="absolute -top-16 -right-16 w-36 h-36 bg-[#FFC312]/30 rounded-full blur-2xl pointer-events-none" />
           <div className="absolute -bottom-16 -left-16 w-36 h-36 bg-[#FF6B35]/20 rounded-full blur-2xl pointer-events-none" />
@@ -713,209 +716,324 @@ export default function AdminPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] flex flex-col -mx-4 sm:-mx-6 -my-6">
-      {/* 1. TOP MOBILE HEADER BAR & DESKTOP NAVBAR */}
-      <header className="sticky top-0 z-40 bg-white border-b border-slate-200 px-4 sm:px-6 py-3 flex items-center justify-between shadow-xs">
-        <div className="flex items-center gap-3">
-          {/* Mobile Drawer Hamburger Trigger */}
-          <button
-            onClick={() => setIsDrawerOpen(true)}
-            className="lg:hidden p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
-            aria-label="Open navigation drawer"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
+    <div className="min-h-screen bg-[#F8F9FA] flex flex-col lg:flex-row relative">
+      {/* ======================================================== */}
+      {/* 1. MOBILE DRAWER OVERLAY BACKDROP */}
+      {/* ======================================================== */}
+      {isDrawerOpen && (
+        <div
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 lg:hidden"
+          onClick={() => setIsDrawerOpen(false)}
+        />
+      )}
 
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[#FFC312] flex items-center justify-center text-xl shadow-xs">
+      {/* ======================================================== */}
+      {/* 2. MOBILE SLIDE-OVER DRAWER (< lg) */}
+      {/* ======================================================== */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-72 bg-[#1A1825] text-white flex flex-col transition-transform duration-300 ease-in-out lg:hidden ${
+          isDrawerOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="p-5 border-b border-white/10 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-[#FFC312] text-[#232121] flex items-center justify-center text-xl shadow-md font-bold">
               🐱
             </div>
             <div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-display font-black text-lg text-[#232121]">Momo Admin</span>
-                <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-[#FF6B35] text-white">
-                  v2.0
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-400 hidden sm:block">
-                Storefront CMS, Catalog & Architecture Control
-              </p>
+              <h2 className="font-display font-bold text-base text-white">Momo The Cat</h2>
+              <p className="text-[11px] text-slate-400">Admin Control Panel</p>
             </div>
-          </Link>
+          </div>
+          <button
+            onClick={() => setIsDrawerOpen(false)}
+            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-white/10"
+          >
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
-        {/* Top Header Actions */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* Live Storefront Architecture Badge */}
-          <span
-            className={`hidden sm:inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full ${
-              settings?.storeMode === 'affiliate_only'
-                ? 'bg-amber-100 text-amber-800 border border-amber-300'
-                : settings?.storeMode === 'retail_only'
-                ? 'bg-teal-100 text-teal-800 border border-teal-300'
-                : 'bg-orange-100 text-orange-800 border border-orange-300'
-            }`}
-          >
-            <span className="w-2 h-2 rounded-full bg-current animate-pulse" />
-            {settings?.storeMode === 'affiliate_only'
-              ? 'Affiliate Mode'
-              : settings?.storeMode === 'retail_only'
-              ? 'Real Product Mode'
-              : 'Dual Mode'}
-          </span>
+        <div className="flex-1 overflow-y-auto p-3 space-y-1.5">
+          <div className="px-3 pt-2 pb-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
+            Navigation Tabs
+          </div>
+          {tabsList.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  setActiveTab(tab.id);
+                  setIsDrawerOpen(false);
+                }}
+                className={`w-full flex items-center justify-between p-3 rounded-2xl text-left transition-all ${
+                  isActive
+                    ? 'bg-gradient-to-r from-[#FF6B35] to-[#FF8C00] text-white font-bold shadow-lg shadow-orange-500/20'
+                    : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                      isActive ? 'bg-white/20 text-white' : 'bg-white/5 text-slate-300'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-xs block leading-tight">{tab.label}</span>
+                    <span
+                      className={`text-[10px] block leading-tight mt-0.5 ${
+                        isActive ? 'text-white/80' : 'text-slate-400'
+                      }`}
+                    >
+                      {tab.description}
+                    </span>
+                  </div>
+                </div>
+                {tab.badge && (
+                  <span
+                    className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
+                      isActive ? 'bg-white text-[#FF6B35]' : 'bg-white/10 text-slate-300'
+                    }`}
+                  >
+                    {tab.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
 
+        <div className="p-4 border-t border-white/10 space-y-3 bg-[#14121E]">
           <Link
             href="/"
             target="_blank"
-            className="px-3 py-2 bg-white border border-slate-200 text-slate-700 hover:text-orange-600 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs transition-colors"
-            title="Open Live Store in new tab"
+            className="w-full py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors"
           >
-            <span>Live Store</span>
+            <span>Visit Live Storefront</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </Link>
-
-          <button
-            onClick={handleOpenAddModal}
-            className="px-3.5 py-2 bg-[#FF6B35] hover:bg-[#e65a25] text-white rounded-xl text-xs font-black flex items-center gap-1.5 shadow-sm transition-all"
-          >
-            <Plus className="w-4 h-4" />
-            <span className="hidden sm:inline">Add Product</span>
-          </button>
-
-          <button
-            onClick={handleLogout}
-            className="p-2 sm:px-3 sm:py-2 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors border border-transparent hover:border-rose-200"
-            title="Log Out"
-          >
-            <LogOut className="w-4 h-4" />
-            <span className="hidden sm:inline">Log Out</span>
-          </button>
         </div>
-      </header>
+      </aside>
 
-      {/* 2. MAIN LAYOUT: LEFT DRAWER / SIDEBAR + CONTENT AREA */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* MOBILE DRAWER OVERLAY BACKDROP */}
-        {isDrawerOpen && (
-          <div
-            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 lg:hidden"
-            onClick={() => setIsDrawerOpen(false)}
-          />
-        )}
-
-        {/* LEFT DRAWER / SIDEBAR */}
-        <aside
-          className={`fixed inset-y-0 left-0 z-50 w-72 bg-[#1A1825] text-white flex flex-col transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
-            isDrawerOpen ? 'translate-x-0' : '-translate-x-full'
-          }`}
-        >
-          {/* Drawer Top Header */}
-          <div className="p-5 border-b border-white/10 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-[#FFC312] text-[#232121] flex items-center justify-center text-xl shadow-md font-bold">
-                🐱
-              </div>
-              <div>
-                <h2 className="font-display font-bold text-base text-white">Momo The Cat</h2>
-                <p className="text-[11px] text-slate-400">Admin Control Panel</p>
-              </div>
+      {/* ======================================================== */}
+      {/* 3. DESKTOP STICKY SIDEBAR (lg and above) */}
+      {/* ======================================================== */}
+      <aside
+        className={`hidden lg:flex flex-col bg-[#1A1825] text-white sticky top-0 h-screen transition-all duration-300 z-30 shrink-0 ${
+          isSidebarCollapsed ? 'w-20' : 'w-64 xl:w-72'
+        }`}
+      >
+        {/* Brand Top Header */}
+        <div className={`p-5 border-b border-white/10 flex items-center ${isSidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-[#FFC312] text-[#232121] flex items-center justify-center text-xl shadow-md font-bold shrink-0">
+              🐱
             </div>
-
-            {/* Mobile Close Button */}
-            <button
-              onClick={() => setIsDrawerOpen(false)}
-              className="lg:hidden p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-white/10"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            {!isSidebarCollapsed && (
+              <div className="overflow-hidden">
+                <h2 className="font-display font-bold text-base text-white truncate">Momo Admin</h2>
+                <p className="text-[11px] text-slate-400 truncate">Store Management</p>
+              </div>
+            )}
           </div>
+        </div>
 
-          {/* Drawer Navigation Tabs List */}
-          <div className="flex-1 overflow-y-auto p-3 space-y-1.5">
+        {/* Tab Items */}
+        <div className="flex-1 overflow-y-auto p-3 space-y-1.5">
+          {!isSidebarCollapsed && (
             <div className="px-3 pt-2 pb-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
               Navigation Tabs
             </div>
+          )}
 
-            {tabsList.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => {
-                    setActiveTab(tab.id);
-                    setIsDrawerOpen(false);
-                  }}
-                  className={`w-full flex items-center justify-between p-3 rounded-2xl text-left transition-all ${
-                    isActive
-                      ? 'bg-gradient-to-r from-[#FF6B35] to-[#FF8C00] text-white font-bold shadow-lg shadow-orange-500/20'
-                      : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
-                        isActive ? 'bg-white/20 text-white' : 'bg-white/5 text-slate-300'
-                      }`}
-                    >
-                      <Icon className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <span className="text-xs block leading-tight">{tab.label}</span>
+          {tabsList.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                title={isSidebarCollapsed ? tab.label : undefined}
+                className={`w-full flex items-center ${
+                  isSidebarCollapsed ? 'justify-center p-3' : 'justify-between p-3'
+                } rounded-2xl text-left transition-all ${
+                  isActive
+                    ? 'bg-gradient-to-r from-[#FF6B35] to-[#FF8C00] text-white font-bold shadow-lg shadow-orange-500/20'
+                    : 'text-slate-300 hover:bg-white/10 hover:text-white font-medium'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                      isActive ? 'bg-white/20 text-white' : 'bg-white/5 text-slate-300'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  {!isSidebarCollapsed && (
+                    <div className="overflow-hidden">
+                      <span className="text-xs block leading-tight truncate">{tab.label}</span>
                       <span
-                        className={`text-[10px] block leading-tight mt-0.5 ${
+                        className={`text-[10px] block leading-tight mt-0.5 truncate ${
                           isActive ? 'text-white/80' : 'text-slate-400'
                         }`}
                       >
                         {tab.description}
                       </span>
                     </div>
-                  </div>
-
-                  {tab.badge && (
-                    <span
-                      className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
-                        isActive ? 'bg-white text-[#FF6B35]' : 'bg-white/10 text-slate-300'
-                      }`}
-                    >
-                      {tab.badge}
-                    </span>
                   )}
-                </button>
-              );
-            })}
+                </div>
+
+                {!isSidebarCollapsed && tab.badge && (
+                  <span
+                    className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
+                      isActive ? 'bg-white text-[#FF6B35]' : 'bg-white/10 text-slate-300'
+                    }`}
+                  >
+                    {tab.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Sidebar Footer */}
+        <div className="p-3 border-t border-white/10 space-y-2 bg-[#14121E]">
+          {!isSidebarCollapsed ? (
+            <>
+              <div className="flex items-center justify-between text-xs px-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-slate-300 font-semibold text-[11px]">Online</span>
+                </div>
+                <span className="text-[10px] text-amber-400 font-bold uppercase">
+                  {settings?.storeMode === 'affiliate_only'
+                    ? 'Affiliate'
+                    : settings?.storeMode === 'retail_only'
+                    ? 'Retail'
+                    : 'Dual'}
+                </span>
+              </div>
+              <Link
+                href="/"
+                target="_blank"
+                className="w-full py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors"
+              >
+                <span>Live Storefront</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </Link>
+            </>
+          ) : (
+            <Link
+              href="/"
+              target="_blank"
+              className="w-full py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold flex items-center justify-center"
+              title="Live Storefront"
+            >
+              <ExternalLink className="w-4 h-4" />
+            </Link>
+          )}
+        </div>
+      </aside>
+
+      {/* ======================================================== */}
+      {/* 4. MAIN DASHBOARD CONTENT AREA */}
+      {/* ======================================================== */}
+      <div className="flex-1 flex flex-col min-w-0 bg-[#F8F9FA] min-h-screen">
+        {/* Sticky Top Bar in Content Area */}
+        <header className="sticky top-0 z-20 bg-white border-b border-slate-200 px-4 sm:px-6 py-3 flex items-center justify-between shadow-xs">
+          <div className="flex items-center gap-3">
+            {/* Mobile hamburger */}
+            <button
+              onClick={() => setIsDrawerOpen(true)}
+              className="lg:hidden p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+              aria-label="Open navigation drawer"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+
+            {/* Desktop collapse toggle */}
+            <button
+              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+              className="hidden lg:flex p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+              title={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            >
+              {isSidebarCollapsed ? (
+                <PanelLeftOpen className="w-5 h-5" />
+              ) : (
+                <PanelLeftClose className="w-5 h-5" />
+              )}
+            </button>
+
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="font-display font-black text-lg text-slate-900">
+                  {tabsList.find((t) => t.id === activeTab)?.label || 'Dashboard'}
+                </h1>
+                <span className="hidden sm:inline-block text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-orange-100 text-[#FF6B35]">
+                  v2.0
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400 hidden sm:block">
+                {tabsList.find((t) => t.id === activeTab)?.description}
+              </p>
+            </div>
           </div>
 
-          {/* Drawer Footer User Info & Mode pill */}
-          <div className="p-4 border-t border-white/10 space-y-3 bg-[#14121E]">
-            <div className="flex items-center justify-between text-xs">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-slate-300 font-semibold">Store Online</span>
-              </div>
-              <span className="text-[11px] text-amber-400 font-mono font-bold">
-                {settings?.storeMode === 'affiliate_only'
-                  ? 'Affiliate'
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Mode badge */}
+            <span
+              className={`hidden md:inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full ${
+                settings?.storeMode === 'affiliate_only'
+                  ? 'bg-amber-100 text-amber-800 border border-amber-300'
                   : settings?.storeMode === 'retail_only'
-                  ? 'Retail'
-                  : 'Dual Mode'}
-              </span>
-            </div>
+                  ? 'bg-teal-100 text-teal-800 border border-teal-300'
+                  : 'bg-orange-100 text-orange-800 border border-orange-300'
+              }`}
+            >
+              <span className="w-2 h-2 rounded-full bg-current animate-pulse" />
+              {settings?.storeMode === 'affiliate_only'
+                ? 'Affiliate Mode'
+                : settings?.storeMode === 'retail_only'
+                ? 'Real Product Mode'
+                : 'Dual Mode'}
+            </span>
 
             <Link
               href="/"
               target="_blank"
-              className="w-full py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-colors"
+              className="px-3 py-2 bg-white border border-slate-200 text-slate-700 hover:text-orange-600 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs transition-colors"
+              title="Open Live Store in new tab"
             >
-              <span>Visit Live Storefront</span>
+              <span className="hidden sm:inline">Live Store</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </Link>
-          </div>
-        </aside>
 
-        {/* 3. MAIN DASHBOARD CONTENT AREA */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-8 max-w-7xl mx-auto space-y-6">
+            <button
+              onClick={handleOpenAddModal}
+              className="px-3.5 py-2 bg-[#FF6B35] hover:bg-[#e65a25] text-white rounded-xl text-xs font-black flex items-center gap-1.5 shadow-sm transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">Add Product</span>
+            </button>
+
+            <button
+              onClick={handleLogout}
+              className="p-2 sm:px-3 sm:py-2 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors border border-transparent hover:border-rose-200"
+              title="Log Out"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="hidden sm:inline">Log Out</span>
+            </button>
+          </div>
+        </header>
+
+        {/* Content Body */}
+        <main className="flex-1 p-3.5 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
           {/* Top Feedback Messages */}
           {cmsSuccessMessage && (
             <div className="p-4 bg-emerald-50 border border-emerald-300 rounded-2xl text-emerald-800 text-xs font-bold flex items-center justify-between shadow-xs animate-in fade-in">
@@ -953,12 +1071,12 @@ export default function AdminPage() {
           {activeTab === 'overview' && (
             <div className="space-y-6">
               {/* Architecture Mode Banner */}
-              <div className="bg-gradient-to-r from-slate-900 via-[#1C182E] to-slate-900 text-white rounded-3xl p-6 sm:p-7 shadow-xl border border-slate-800 space-y-5">
+              <div className="bg-gradient-to-r from-slate-900 via-[#1C182E] to-slate-900 text-white rounded-3xl p-5 sm:p-7 shadow-xl border border-slate-800 space-y-5">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <span className="w-3 h-3 rounded-full bg-emerald-400 animate-ping inline-block" />
-                      <h2 className="font-display font-extrabold text-xl text-white">
+                      <h2 className="font-display font-extrabold text-lg sm:text-xl text-white">
                         Architecture Store Mode Controller
                       </h2>
                     </div>
@@ -977,8 +1095,7 @@ export default function AdminPage() {
                 </div>
 
                 {/* 3 Interactive Mode Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {/* Affiliate Mode */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
                   <button
                     onClick={() => handleModeChange('affiliate_only')}
                     disabled={modeUpdating}
@@ -999,7 +1116,6 @@ export default function AdminPage() {
                     </p>
                   </button>
 
-                  {/* Real Product Mode */}
                   <button
                     onClick={() => handleModeChange('retail_only')}
                     disabled={modeUpdating}
@@ -1020,7 +1136,6 @@ export default function AdminPage() {
                     </p>
                   </button>
 
-                  {/* Dual Mode */}
                   <button
                     onClick={() => handleModeChange('hybrid')}
                     disabled={modeUpdating}
@@ -1044,22 +1159,22 @@ export default function AdminPage() {
               </div>
 
               {/* KPI Cards Row */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs space-y-1">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <div className="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200/80 shadow-xs space-y-1">
                   <div className="flex items-center justify-between text-slate-400">
-                    <span className="text-xs font-bold uppercase tracking-wider">Total Products</span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider">Total Products</span>
                     <Package className="w-4 h-4 text-orange-500" />
                   </div>
                   <p className="text-2xl font-black text-slate-900">{products.length}</p>
                   <p className="text-[11px] text-slate-500 font-medium">
-                    <strong className="text-amber-600">{affiliateCount}</strong> Affiliate ·{' '}
-                    <strong className="text-teal-600">{realCount}</strong> Momo Real
+                    <strong className="text-amber-600">{affiliateCount}</strong> Aff ·{' '}
+                    <strong className="text-teal-600">{realCount}</strong> Momo
                   </p>
                 </div>
 
-                <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs space-y-1">
+                <div className="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200/80 shadow-xs space-y-1">
                   <div className="flex items-center justify-between text-slate-400">
-                    <span className="text-xs font-bold uppercase tracking-wider">Customer Orders</span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider">Orders</span>
                     <ShoppingBag className="w-4 h-4 text-teal-600" />
                   </div>
                   <p className="text-2xl font-black text-slate-900">{orders.length}</p>
@@ -1068,20 +1183,20 @@ export default function AdminPage() {
                   </p>
                 </div>
 
-                <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs space-y-1">
+                <div className="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200/80 shadow-xs space-y-1">
                   <div className="flex items-center justify-between text-slate-400">
-                    <span className="text-xs font-bold uppercase tracking-wider">Stripe Revenue</span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider">Revenue</span>
                     <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
                       USD
                     </span>
                   </div>
                   <p className="text-2xl font-black text-slate-900">${totalRevenue.toFixed(2)}</p>
-                  <p className="text-[11px] text-slate-500 font-medium">Processed via Stripe gateway</p>
+                  <p className="text-[11px] text-slate-500 font-medium">Processed via Stripe</p>
                 </div>
 
-                <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs space-y-1">
+                <div className="bg-white p-4 sm:p-5 rounded-3xl border border-slate-200/80 shadow-xs space-y-1">
                   <div className="flex items-center justify-between text-slate-400">
-                    <span className="text-xs font-bold uppercase tracking-wider">Captured Leads</span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider">Leads</span>
                     <Users className="w-4 h-4 text-amber-500" />
                   </div>
                   <p className="text-2xl font-black text-slate-900">{leads.length}</p>
@@ -1100,7 +1215,7 @@ export default function AdminPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
                 <div
                   onClick={() => setActiveTab('content')}
-                  className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs hover:border-orange-300 hover:shadow-md transition-all cursor-pointer group"
+                  className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-xs hover:border-orange-300 hover:shadow-md transition-all cursor-pointer group"
                 >
                   <div className="flex items-center justify-between mb-3">
                     <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center">
@@ -1108,7 +1223,7 @@ export default function AdminPage() {
                     </div>
                     <ChevronRight className="w-5 h-5 text-slate-400 group-hover:translate-x-1 transition-transform" />
                   </div>
-                  <h3 className="font-display font-bold text-lg text-slate-900 mb-1">
+                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 mb-1">
                     Edit Website Content (CMS)
                   </h3>
                   <p className="text-xs text-slate-500">
@@ -1118,7 +1233,7 @@ export default function AdminPage() {
 
                 <div
                   onClick={() => setActiveTab('seo')}
-                  className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs hover:border-orange-300 hover:shadow-md transition-all cursor-pointer group"
+                  className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-xs hover:border-orange-300 hover:shadow-md transition-all cursor-pointer group"
                 >
                   <div className="flex items-center justify-between mb-3">
                     <div className="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center">
@@ -1126,7 +1241,7 @@ export default function AdminPage() {
                     </div>
                     <ChevronRight className="w-5 h-5 text-slate-400 group-hover:translate-x-1 transition-transform" />
                   </div>
-                  <h3 className="font-display font-bold text-lg text-slate-900 mb-1">
+                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 mb-1">
                     SEO Meta Tags & Branding
                   </h3>
                   <p className="text-xs text-slate-500">
@@ -1143,9 +1258,9 @@ export default function AdminPage() {
           {activeTab === 'content' && (
             <div className="space-y-6">
               {/* Header with Save Button */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-xs">
                 <div>
-                  <h2 className="font-display font-black text-2xl text-slate-900">
+                  <h2 className="font-display font-black text-xl sm:text-2xl text-slate-900">
                     Website Content Manager (CMS)
                   </h2>
                   <p className="text-xs text-slate-500 mt-1">
@@ -1157,7 +1272,7 @@ export default function AdminPage() {
                   <button
                     type="button"
                     onClick={handleResetToDefaults}
-                    className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors"
+                    className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
                     <span>Reset Defaults</span>
@@ -1176,9 +1291,9 @@ export default function AdminPage() {
               </div>
 
               {/* 1. HERO BANNER SLIDES */}
-              <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-xs space-y-6">
+              <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-6">
                 <div className="border-b border-slate-100 pb-3">
-                  <h3 className="font-display font-bold text-lg text-slate-900 flex items-center gap-2">
+                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
                     <span>🐱</span> 1. Hero Banner Slides
                   </h3>
                   <p className="text-xs text-slate-400">
@@ -1187,7 +1302,7 @@ export default function AdminPage() {
                 </div>
 
                 {/* Slide 1 */}
-                <div className="bg-[#FBF9F7] p-5 rounded-2xl border border-slate-200/80 space-y-4">
+                <div className="bg-[#FBF9F7] p-4 sm:p-5 rounded-2xl border border-slate-200/80 space-y-4">
                   <span className="text-[11px] font-black uppercase px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800">
                     Slide 1 (Dog & Cat Food)
                   </span>
@@ -1235,7 +1350,7 @@ export default function AdminPage() {
                 </div>
 
                 {/* Slide 2 */}
-                <div className="bg-[#FBF9F7] p-5 rounded-2xl border border-slate-200/80 space-y-4">
+                <div className="bg-[#FBF9F7] p-4 sm:p-5 rounded-2xl border border-slate-200/80 space-y-4">
                   <span className="text-[11px] font-black uppercase px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-800">
                     Slide 2 (Pure Cat Treats)
                   </span>
@@ -1284,9 +1399,9 @@ export default function AdminPage() {
               </div>
 
               {/* 2. PRODUCT CATALOG SECTION */}
-              <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
+              <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
                 <div className="border-b border-slate-100 pb-3">
-                  <h3 className="font-display font-bold text-lg text-slate-900 flex items-center gap-2">
+                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
                     <span>🐾</span> 2. Products Catalog Section
                   </h3>
                   <p className="text-xs text-slate-400">
@@ -1317,9 +1432,9 @@ export default function AdminPage() {
               </div>
 
               {/* 3. PASSION FEATURE SECTION */}
-              <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
+              <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
                 <div className="border-b border-slate-100 pb-3">
-                  <h3 className="font-display font-bold text-lg text-slate-900 flex items-center gap-2">
+                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
                     <span>❤️</span> 3. Passion Section
                   </h3>
                   <p className="text-xs text-slate-400">
@@ -1360,9 +1475,9 @@ export default function AdminPage() {
               </div>
 
               {/* 4. FLASH DEALS SECTION */}
-              <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
+              <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
                 <div className="border-b border-slate-100 pb-3">
-                  <h3 className="font-display font-bold text-lg text-slate-900 flex items-center gap-2">
+                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
                     <span>⚡</span> 4. Flash Deals Section
                   </h3>
                   <p className="text-xs text-slate-400">
@@ -1403,9 +1518,9 @@ export default function AdminPage() {
               </div>
 
               {/* 5. DISCOUNTS FLASH BANNER */}
-              <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
+              <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
                 <div className="border-b border-slate-100 pb-3">
-                  <h3 className="font-display font-bold text-lg text-slate-900 flex items-center gap-2">
+                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
                     <span>🏷️</span> 5. Discounts Flash Banner
                   </h3>
                   <p className="text-xs text-slate-400">
@@ -1446,9 +1561,9 @@ export default function AdminPage() {
               </div>
 
               {/* 6. TESTIMONIALS SECTION */}
-              <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
+              <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
                 <div className="border-b border-slate-100 pb-3">
-                  <h3 className="font-display font-bold text-lg text-slate-900 flex items-center gap-2">
+                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
                     <span>⭐</span> 6. Testimonials Section
                   </h3>
                   <p className="text-xs text-slate-400">
@@ -1468,9 +1583,9 @@ export default function AdminPage() {
               </div>
 
               {/* 7. ANNOUNCEMENT BAR & NEWSLETTER */}
-              <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
+              <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
                 <div className="border-b border-slate-100 pb-3">
-                  <h3 className="font-display font-bold text-lg text-slate-900 flex items-center gap-2">
+                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
                     <span>📢</span> 7. Top Announcement & Footer Newsletter
                   </h3>
                   <p className="text-xs text-slate-400">
@@ -1522,9 +1637,9 @@ export default function AdminPage() {
               </div>
 
               {/* 8. FOOTER & CONTACT DETAILS */}
-              <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
+              <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
                 <div className="border-b border-slate-100 pb-3">
-                  <h3 className="font-display font-bold text-lg text-slate-900 flex items-center gap-2">
+                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
                     <span>📍</span> 8. Footer Description & Contact Details
                   </h3>
                   <p className="text-xs text-slate-400">
@@ -1582,7 +1697,7 @@ export default function AdminPage() {
               </div>
 
               {/* Bottom Sticky Save Bar */}
-              <div className="sticky bottom-4 bg-[#1A1825] text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between gap-4 border border-white/10">
+              <div className="sticky bottom-4 bg-[#1A1825] text-white p-4 rounded-2xl shadow-2xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border border-white/10">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
                   <span className="text-xs font-medium text-slate-300">
@@ -1594,7 +1709,7 @@ export default function AdminPage() {
                   type="button"
                   onClick={() => handleSaveCmsSettings()}
                   disabled={savingCms}
-                  className="px-6 py-2.5 bg-[#FF6B35] hover:bg-[#e65a25] text-white rounded-xl text-xs font-black shadow-md transition-all flex items-center gap-2 disabled:opacity-50"
+                  className="px-6 py-2.5 bg-[#FF6B35] hover:bg-[#e65a25] text-white rounded-xl text-xs font-black shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   <Save className="w-4 h-4" />
                   <span>{savingCms ? 'Saving...' : 'Save Website Content'}</span>
@@ -1609,9 +1724,9 @@ export default function AdminPage() {
           {activeTab === 'seo' && (
             <div className="space-y-6">
               {/* Header with Save Button */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-xs">
                 <div>
-                  <h2 className="font-display font-black text-2xl text-slate-900">
+                  <h2 className="font-display font-black text-xl sm:text-2xl text-slate-900">
                     SEO Meta Tags & Branding Manager
                   </h2>
                   <p className="text-xs text-slate-500 mt-1">
@@ -1623,7 +1738,7 @@ export default function AdminPage() {
                   type="button"
                   onClick={() => handleSaveCmsSettings()}
                   disabled={savingCms}
-                  className="px-5 py-2.5 bg-[#FF6B35] hover:bg-[#e65a25] text-white rounded-xl text-xs font-black flex items-center gap-2 shadow-md shadow-orange-500/20 active:scale-95 transition-all disabled:opacity-50"
+                  className="px-5 py-2.5 bg-[#FF6B35] hover:bg-[#e65a25] text-white rounded-xl text-xs font-black flex items-center justify-center gap-2 shadow-md shadow-orange-500/20 active:scale-95 transition-all disabled:opacity-50"
                 >
                   <Save className="w-4 h-4" />
                   <span>{savingCms ? 'Saving...' : 'Save SEO & Branding'}</span>
@@ -1631,7 +1746,7 @@ export default function AdminPage() {
               </div>
 
               {/* LIVE GOOGLE SEARCH RESULT PREVIEW CARD */}
-              <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
+              <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <div>
                     <h3 className="font-display font-bold text-base text-slate-900 flex items-center gap-2">
@@ -1647,7 +1762,7 @@ export default function AdminPage() {
                 </div>
 
                 {/* Google Snippet Card */}
-                <div className="bg-[#F8F9FA] p-5 rounded-2xl border border-slate-200 space-y-1.5 max-w-2xl font-sans">
+                <div className="bg-[#F8F9FA] p-4 sm:p-5 rounded-2xl border border-slate-200 space-y-1.5 max-w-2xl font-sans">
                   <div className="flex items-center gap-2 text-xs text-slate-600">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -1658,18 +1773,18 @@ export default function AdminPage() {
                         (e.target as HTMLElement).style.display = 'none';
                       }}
                     />
-                    <span className="font-semibold text-slate-800">
+                    <span className="font-semibold text-slate-800 truncate">
                       https://momothecat.vercel.app
                     </span>
                     <span className="text-slate-400">›</span>
-                    <span className="text-slate-500">{cmsForm.brandName || 'Momo'}</span>
+                    <span className="text-slate-500 truncate">{cmsForm.brandName || 'Momo'}</span>
                   </div>
 
-                  <h4 className="text-lg font-semibold text-[#1a0dab] hover:underline cursor-pointer leading-tight pt-1 line-clamp-1">
+                  <h4 className="text-base sm:text-lg font-semibold text-[#1a0dab] hover:underline cursor-pointer leading-tight pt-1 line-clamp-1 break-words">
                     {cmsForm.metaTitle || 'Momo - The Cat | Amazon Affiliate Cat Store & Boutique'}
                   </h4>
 
-                  <p className="text-xs text-[#4d5156] leading-relaxed line-clamp-2 pt-0.5">
+                  <p className="text-xs text-[#4d5156] leading-relaxed line-clamp-2 pt-0.5 break-words">
                     {cmsForm.metaDescription ||
                       'Fresh Flavoured Cat Food & Toys. Discover top-rated Amazon Prime essentials and handcrafted Momo Originals.'}
                   </p>
@@ -1677,9 +1792,9 @@ export default function AdminPage() {
               </div>
 
               {/* SEO INPUT FIELDS */}
-              <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-xs space-y-5">
+              <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-5">
                 <div className="border-b border-slate-100 pb-3">
-                  <h3 className="font-display font-bold text-lg text-slate-900">
+                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900">
                     Search Engine Optimization (SEO) Fields
                   </h3>
                   <p className="text-xs text-slate-400">
@@ -1743,9 +1858,9 @@ export default function AdminPage() {
               </div>
 
               {/* BRANDING ASSETS: FAVICON & LOGO */}
-              <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-xs space-y-6">
+              <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-6">
                 <div className="border-b border-slate-100 pb-3">
-                  <h3 className="font-display font-bold text-lg text-slate-900">
+                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900">
                     Branding Assets & Logo
                   </h3>
                   <p className="text-xs text-slate-400">
@@ -1755,7 +1870,7 @@ export default function AdminPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Website Favicon */}
-                  <div className="space-y-3 p-5 rounded-2xl bg-[#FBF9F7] border border-slate-200/80">
+                  <div className="space-y-3 p-4 sm:p-5 rounded-2xl bg-[#FBF9F7] border border-slate-200/80">
                     <div className="flex items-center justify-between">
                       <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                         <ImageIcon className="w-4 h-4 text-orange-500" /> Website Favicon URL
@@ -1786,7 +1901,7 @@ export default function AdminPage() {
                   </div>
 
                   {/* Website Logo */}
-                  <div className="space-y-3 p-5 rounded-2xl bg-[#FBF9F7] border border-slate-200/80">
+                  <div className="space-y-3 p-4 sm:p-5 rounded-2xl bg-[#FBF9F7] border border-slate-200/80">
                     <div className="flex items-center justify-between">
                       <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                         <ImageIcon className="w-4 h-4 text-teal-600" /> Website Logo URL
@@ -1842,7 +1957,7 @@ export default function AdminPage() {
               </div>
 
               {/* Bottom Sticky Save Bar */}
-              <div className="sticky bottom-4 bg-[#1A1825] text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between gap-4 border border-white/10">
+              <div className="sticky bottom-4 bg-[#1A1825] text-white p-4 rounded-2xl shadow-2xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border border-white/10">
                 <span className="text-xs font-medium text-slate-300">
                   Update Google meta headers and site assets
                 </span>
@@ -1850,7 +1965,7 @@ export default function AdminPage() {
                   type="button"
                   onClick={() => handleSaveCmsSettings()}
                   disabled={savingCms}
-                  className="px-6 py-2.5 bg-[#FF6B35] hover:bg-[#e65a25] text-white rounded-xl text-xs font-black shadow-md transition-all flex items-center gap-2 disabled:opacity-50"
+                  className="px-6 py-2.5 bg-[#FF6B35] hover:bg-[#e65a25] text-white rounded-xl text-xs font-black shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   <Save className="w-4 h-4" />
                   <span>{savingCms ? 'Saving...' : 'Save SEO & Branding'}</span>
@@ -1864,10 +1979,10 @@ export default function AdminPage() {
           {/* ======================================================== */}
           {activeTab === 'inventory' && (
             <div className="space-y-6">
-              {/* Top Controls: Search, Type Filters & Add Product */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs">
+              {/* Top Controls */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 sm:p-5 rounded-3xl border border-slate-200/80 shadow-xs">
                 {/* Search */}
-                <div className="relative flex-1 max-w-md">
+                <div className="relative flex-1 max-w-md w-full">
                   <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
@@ -1878,8 +1993,8 @@ export default function AdminPage() {
                   />
                 </div>
 
-                {/* Filter Pills */}
-                <div className="flex items-center gap-2">
+                {/* Filter Pills & Add */}
+                <div className="flex items-center flex-wrap gap-2">
                   <button
                     onClick={() => setProductTypeFilter('all')}
                     className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
@@ -1908,23 +2023,23 @@ export default function AdminPage() {
                         : 'bg-teal-50 text-teal-700 hover:bg-teal-100'
                     }`}
                   >
-                    Momo Real ({realCount})
+                    Real ({realCount})
                   </button>
 
                   <button
                     onClick={handleOpenAddModal}
-                    className="ml-2 px-4 py-2 bg-[#FF6B35] hover:bg-[#e65a25] text-white rounded-xl text-xs font-black flex items-center gap-1.5 shadow-sm transition-all"
+                    className="px-3.5 py-1.5 bg-[#FF6B35] hover:bg-[#e65a25] text-white rounded-xl text-xs font-black flex items-center gap-1.5 shadow-sm transition-all"
                   >
-                    <Plus className="w-4 h-4" />
-                    <span>Add Product</span>
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add</span>
                   </button>
                 </div>
               </div>
 
-              {/* Products Table */}
+              {/* Products Table with responsive overflow */}
               <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
+                <div className="overflow-x-auto w-full">
+                  <table className="w-full min-w-[700px] text-left text-xs">
                     <thead className="bg-[#FBF9F7] text-slate-500 font-bold uppercase tracking-wider border-b border-slate-200/80">
                       <tr>
                         <th className="p-4">Product</th>
@@ -1943,7 +2058,6 @@ export default function AdminPage() {
 
                         return (
                           <tr key={p._id} className="hover:bg-slate-50/80 transition-colors">
-                            {/* Product Info */}
                             <td className="p-4">
                               <div className="flex items-center gap-3">
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -1965,7 +2079,6 @@ export default function AdminPage() {
                               </div>
                             </td>
 
-                            {/* Type Badge */}
                             <td className="p-4">
                               <span
                                 className={`text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full ${
@@ -1978,10 +2091,8 @@ export default function AdminPage() {
                               </span>
                             </td>
 
-                            {/* Category */}
                             <td className="p-4 text-slate-600 font-semibold">{p.category}</td>
 
-                            {/* Price */}
                             <td className="p-4 font-bold text-slate-900">
                               ${p.price.toFixed(2)}
                               {p.originalPrice && (
@@ -1991,7 +2102,6 @@ export default function AdminPage() {
                               )}
                             </td>
 
-                            {/* Stock or Link */}
                             <td className="p-4">
                               {isAff ? (
                                 <a
@@ -2016,7 +2126,6 @@ export default function AdminPage() {
                               )}
                             </td>
 
-                            {/* Actions */}
                             <td className="p-4 text-right">
                               <div className="flex items-center justify-end gap-1.5">
                                 <button
@@ -2076,8 +2185,8 @@ export default function AdminPage() {
                 </div>
               ) : (
                 <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs">
+                  <div className="overflow-x-auto w-full">
+                    <table className="w-full min-w-[650px] text-left text-xs">
                       <thead className="bg-[#FBF9F7] text-slate-500 font-bold uppercase tracking-wider border-b border-slate-200/80">
                         <tr>
                           <th className="p-4">Order #</th>
@@ -2235,32 +2344,34 @@ export default function AdminPage() {
               </div>
 
               <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-[#FBF9F7] text-slate-500 font-bold uppercase tracking-wider border-b border-slate-200/80">
-                    <tr>
-                      <th className="p-4">Email</th>
-                      <th className="p-4">Capture Source</th>
-                      <th className="p-4">Discount Code</th>
-                      <th className="p-4">Date Joined</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 font-medium">
-                    {leads.map((l) => (
-                      <tr key={l._id} className="hover:bg-slate-50/80">
-                        <td className="p-4 font-bold text-slate-900">{l.email}</td>
-                        <td className="p-4 text-slate-600">{l.source}</td>
-                        <td className="p-4">
-                          <span className="font-mono font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded">
-                            {l.discountCode || 'MOMO15'}
-                          </span>
-                        </td>
-                        <td className="p-4 text-slate-400">
-                          {new Date(l.createdAt).toLocaleString()}
-                        </td>
+                <div className="overflow-x-auto w-full">
+                  <table className="w-full min-w-[500px] text-left text-xs">
+                    <thead className="bg-[#FBF9F7] text-slate-500 font-bold uppercase tracking-wider border-b border-slate-200/80">
+                      <tr>
+                        <th className="p-4">Email</th>
+                        <th className="p-4">Capture Source</th>
+                        <th className="p-4">Discount Code</th>
+                        <th className="p-4">Date Joined</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 font-medium">
+                      {leads.map((l) => (
+                        <tr key={l._id} className="hover:bg-slate-50/80">
+                          <td className="p-4 font-bold text-slate-900">{l.email}</td>
+                          <td className="p-4 text-slate-600">{l.source}</td>
+                          <td className="p-4">
+                            <span className="font-mono font-bold text-orange-600 bg-orange-50 px-2 py-0.5 rounded">
+                              {l.discountCode || 'MOMO15'}
+                            </span>
+                          </td>
+                          <td className="p-4 text-slate-400">
+                            {new Date(l.createdAt).toLocaleString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}
@@ -2270,8 +2381,8 @@ export default function AdminPage() {
           {/* ======================================================== */}
           {activeTab === 'settings' && (
             <div className="space-y-6">
-              <div className="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs space-y-2">
-                <h2 className="font-display font-black text-2xl text-slate-900">
+              <div className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-xs space-y-2">
+                <h2 className="font-display font-black text-xl sm:text-2xl text-slate-900">
                   Store Architecture & Affiliate Parameters
                 </h2>
                 <p className="text-xs text-slate-500">
@@ -2280,8 +2391,8 @@ export default function AdminPage() {
               </div>
 
               {/* Mode Switch Card */}
-              <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs space-y-4">
-                <h3 className="font-display font-bold text-lg text-slate-900">
+              <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
+                <h3 className="font-display font-bold text-base sm:text-lg text-slate-900">
                   Storefront Operation Mode
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -2324,8 +2435,8 @@ export default function AdminPage() {
               </div>
 
               {/* Amazon Affiliate Tag */}
-              <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-xs space-y-4">
-                <h3 className="font-display font-bold text-lg text-slate-900">
+              <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-xs space-y-4">
+                <h3 className="font-display font-bold text-base sm:text-lg text-slate-900">
                   Amazon Associate Parameters
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -2365,7 +2476,7 @@ export default function AdminPage() {
               </div>
 
               {/* Phase 2 Retail Flip Trigger */}
-              <div className="bg-rose-50 border border-rose-200 rounded-3xl p-6 space-y-3">
+              <div className="bg-rose-50 border border-rose-200 rounded-3xl p-5 sm:p-6 space-y-3">
                 <h3 className="font-display font-bold text-base text-rose-900 flex items-center gap-2">
                   <AlertCircle className="w-5 h-5 text-rose-600" />
                   Phase 2 Retail Flip Master Trigger
@@ -2414,7 +2525,6 @@ export default function AdminPage() {
             </div>
 
             <form onSubmit={handleSaveProduct} className="space-y-4 text-xs font-bold">
-              {/* Type Switcher */}
               {!editingProductId && (
                 <div className="flex rounded-2xl bg-slate-100 p-1">
                   <button
@@ -2442,7 +2552,6 @@ export default function AdminPage() {
                 </div>
               )}
 
-              {/* Title */}
               <div className="space-y-1">
                 <label className="text-slate-700">Product Name</label>
                 <input
@@ -2455,7 +2564,6 @@ export default function AdminPage() {
                 />
               </div>
 
-              {/* Price & Original Price */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="text-slate-700">Price ($)</label>
@@ -2484,7 +2592,6 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              {/* Category & Badge */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="text-slate-700">Category</label>
@@ -2512,7 +2619,6 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              {/* Conditional: Affiliate Link & Image */}
               {newProductType === 'affiliate' ? (
                 <>
                   <div className="space-y-1">
