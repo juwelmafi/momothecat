@@ -3,31 +3,40 @@
 import React from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
+import { useCart } from '@/context/CartContext';
 
 interface Props {
   onSelectCategory?: (cat: string) => void;
 }
 
 export default function CategoryShowcase({ onSelectCategory }: Props) {
+  const { settings } = useCart();
+
   const arches = [
     {
       title: 'Dog Treats & Food',
       subtitle: 'Nutritious & Delicious',
-      image: 'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/05/Pty-Dog-Image-1.png',
+      image:
+        settings.categoryArch1Image ||
+        'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/05/Pty-Dog-Image-1.png',
       bg: '#D2EDF8',
       category: 'Cat Food & Treats',
     },
     {
       title: 'Active Toys & Play',
       subtitle: 'Interactive Teasers',
-      image: 'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/05/Pty-bird-Image-1.png',
+      image:
+        settings.categoryArch2Image ||
+        'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/05/Pty-bird-Image-1.png',
       bg: '#FDF3CA',
       category: 'Cat Toys',
     },
     {
       title: 'Royal Cat Comfort',
       subtitle: 'Beds & Scratchers',
-      image: 'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/05/Pty-cat-Image-1-1.png',
+      image:
+        settings.categoryArch3Image ||
+        'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/05/Pty-cat-Image-1-1.png',
       bg: '#FDE4D8',
       category: 'Beds & Furniture',
     },

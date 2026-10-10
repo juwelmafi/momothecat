@@ -3,8 +3,11 @@
 import React from 'react';
 import Link from 'next/link';
 import { ArrowRight, Flame, Clock } from 'lucide-react';
+import { useCart } from '@/context/CartContext';
 
 export default function PromoCards() {
+  const { settings } = useCart();
+
   return (
     <section className="py-10 grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
       {/* Card 1: Deals Ended Soon (Soft Cream Background) */}
@@ -38,7 +41,10 @@ export default function PromoCards() {
         <div className="absolute -bottom-4 -right-4 w-48 sm:w-60 h-48 sm:h-60 rounded-full overflow-hidden opacity-95 group-hover:scale-105 transition-transform duration-500">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=600&q=80"
+            src={
+              settings.promoCard1Image ||
+              'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=600&q=80'
+            }
             alt="Sleeping Cat in Lounger"
             className="w-full h-full object-cover"
           />
@@ -76,7 +82,10 @@ export default function PromoCards() {
         <div className="absolute -bottom-4 -right-4 w-48 sm:w-60 h-48 sm:h-60 rounded-full overflow-hidden opacity-95 group-hover:scale-105 transition-transform duration-500">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?auto=format&fit=crop&w=600&q=80"
+            src={
+              settings.promoCard2Image ||
+              'https://images.unsplash.com/photo-1518791841217-8f162f1e1131?auto=format&fit=crop&w=600&q=80'
+            }
             alt="Curious Kitten"
             className="w-full h-full object-cover"
           />

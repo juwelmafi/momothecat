@@ -47,6 +47,7 @@ import {
   Layers,
   PanelLeftClose,
   PanelLeftOpen,
+  UploadCloud,
 } from 'lucide-react';
 import {
   MergedProduct,
@@ -57,10 +58,12 @@ import {
   StoreSettings,
 } from '@/lib/types';
 import { CATEGORIES, INITIAL_SETTINGS } from '@/lib/initialData';
+import CloudinaryImageUploader from '@/components/admin/CloudinaryImageUploader';
 
 type AdminTab =
   | 'overview'
   | 'content'
+  | 'media'
   | 'seo'
   | 'inventory'
   | 'orders'
@@ -77,6 +80,15 @@ export default function AdminPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [settings, setSettings] = useState<StoreSettings | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Cloudinary Status & Upload in Admin
+  const [cloudinaryStatus, setCloudinaryStatus] = useState<{
+    configured: boolean;
+    cloudName?: string;
+    source?: string;
+  } | null>(null);
+  const [showApiSecret, setShowApiSecret] = useState(false);
+  const [productUploading, setProductUploading] = useState(false);
 
   // CMS & SEO Live Settings Form State
   const [cmsForm, setCmsForm] = useState<StoreSettings>({ ...INITIAL_SETTINGS });
@@ -162,6 +174,7 @@ export default function AdminPage() {
         setSettings(setData.settings);
         setCmsForm(setData.settings);
       }
+      checkCloudinaryStatus();
     } catch (err) {
       console.error('Error fetching admin data:', err);
     } finally {
@@ -260,6 +273,65 @@ export default function AdminPage() {
       setCmsErrorMessage(err?.message || 'Error saving settings.');
     } finally {
       setSavingCms(false);
+    }
+  };
+
+  const checkCloudinaryStatus = async () => {
+    try {
+      const res = await fetch('/api/admin/upload');
+      const data = await res.json();
+      if (data.success) {
+        setCloudinaryStatus({
+          configured: data.configured,
+          cloudName: data.cloudName,
+          source: data.source,
+        });
+      }
+    } catch (err) {
+      console.error('Failed to check Cloudinary status:', err);
+    }
+  };
+
+  const handleProductImageUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    isGallery = false
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setProductUploading(true);
+    setFormError('');
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('folder', 'momothecat/products');
+
+      const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Upload failed');
+      }
+
+      if (isGallery) {
+        const existing = productForm.images
+          ? productForm.images
+              .split(',')
+              .map((s) => s.trim())
+              .filter(Boolean)
+          : [];
+        existing.push(data.url);
+        setProductForm((prev) => ({ ...prev, images: existing.join(', ') }));
+      } else {
+        setProductForm((prev) => ({ ...prev, imageUrl: data.url }));
+      }
+    } catch (err: any) {
+      setFormError(err.message || 'Failed to upload product image to Cloudinary');
+    } finally {
+      setProductUploading(false);
+      e.target.value = '';
     }
   };
 
@@ -675,6 +747,13 @@ export default function AdminPage() {
       description: 'Headings, Hero & Body Text',
       icon: FileText,
       badge: 'CMS',
+    },
+    {
+      id: 'media' as AdminTab,
+      label: 'Images & Media',
+      description: 'Cloudinary Direct Upload',
+      icon: ImageIcon,
+      badge: 'Media',
     },
     {
       id: 'seo' as AdminTab,
@@ -1212,7 +1291,7 @@ export default function AdminPage() {
               </div>
 
               {/* Quick Navigation Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
                 <div
                   onClick={() => setActiveTab('content')}
                   className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-xs hover:border-orange-300 hover:shadow-md transition-all cursor-pointer group"
@@ -1227,13 +1306,31 @@ export default function AdminPage() {
                     Edit Website Content (CMS)
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Customize website headings, body text, hero slides, promo banners, and newsletter copy with instant live store preview.
+                    Customize headings, hero slides, and promo banners with instant live store preview.
+                  </p>
+                </div>
+
+                <div
+                  onClick={() => setActiveTab('media')}
+                  className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-xs hover:border-blue-300 hover:shadow-md transition-all cursor-pointer group"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="w-10 h-10 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center">
+                      <ImageIcon className="w-5 h-5" />
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-slate-400 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 mb-1">
+                    Images & Cloudinary
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Customize every image on the storefront via direct Cloudinary upload or image URLs.
                   </p>
                 </div>
 
                 <div
                   onClick={() => setActiveTab('seo')}
-                  className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-xs hover:border-orange-300 hover:shadow-md transition-all cursor-pointer group"
+                  className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-xs hover:border-indigo-300 hover:shadow-md transition-all cursor-pointer group"
                 >
                   <div className="flex items-center justify-between mb-3">
                     <div className="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center">
@@ -1242,10 +1339,10 @@ export default function AdminPage() {
                     <ChevronRight className="w-5 h-5 text-slate-400 group-hover:translate-x-1 transition-transform" />
                   </div>
                   <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 mb-1">
-                    SEO Meta Tags & Branding
+                    SEO & Branding
                   </h3>
                   <p className="text-xs text-slate-500">
-                    Update Google Search meta title, description, keywords, favicon icon, brand logo, and tagline.
+                    Update Google Search meta title, description, keywords, favicon, and brand logo.
                   </p>
                 </div>
               </div>
@@ -1713,6 +1810,491 @@ export default function AdminPage() {
                 >
                   <Save className="w-4 h-4" />
                   <span>{savingCms ? 'Saving...' : 'Save Website Content'}</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ======================================================== */}
+          {/* TAB: IMAGES & MEDIA MANAGER (CLOUDINARY) */}
+          {/* ======================================================== */}
+          {activeTab === 'media' && (
+            <div className="space-y-6">
+              {/* Header with Save Button */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-xs">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse" />
+                    <h2 className="font-display font-black text-xl sm:text-2xl text-slate-900">
+                      Images & Media Manager (Cloudinary)
+                    </h2>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Every image across the storefront is customizable here. Upload directly to Cloudinary or paste any image URL, then click Save.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2.5">
+                  <button
+                    type="button"
+                    onClick={handleResetToDefaults}
+                    className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Reset Defaults</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleSaveCmsSettings()}
+                    disabled={savingCms}
+                    className="px-5 py-2.5 bg-[#FF6B35] hover:bg-[#e65a25] text-white rounded-xl text-xs font-black flex items-center gap-2 shadow-md shadow-orange-500/20 active:scale-95 transition-all disabled:opacity-50"
+                  >
+                    <Save className="w-4 h-4" />
+                    <span>{savingCms ? 'Saving...' : 'Save All Images'}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* CLOUDINARY INTEGRATION & CREDENTIALS CARD */}
+              <div className="bg-gradient-to-br from-slate-900 via-[#1A182E] to-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-800 space-y-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center border border-blue-400/30">
+                        <UploadCloud className="w-5 h-5" />
+                      </div>
+                      <h3 className="font-display font-extrabold text-lg text-white">
+                        Cloudinary Integration Settings
+                      </h3>
+                    </div>
+                    <p className="text-xs text-slate-300 max-w-xl">
+                      Enables 1-click direct image uploads to your Cloudinary cloud. You can store your credentials here in store settings or in <code className="text-amber-300 font-mono">.env.local</code>.
+                    </p>
+                  </div>
+
+                  <span
+                    className={`inline-flex items-center gap-1.5 text-xs font-bold px-3.5 py-1.5 rounded-full border self-start sm:self-auto ${
+                      cloudinaryStatus?.configured
+                        ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                        : 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                    }`}
+                  >
+                    <span
+                      className={`w-2 h-2 rounded-full ${
+                        cloudinaryStatus?.configured ? 'bg-emerald-400' : 'bg-amber-400'
+                      }`}
+                    />
+                    {cloudinaryStatus?.configured
+                      ? `Cloudinary Active (${cloudinaryStatus.cloudName || 'Configured'})`
+                      : 'Credentials Needed'}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-300">Cloud Name</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. dxyz123abc"
+                      value={cmsForm.cloudinaryCloudName ?? ''}
+                      onChange={(e) =>
+                        setCmsForm({ ...cmsForm, cloudinaryCloudName: e.target.value })
+                      }
+                      className="w-full px-3.5 py-2.5 bg-white/5 border border-white/15 rounded-xl text-xs text-white placeholder:text-slate-500 outline-none focus:border-[#FFC312] focus:bg-white/10 font-mono"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-300">API Key</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 123456789012345"
+                      value={cmsForm.cloudinaryApiKey ?? ''}
+                      onChange={(e) =>
+                        setCmsForm({ ...cmsForm, cloudinaryApiKey: e.target.value })
+                      }
+                      className="w-full px-3.5 py-2.5 bg-white/5 border border-white/15 rounded-xl text-xs text-white placeholder:text-slate-500 outline-none focus:border-[#FFC312] focus:bg-white/10 font-mono"
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-300 flex items-center justify-between">
+                      <span>API Secret</span>
+                      <button
+                        type="button"
+                        onClick={() => setShowApiSecret(!showApiSecret)}
+                        className="text-[10px] text-slate-400 hover:text-white"
+                      >
+                        {showApiSecret ? 'Hide' : 'Show'}
+                      </button>
+                    </label>
+                    <input
+                      type={showApiSecret ? 'text' : 'password'}
+                      placeholder="e.g. abcd_1234XYZ"
+                      value={cmsForm.cloudinaryApiSecret ?? ''}
+                      onChange={(e) =>
+                        setCmsForm({ ...cmsForm, cloudinaryApiSecret: e.target.value })
+                      }
+                      className="w-full px-3.5 py-2.5 bg-white/5 border border-white/15 rounded-xl text-xs text-white placeholder:text-slate-500 outline-none focus:border-[#FFC312] focus:bg-white/10 font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2">
+                  <p className="text-[11px] text-slate-400">
+                    Find these at: <strong className="text-white">Cloudinary Console &gt; Dashboard &gt; API Keys</strong>.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await handleSaveCmsSettings();
+                      checkCloudinaryStatus();
+                    }}
+                    disabled={savingCms}
+                    className="px-5 py-2.5 bg-[#FFC312] hover:bg-[#eab308] text-[#232121] rounded-xl text-xs font-black transition-all shadow-md active:scale-95 disabled:opacity-50"
+                  >
+                    Save Cloudinary Credentials
+                  </button>
+                </div>
+              </div>
+
+              {/* 1. BRAND & IDENTITY ASSETS */}
+              <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-5">
+                <div className="border-b border-slate-100 pb-3">
+                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
+                    <span>👑</span> 1. Brand Logo & Browser Favicon
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Your primary store identity shown in header, footer, and browser navigation tabs.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <CloudinaryImageUploader
+                    label="Website Header & Brand Logo"
+                    description="Main logo shown on top left header and footer."
+                    recommendedSize="240x60 PNG / SVG"
+                    value={cmsForm.websiteLogo || ''}
+                    defaultValue={INITIAL_SETTINGS.websiteLogo}
+                    onChange={(url) => setCmsForm({ ...cmsForm, websiteLogo: url })}
+                  />
+
+                  <CloudinaryImageUploader
+                    label="Website Browser Favicon"
+                    description="Small square icon displayed on browser tabs."
+                    recommendedSize="32x32 PNG / ICO"
+                    value={cmsForm.websiteFavicon || ''}
+                    defaultValue={INITIAL_SETTINGS.websiteFavicon}
+                    onChange={(url) => setCmsForm({ ...cmsForm, websiteFavicon: url })}
+                  />
+                </div>
+              </div>
+
+              {/* 2. HERO BANNER SLIDES (SLIDE 1 & SLIDE 2) */}
+              <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-6">
+                <div className="border-b border-slate-100 pb-3">
+                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
+                    <span>🐱</span> 2. Hero Banner Slider Images
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    All pet cutouts, product bags, bowls, and discount badges for Slide 1 & Slide 2.
+                  </p>
+                </div>
+
+                {/* Slide 1 Image Grid */}
+                <div className="space-y-3">
+                  <span className="text-xs font-black uppercase tracking-wider text-[#FF6B35] bg-[#FFEFEA] px-3 py-1 rounded-full">
+                    Slide 1: Fresh Flavoured Dog & Cat Food
+                  </span>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
+                    <CloudinaryImageUploader
+                      label="Slide 1: Pet Portrait Cutout"
+                      description="Cute Golden Retriever dog or cat portrait cutout on left."
+                      recommendedSize="420x540 PNG"
+                      value={cmsForm.heroSlide1PetImage || ''}
+                      defaultValue={INITIAL_SETTINGS.heroSlide1PetImage}
+                      onChange={(url) => setCmsForm({ ...cmsForm, heroSlide1PetImage: url })}
+                    />
+
+                    <CloudinaryImageUploader
+                      label="Slide 1: Food Pack Bag"
+                      description="Pet food kibble bag package sitting in bowl."
+                      recommendedSize="360x420 PNG"
+                      value={cmsForm.heroSlide1FoodPackImage || ''}
+                      defaultValue={INITIAL_SETTINGS.heroSlide1FoodPackImage}
+                      onChange={(url) => setCmsForm({ ...cmsForm, heroSlide1FoodPackImage: url })}
+                    />
+
+                    <CloudinaryImageUploader
+                      label="Slide 1: Food Bowl / Plate"
+                      description="Yellow food dish bowl with kibble."
+                      recommendedSize="420x240 PNG"
+                      value={cmsForm.heroSlide1PlateImage || ''}
+                      defaultValue={INITIAL_SETTINGS.heroSlide1PlateImage}
+                      onChange={(url) => setCmsForm({ ...cmsForm, heroSlide1PlateImage: url })}
+                    />
+
+                    <CloudinaryImageUploader
+                      label="Slide 1: Cyan Discount Starburst Badge"
+                      description="Up to 20% Off cyan starburst badge."
+                      recommendedSize="180x180 PNG"
+                      value={cmsForm.heroSlide1DiscountBadge || ''}
+                      defaultValue={INITIAL_SETTINGS.heroSlide1DiscountBadge}
+                      onChange={(url) => setCmsForm({ ...cmsForm, heroSlide1DiscountBadge: url })}
+                    />
+
+                    <CloudinaryImageUploader
+                      label="Slide 1: Heading Sparkle Icon"
+                      description="Cute dog in green hat / sparkle decoration above heading."
+                      recommendedSize="120x120 PNG"
+                      value={cmsForm.heroSlide1HeadingIcon || ''}
+                      defaultValue={INITIAL_SETTINGS.heroSlide1HeadingIcon}
+                      onChange={(url) => setCmsForm({ ...cmsForm, heroSlide1HeadingIcon: url })}
+                    />
+                  </div>
+                </div>
+
+                {/* Slide 2 Image Grid */}
+                <div className="space-y-3 pt-4 border-t border-slate-100">
+                  <span className="text-xs font-black uppercase tracking-wider text-teal-700 bg-teal-50 px-3 py-1 rounded-full">
+                    Slide 2: Nutrition Rich Pure Cat Treats
+                  </span>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-1">
+                    <CloudinaryImageUploader
+                      label="Slide 2: Pet Portrait Cutout"
+                      description="Happy cat cutout portrait on left of slide 2."
+                      recommendedSize="420x540 PNG"
+                      value={cmsForm.heroSlide2PetImage || ''}
+                      defaultValue={INITIAL_SETTINGS.heroSlide2PetImage}
+                      onChange={(url) => setCmsForm({ ...cmsForm, heroSlide2PetImage: url })}
+                    />
+
+                    <CloudinaryImageUploader
+                      label="Slide 2: Food Pack Bag"
+                      description="Treat pack bag package for slide 2."
+                      recommendedSize="360x420 PNG"
+                      value={cmsForm.heroSlide2FoodPackImage || ''}
+                      defaultValue={INITIAL_SETTINGS.heroSlide2FoodPackImage}
+                      onChange={(url) => setCmsForm({ ...cmsForm, heroSlide2FoodPackImage: url })}
+                    />
+
+                    <CloudinaryImageUploader
+                      label="Slide 2: Food Bowl / Plate"
+                      description="Food plate / bowl on slide 2."
+                      recommendedSize="420x240 PNG"
+                      value={cmsForm.heroSlide2PlateImage || ''}
+                      defaultValue={INITIAL_SETTINGS.heroSlide2PlateImage}
+                      onChange={(url) => setCmsForm({ ...cmsForm, heroSlide2PlateImage: url })}
+                    />
+
+                    <CloudinaryImageUploader
+                      label="Slide 2: Discount Starburst Badge"
+                      description="Cyan discount badge on slide 2."
+                      recommendedSize="180x180 PNG"
+                      value={cmsForm.heroSlide2DiscountBadge || ''}
+                      defaultValue={INITIAL_SETTINGS.heroSlide2DiscountBadge}
+                      onChange={(url) => setCmsForm({ ...cmsForm, heroSlide2DiscountBadge: url })}
+                    />
+
+                    <CloudinaryImageUploader
+                      label="Slide 2: Heading Decorative Icon"
+                      description="Cute decorative mascot icon for slide 2 heading."
+                      recommendedSize="120x120 PNG"
+                      value={cmsForm.heroSlide2HeadingIcon || ''}
+                      defaultValue={INITIAL_SETTINGS.heroSlide2HeadingIcon}
+                      onChange={(url) => setCmsForm({ ...cmsForm, heroSlide2HeadingIcon: url })}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. CATEGORY SHOWCASE ARCHES */}
+              <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-5">
+                <div className="border-b border-slate-100 pb-3">
+                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
+                    <span>🌈</span> 3. Category Showcase Arches
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    The 3 arch cutout cards positioned directly below the hero banner.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <CloudinaryImageUploader
+                    label="Arch 1: Treats & Food"
+                    description="Dog/cat portrait inside soft blue arch."
+                    recommendedSize="320x360 PNG"
+                    value={cmsForm.categoryArch1Image || ''}
+                    defaultValue={INITIAL_SETTINGS.categoryArch1Image}
+                    onChange={(url) => setCmsForm({ ...cmsForm, categoryArch1Image: url })}
+                  />
+
+                  <CloudinaryImageUploader
+                    label="Arch 2: Active Toys"
+                    description="Bird/teaser image inside soft cream arch."
+                    recommendedSize="320x360 PNG"
+                    value={cmsForm.categoryArch2Image || ''}
+                    defaultValue={INITIAL_SETTINGS.categoryArch2Image}
+                    onChange={(url) => setCmsForm({ ...cmsForm, categoryArch2Image: url })}
+                  />
+
+                  <CloudinaryImageUploader
+                    label="Arch 3: Royal Comfort"
+                    description="Cat portrait inside soft peach arch."
+                    recommendedSize="320x360 PNG"
+                    value={cmsForm.categoryArch3Image || ''}
+                    defaultValue={INITIAL_SETTINGS.categoryArch3Image}
+                    onChange={(url) => setCmsForm({ ...cmsForm, categoryArch3Image: url })}
+                  />
+                </div>
+              </div>
+
+              {/* 4. PROMOTIONAL BANNERS & CARDS */}
+              <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-5">
+                <div className="border-b border-slate-100 pb-3">
+                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
+                    <span>🔥</span> 4. Promotional Banners & Flash Cards
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Featured images inside Passion Banner, Deals Ended Soon, Flash Discounts & Promo cards.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <CloudinaryImageUploader
+                    label="Passion Section: Girl & Pet Portrait"
+                    description="Cutout portrait shown with yellow circular backdrop in passion section."
+                    recommendedSize="460x460 PNG"
+                    value={cmsForm.passionBannerImage || ''}
+                    defaultValue={INITIAL_SETTINGS.passionBannerImage}
+                    onChange={(url) => setCmsForm({ ...cmsForm, passionBannerImage: url })}
+                  />
+
+                  <CloudinaryImageUploader
+                    label="Deals Ended Soon: Sleeping Dog Banner"
+                    description="Dog sleeping on bed with bone treat illustration."
+                    recommendedSize="480x360 PNG"
+                    value={cmsForm.dealsBannerImage || ''}
+                    defaultValue={INITIAL_SETTINGS.dealsBannerImage}
+                    onChange={(url) => setCmsForm({ ...cmsForm, dealsBannerImage: url })}
+                  />
+
+                  <CloudinaryImageUploader
+                    label="Enticing Discounts: Popping Pet Cutout"
+                    description="Pet cutout jumping on right of yellow 20% offer banner."
+                    recommendedSize="360x360 PNG"
+                    value={cmsForm.discountsBannerImage || ''}
+                    defaultValue={INITIAL_SETTINGS.discountsBannerImage}
+                    onChange={(url) => setCmsForm({ ...cmsForm, discountsBannerImage: url })}
+                  />
+
+                  <CloudinaryImageUploader
+                    label="Promo Card 1: Sleeping Kitten Cutout"
+                    description="Overlapping kitten photo on Save Up To 40% card."
+                    recommendedSize="400x400 JPG / PNG"
+                    value={cmsForm.promoCard1Image || ''}
+                    defaultValue={INITIAL_SETTINGS.promoCard1Image}
+                    onChange={(url) => setCmsForm({ ...cmsForm, promoCard1Image: url })}
+                  />
+
+                  <CloudinaryImageUploader
+                    label="Promo Card 2: Curious Kitten Cutout"
+                    description="Overlapping kitten photo on 20% Flash Offer yellow card."
+                    recommendedSize="400x400 JPG / PNG"
+                    value={cmsForm.promoCard2Image || ''}
+                    defaultValue={INITIAL_SETTINGS.promoCard2Image}
+                    onChange={(url) => setCmsForm({ ...cmsForm, promoCard2Image: url })}
+                  />
+                </div>
+              </div>
+
+              {/* 5. CUSTOMER TESTIMONIALS PORTRAITS */}
+              <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-5">
+                <div className="border-b border-slate-100 pb-3">
+                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
+                    <span>⭐</span> 5. Customer Testimonials Portraits
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Customer review photos displayed inside circular frames in the testimonial carousel.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <CloudinaryImageUploader
+                    label="Customer 1: Jaden - Cat Lover"
+                    description="Portrait for first testimonial review."
+                    recommendedSize="300x300 JPG"
+                    value={cmsForm.testimonial1Image || ''}
+                    defaultValue={INITIAL_SETTINGS.testimonial1Image}
+                    onChange={(url) => setCmsForm({ ...cmsForm, testimonial1Image: url })}
+                  />
+
+                  <CloudinaryImageUploader
+                    label="Customer 2: Sarah - Pet Parent"
+                    description="Portrait for second testimonial review."
+                    recommendedSize="300x300 JPG"
+                    value={cmsForm.testimonial2Image || ''}
+                    defaultValue={INITIAL_SETTINGS.testimonial2Image}
+                    onChange={(url) => setCmsForm({ ...cmsForm, testimonial2Image: url })}
+                  />
+
+                  <CloudinaryImageUploader
+                    label="Customer 3: Michael - Cat Enthusiast"
+                    description="Portrait for third testimonial review."
+                    recommendedSize="300x300 JPG"
+                    value={cmsForm.testimonial3Image || ''}
+                    defaultValue={INITIAL_SETTINGS.testimonial3Image}
+                    onChange={(url) => setCmsForm({ ...cmsForm, testimonial3Image: url })}
+                  />
+                </div>
+              </div>
+
+              {/* 6. NEWSLETTER & FOOTER GRAPHICS */}
+              <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-5">
+                <div className="border-b border-slate-100 pb-3">
+                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
+                    <span>💌</span> 6. Newsletter & Footer Graphics
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Cute pet illustration next to the newsletter signup box and payment logos in the copyright footer.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <CloudinaryImageUploader
+                    label="Newsletter Pets Illustration"
+                    description="Illustration of cute dog and cat beside newsletter form."
+                    recommendedSize="360x280 PNG"
+                    value={cmsForm.newsletterPetImage || ''}
+                    defaultValue={INITIAL_SETTINGS.newsletterPetImage}
+                    onChange={(url) => setCmsForm({ ...cmsForm, newsletterPetImage: url })}
+                  />
+
+                  <CloudinaryImageUploader
+                    label="Footer Supported Payment Badges"
+                    description="Payment method icons (Visa, Mastercard, PayPal, Apple Pay)."
+                    recommendedSize="300x40 PNG"
+                    value={cmsForm.footerPaymentBadgesImage || ''}
+                    defaultValue={INITIAL_SETTINGS.footerPaymentBadgesImage}
+                    onChange={(url) => setCmsForm({ ...cmsForm, footerPaymentBadgesImage: url })}
+                  />
+                </div>
+              </div>
+
+              {/* Bottom Sticky Save Bar */}
+              <div className="sticky bottom-4 bg-[#1A1825] text-white p-4 rounded-2xl shadow-2xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border border-white/10 z-10">
+                <span className="text-xs font-medium text-slate-300">
+                  Save all customized images and Cloudinary configurations live to store
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleSaveCmsSettings()}
+                  disabled={savingCms}
+                  className="px-6 py-2.5 bg-[#FF6B35] hover:bg-[#e65a25] text-white rounded-xl text-xs font-black shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>{savingCms ? 'Saving...' : 'Save All Images'}</span>
                 </button>
               </div>
             </div>
@@ -2634,32 +3216,93 @@ export default function AdminPage() {
                       className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 font-medium"
                     />
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-slate-700">Product Image URL</label>
-                    <input
-                      type="url"
-                      required
-                      placeholder="https://images.unsplash.com/..."
-                      value={productForm.imageUrl}
-                      onChange={(e) =>
-                        setProductForm({ ...productForm, imageUrl: e.target.value })
-                      }
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 font-medium"
-                    />
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-slate-700 font-bold text-xs">Product Image</label>
+                      <label className="inline-flex items-center gap-1 text-[11px] font-bold text-[#FF6B35] hover:text-[#e65a25] cursor-pointer bg-orange-50 hover:bg-orange-100 px-2.5 py-1 rounded-lg transition-colors">
+                        <UploadCloud className="w-3.5 h-3.5" />
+                        <span>{productUploading ? 'Uploading...' : 'Upload to Cloudinary'}</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          disabled={productUploading}
+                          onChange={(e) => handleProductImageUpload(e, false)}
+                          className="hidden"
+                        />
+                      </label>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="url"
+                        required
+                        placeholder="https://res.cloudinary.com/... or paste image URL"
+                        value={productForm.imageUrl}
+                        onChange={(e) =>
+                          setProductForm({ ...productForm, imageUrl: e.target.value })
+                        }
+                        className="flex-1 px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 font-medium text-xs font-mono"
+                      />
+                      {productForm.imageUrl && (
+                        <div className="w-10 h-10 rounded-lg border border-slate-200 overflow-hidden bg-white shrink-0 p-0.5">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={productForm.imageUrl}
+                            alt="preview"
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </>
               ) : (
                 <>
-                  <div className="space-y-1">
-                    <label className="text-slate-700">Image URLs (comma-separated)</label>
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-slate-700 font-bold text-xs">Gallery Images (comma-separated)</label>
+                      <label className="inline-flex items-center gap-1 text-[11px] font-bold text-teal-600 hover:text-teal-700 cursor-pointer bg-teal-50 hover:bg-teal-100 px-2.5 py-1 rounded-lg transition-colors">
+                        <UploadCloud className="w-3.5 h-3.5" />
+                        <span>{productUploading ? 'Uploading...' : '+ Add Image via Cloudinary'}</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          disabled={productUploading}
+                          onChange={(e) => handleProductImageUpload(e, true)}
+                          className="hidden"
+                        />
+                      </label>
+                    </div>
                     <input
                       type="text"
                       required
-                      placeholder="https://images.unsplash.com/1, https://images.unsplash.com/2"
+                      placeholder="https://res.cloudinary.com/1, https://res.cloudinary.com/2"
                       value={productForm.images}
                       onChange={(e) => setProductForm({ ...productForm, images: e.target.value })}
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 font-medium"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 font-medium text-xs font-mono"
                     />
+                    {productForm.images && (
+                      <div className="flex items-center gap-2 flex-wrap pt-1">
+                        {productForm.images
+                          .split(',')
+                          .map((url, idx) => {
+                            const clean = url.trim();
+                            if (!clean) return null;
+                            return (
+                              <div
+                                key={idx}
+                                className="w-10 h-10 rounded-lg border border-slate-200 overflow-hidden bg-white p-0.5 shrink-0"
+                              >
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                  src={clean}
+                                  alt="preview"
+                                  className="w-full h-full object-contain"
+                                />
+                              </div>
+                            );
+                          })}
+                      </div>
+                    )}
                   </div>
                   <div className="grid grid-cols-3 gap-3">
                     <div className="space-y-1">

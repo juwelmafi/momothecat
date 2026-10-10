@@ -28,7 +28,23 @@ const TESTIMONIALS = [
 export default function TestimonialsSection() {
   const { settings } = useCart();
   const [current, setCurrent] = useState(0);
-  const t = TESTIMONIALS[current];
+
+  const testimonials = [
+    {
+      ...TESTIMONIALS[0],
+      image: settings.testimonial1Image || TESTIMONIALS[0].image,
+    },
+    {
+      ...TESTIMONIALS[1],
+      image: settings.testimonial2Image || TESTIMONIALS[1].image,
+    },
+    {
+      ...TESTIMONIALS[2],
+      image: settings.testimonial3Image || TESTIMONIALS[2].image,
+    },
+  ];
+
+  const t = testimonials[current];
 
   return (
     <section id="testimonials-section" className="py-16 sm:py-24 bg-white relative overflow-hidden">

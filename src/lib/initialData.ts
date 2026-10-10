@@ -407,6 +407,66 @@ export const INITIAL_SETTINGS: StoreSettings = {
     'Sign up for secret Amazon lightning deals, cat care guides, and exclusive discount codes.',
   footerDescription:
     'Premium Amazon affiliate cat products and hybrid boutique. Curating top-rated Amazon Prime essentials and feline favorites.',
+
+  // Custom Website Images (Full Storefront)
+  heroSlide1PetImage:
+    'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Home-1-Slider-dog.png',
+  heroSlide1FoodPackImage:
+    'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Home-1-Slider-foodpack-2.png',
+  heroSlide1PlateImage:
+    'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Home-1-Slider-Plate-1.png',
+  heroSlide1DiscountBadge:
+    'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Home-1-Slider-Off-img.png',
+  heroSlide1HeadingIcon:
+    'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Home-1-Slider-1-Heading-img.png',
+
+  heroSlide2PetImage:
+    'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/05/Home-1-Slider-3-1.png',
+  heroSlide2FoodPackImage:
+    'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/05/Home-3-Slider-foodpack.png',
+  heroSlide2PlateImage:
+    'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Home-1-Slider-Plate-1.png',
+  heroSlide2DiscountBadge:
+    'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Home-1-Slider-Off-img.png',
+  heroSlide2HeadingIcon:
+    'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Home-1-Slider-1-Heading-img.png',
+
+  categoryArch1Image:
+    'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/05/Pty-Dog-Image-1.png',
+  categoryArch2Image:
+    'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/05/Pty-bird-Image-1.png',
+  categoryArch3Image:
+    'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/05/Pty-cat-Image-1-1.png',
+
+  passionBannerImage:
+    'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Pty-Grid-Sec-Img-a-1.png',
+  dealsBannerImage:
+    'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Dog-Food.png',
+  discountsBannerImage:
+    'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Home-1-Slider-dog.png',
+
+  promoCard1Image:
+    'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=600&q=80',
+  promoCard2Image:
+    'https://images.unsplash.com/photo-1518791841217-8f162f1e1131?auto=format&fit=crop&w=600&q=80',
+
+  testimonial1Image:
+    'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/05/home-testimonial-1.jpg',
+  testimonial2Image:
+    'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/05/home-testimonial-2.jpg',
+  testimonial3Image:
+    'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/05/home-testimonial-3.jpg',
+
+  newsletterPetImage:
+    'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Group-132587@2x.png',
+  footerPaymentBadgesImage:
+    'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Pty-Amount-Logo-1.png',
+
+  // Cloudinary Settings
+  cloudinaryCloudName: '',
+  cloudinaryApiKey: '',
+  cloudinaryApiSecret: '',
+  cloudinaryUploadPreset: '',
 };
 
 export const CATEGORIES = [

@@ -70,7 +70,10 @@ export default function Footer() {
             <div className="shrink-0 w-32 sm:w-44 h-auto hidden sm:block">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Group-132587@2x.png"
+                src={
+                  settings.newsletterPetImage ||
+                  'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Group-132587@2x.png'
+                }
                 alt="Pets illustration"
                 className="w-full h-auto object-contain drop-shadow-md"
               />
@@ -245,7 +248,10 @@ export default function Footer() {
           <div className="flex items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Pty-Amount-Logo-1.png"
+              src={
+                settings.footerPaymentBadgesImage ||
+                'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Pty-Amount-Logo-1.png'
+              }
               alt="Supported Payment Methods"
               className="h-7 w-auto object-contain opacity-90 hover:opacity-100 transition-opacity"
             />

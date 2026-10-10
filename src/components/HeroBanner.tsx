@@ -41,6 +41,11 @@ export default function HeroBanner() {
       heading2: settings.heroSlide1Heading2 || DEFAULT_SLIDES[0].heading2,
       description: settings.heroSlide1Description || DEFAULT_SLIDES[0].description,
       buttonText: settings.heroSlide1ButtonText || DEFAULT_SLIDES[0].buttonText,
+      petImage: settings.heroSlide1PetImage || DEFAULT_SLIDES[0].petImage,
+      foodPackImage: settings.heroSlide1FoodPackImage || DEFAULT_SLIDES[0].foodPackImage,
+      plateImage: settings.heroSlide1PlateImage || DEFAULT_SLIDES[0].plateImage,
+      discountBadge: settings.heroSlide1DiscountBadge || DEFAULT_SLIDES[0].discountBadge,
+      headingIcon: settings.heroSlide1HeadingIcon || DEFAULT_SLIDES[0].headingIcon,
     },
     {
       ...DEFAULT_SLIDES[1],
@@ -48,6 +53,11 @@ export default function HeroBanner() {
       heading2: settings.heroSlide2Heading2 || DEFAULT_SLIDES[1].heading2,
       description: settings.heroSlide2Description || DEFAULT_SLIDES[1].description,
       buttonText: settings.heroSlide2ButtonText || DEFAULT_SLIDES[1].buttonText,
+      petImage: settings.heroSlide2PetImage || DEFAULT_SLIDES[1].petImage,
+      foodPackImage: settings.heroSlide2FoodPackImage || DEFAULT_SLIDES[1].foodPackImage,
+      plateImage: settings.heroSlide2PlateImage || DEFAULT_SLIDES[1].plateImage,
+      discountBadge: settings.heroSlide2DiscountBadge || DEFAULT_SLIDES[1].discountBadge,
+      headingIcon: settings.heroSlide2HeadingIcon || DEFAULT_SLIDES[1].headingIcon,
     },
   ];
 

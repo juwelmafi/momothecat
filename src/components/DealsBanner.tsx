@@ -17,7 +17,10 @@ export default function DealsBanner() {
             <div className="relative w-full max-w-lg">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Dog-Food.png"
+                src={
+                  settings.dealsBannerImage ||
+                  'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Dog-Food.png'
+                }
                 alt="Deals Ended Soon"
                 className="w-full h-auto object-contain drop-shadow-md rounded-2xl hover:scale-102 transition-transform duration-500"
               />

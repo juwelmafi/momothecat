@@ -30,7 +30,10 @@ export default function PassionBanner() {
               {/* Portrait image cutout */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Pty-Grid-Sec-Img-a-1.png"
+                src={
+                  settings.passionBannerImage ||
+                  'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Pty-Grid-Sec-Img-a-1.png'
+                }
                 alt="Our Passion Is Providing Premium Cat Products"
                 className="w-full h-auto max-h-[460px] object-contain drop-shadow-xl relative z-10 -mt-8 hover:scale-105 transition-transform duration-500"
               />

@@ -145,4 +145,41 @@ export interface StoreSettings {
   newsletterHeading: string;
   newsletterDescription: string;
   footerDescription: string;
+
+  // Custom Website Images (Full Storefront)
+  heroSlide1PetImage?: string;
+  heroSlide1FoodPackImage?: string;
+  heroSlide1PlateImage?: string;
+  heroSlide1DiscountBadge?: string;
+  heroSlide1HeadingIcon?: string;
+
+  heroSlide2PetImage?: string;
+  heroSlide2FoodPackImage?: string;
+  heroSlide2PlateImage?: string;
+  heroSlide2DiscountBadge?: string;
+  heroSlide2HeadingIcon?: string;
+
+  categoryArch1Image?: string;
+  categoryArch2Image?: string;
+  categoryArch3Image?: string;
+
+  passionBannerImage?: string;
+  dealsBannerImage?: string;
+  discountsBannerImage?: string;
+
+  promoCard1Image?: string;
+  promoCard2Image?: string;
+
+  testimonial1Image?: string;
+  testimonial2Image?: string;
+  testimonial3Image?: string;
+
+  newsletterPetImage?: string;
+  footerPaymentBadgesImage?: string;
+
+  // Cloudinary Settings
+  cloudinaryCloudName?: string;
+  cloudinaryApiKey?: string;
+  cloudinaryApiSecret?: string;
+  cloudinaryUploadPreset?: string;
 }

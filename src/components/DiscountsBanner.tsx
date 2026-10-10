@@ -50,7 +50,10 @@ export default function DiscountsBanner() {
             <div className="shrink-0 relative w-44 sm:w-60 h-36 sm:h-44 hidden md:flex items-end justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Home-1-Slider-dog.png"
+                src={
+                  settings.discountsBannerImage ||
+                  'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Home-1-Slider-dog.png'
+                }
                 alt="Happy Pet"
                 className="w-full h-full object-contain object-bottom hover:scale-105 transition-transform"
               />
