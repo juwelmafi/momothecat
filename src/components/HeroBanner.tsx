@@ -220,16 +220,16 @@ export default function HeroBanner() {
         </div>
       </div>
 
-      {/* Slider Controls / Dots on Right Side */}
-      <div className="absolute right-6 top-1/2 -translate-y-1/2 z-20 flex flex-col items-center gap-3 hidden sm:flex">
+      {/* Slider Controls / Dots Bottom Center */}
+      <div className="absolute bottom-16 sm:bottom-24 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2.5">
         {slides.map((_, i) => (
           <button
             key={i}
             onClick={() => setCurrentSlide(i)}
-            className={`w-3.5 h-3.5 rounded-full border-2 border-white transition-all ${
+            className={`transition-all duration-300 rounded-full ${
               currentSlide === i
-                ? 'bg-[#FF6B35] scale-125 shadow-md'
-                : 'bg-[#232121]/50 hover:bg-[#232121]'
+                ? 'w-8 h-2.5 bg-[#FF6B35] shadow-md'
+                : 'w-2.5 h-2.5 bg-[#232121]/30 hover:bg-[#232121]/60'
             }`}
             aria-label={`Slide ${i + 1}`}
           />
@@ -239,7 +239,7 @@ export default function HeroBanner() {
       {/* Slide Navigation Arrows */}
       <button
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/40 hover:bg-white text-[#232121] flex items-center justify-center transition-all shadow-sm hidden md:flex"
+        className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/70 hover:bg-white text-[#232121] flex items-center justify-center transition-all shadow-md hover:scale-105 active:scale-95 focus:outline-none hidden sm:flex"
         aria-label="Previous slide"
       >
         <ChevronLeft className="w-5 h-5" />
@@ -247,7 +247,7 @@ export default function HeroBanner() {
 
       <button
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white/40 hover:bg-white text-[#232121] flex items-center justify-center transition-all shadow-sm hidden md:flex"
+        className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/70 hover:bg-white text-[#232121] flex items-center justify-center transition-all shadow-md hover:scale-105 active:scale-95 focus:outline-none hidden sm:flex"
         aria-label="Next slide"
       >
         <ChevronRight className="w-5 h-5" />
