@@ -20,7 +20,7 @@ import { CATEGORIES } from '@/lib/initialData';
 
 export default function Header() {
   const router = useRouter();
-  const { storeMode, itemCount, subtotal, setIsCartOpen, wishlist } = useCart();
+  const { storeMode, itemCount, subtotal, setIsCartOpen, wishlist, settings } = useCart();
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -87,30 +87,40 @@ export default function Header() {
           <div className="flex items-center gap-2 text-center md:text-left text-[#232121]">
             <span className="text-sm">🐾</span>
             <span className="tracking-wide text-xs font-bold">
-              Get 15% Off When You Spend $50+ W. Code:{' '}
-              <strong className="underline underline-offset-2 decoration-[#232121]">MOMO15</strong>
+              {settings?.announcementText || 'Get 15% Off When You Spend $50+ W. Code:'}{' '}
+              {settings?.announcementCode && (
+                <strong className="underline underline-offset-2 decoration-[#232121]">
+                  {settings.announcementCode}
+                </strong>
+              )}
             </span>
           </div>
 
           {/* Contact info and Admin Hub button */}
           <div className="flex items-center gap-4 text-xs font-semibold">
-            <a
-              href="tel:18002286666"
-              className="hidden lg:flex items-center gap-1.5 text-[#232121] hover:text-[#FF6B35] transition-colors"
-            >
-              <Phone className="w-3.5 h-3.5 fill-[#232121] text-[#232121]" />
-              <span>(+1) 800-CAT-MOMO</span>
-            </a>
+            {settings?.contactPhone && (
+              <a
+                href={`tel:${settings.contactPhone.replace(/[^0-9+]/g, '')}`}
+                className="hidden lg:flex items-center gap-1.5 text-[#232121] hover:text-[#FF6B35] transition-colors"
+              >
+                <Phone className="w-3.5 h-3.5 fill-[#232121] text-[#232121]" />
+                <span>{settings.contactPhone}</span>
+              </a>
+            )}
 
-            <span className="hidden lg:inline text-black/25">|</span>
+            {settings?.contactPhone && settings?.contactEmail && (
+              <span className="hidden lg:inline text-black/25">|</span>
+            )}
 
-            <a
-              href="mailto:hello@momothecat.shop"
-              className="hidden sm:flex items-center gap-1.5 text-[#232121] hover:text-[#FF6B35] transition-colors"
-            >
-              <Mail className="w-3.5 h-3.5" />
-              <span>hello@momothecat.shop</span>
-            </a>
+            {settings?.contactEmail && (
+              <a
+                href={`mailto:${settings.contactEmail}`}
+                className="hidden sm:flex items-center gap-1.5 text-[#232121] hover:text-[#FF6B35] transition-colors"
+              >
+                <Mail className="w-3.5 h-3.5" />
+                <span>{settings.contactEmail}</span>
+              </a>
+            )}
           </div>
         </div>
       </div>
@@ -120,18 +130,27 @@ export default function Header() {
         <div className="flex items-center justify-between gap-3 sm:gap-6">
           {/* Logo matching Pettie */}
           <Link href="/" className="flex items-center gap-2 group shrink-0 min-w-0">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#FFC312] flex items-center justify-center text-xl sm:text-2xl shadow-xs group-hover:scale-105 transition-transform shrink-0">
-              🐱
-            </div>
+            {settings?.websiteLogo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={settings.websiteLogo}
+                alt={settings.brandName || 'Momo'}
+                className="h-10 sm:h-12 w-auto object-contain max-w-[140px] group-hover:scale-105 transition-transform shrink-0"
+              />
+            ) : (
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#FFC312] flex items-center justify-center text-xl sm:text-2xl shadow-xs group-hover:scale-105 transition-transform shrink-0">
+                🐱
+              </div>
+            )}
             <div className="flex flex-col min-w-0">
               <div className="flex items-center gap-1">
                 <span className="font-display font-bold text-2xl sm:text-3xl tracking-tight text-[#232121] group-hover:text-[#FF6B35] transition-colors truncate">
-                  Momo
+                  {settings?.brandName || 'Momo'}
                 </span>
                 <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#FF6B35] inline-block mb-1 shrink-0" />
               </div>
               <span className="text-[9px] sm:text-[10px] font-semibold text-[#555555] tracking-wider uppercase -mt-1 truncate">
-                Amazon Cat Boutique
+                {settings?.brandTagline || 'Amazon Cat Boutique'}
               </span>
             </div>
           </Link>

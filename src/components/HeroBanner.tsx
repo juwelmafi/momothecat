@@ -3,8 +3,9 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useCart } from '@/context/CartContext';
 
-const SLIDES = [
+const DEFAULT_SLIDES = [
   {
     petImage: 'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Home-1-Slider-dog.png',
     heading1: 'Fresh Flavoured',
@@ -14,6 +15,7 @@ const SLIDES = [
     plateImage: 'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Home-1-Slider-Plate-1.png',
     discountBadge: 'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Home-1-Slider-Off-img.png',
     headingIcon: 'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Home-1-Slider-1-Heading-img.png',
+    buttonText: 'discover',
   },
   {
     petImage: 'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/05/Home-1-Slider-3-1.png',
@@ -24,19 +26,39 @@ const SLIDES = [
     plateImage: 'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Home-1-Slider-Plate-1.png',
     discountBadge: 'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Home-1-Slider-Off-img.png',
     headingIcon: 'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Home-1-Slider-1-Heading-img.png',
+    buttonText: 'discover',
   },
 ];
 
 export default function HeroBanner() {
+  const { settings } = useCart();
   const [currentSlide, setCurrentSlide] = useState(0);
-  const slide = SLIDES[currentSlide];
+
+  const slides = [
+    {
+      ...DEFAULT_SLIDES[0],
+      heading1: settings.heroSlide1Heading1 || DEFAULT_SLIDES[0].heading1,
+      heading2: settings.heroSlide1Heading2 || DEFAULT_SLIDES[0].heading2,
+      description: settings.heroSlide1Description || DEFAULT_SLIDES[0].description,
+      buttonText: settings.heroSlide1ButtonText || DEFAULT_SLIDES[0].buttonText,
+    },
+    {
+      ...DEFAULT_SLIDES[1],
+      heading1: settings.heroSlide2Heading1 || DEFAULT_SLIDES[1].heading1,
+      heading2: settings.heroSlide2Heading2 || DEFAULT_SLIDES[1].heading2,
+      description: settings.heroSlide2Description || DEFAULT_SLIDES[1].description,
+      buttonText: settings.heroSlide2ButtonText || DEFAULT_SLIDES[1].buttonText,
+    },
+  ];
+
+  const slide = slides[currentSlide];
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % SLIDES.length);
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + SLIDES.length) % SLIDES.length);
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
   return (
@@ -155,7 +177,7 @@ export default function HeroBanner() {
                 href="#products-section"
                 className="pettie-btn pettie-btn-primary text-sm shadow-lg shadow-[#FF6B35]/30 hover:scale-105 active:scale-95 transition-all"
               >
-                <span>discover</span>
+                <span>{slide.buttonText || 'discover'}</span>
               </a>
             </div>
           </div>
@@ -200,7 +222,7 @@ export default function HeroBanner() {
 
       {/* Slider Controls / Dots on Right Side */}
       <div className="absolute right-6 top-1/2 -translate-y-1/2 z-20 flex flex-col items-center gap-3 hidden sm:flex">
-        {SLIDES.map((_, i) => (
+        {slides.map((_, i) => (
           <button
             key={i}
             onClick={() => setCurrentSlide(i)}

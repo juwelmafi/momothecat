@@ -58,17 +58,14 @@ export async function getStoreSettings(): Promise<StoreSettings> {
         settings = await StoreSettingsModel.create(INITIAL_SETTINGS);
       }
       return {
-        storeMode: settings.storeMode,
-        affiliateTag: settings.affiliateTag,
-        freeShippingThreshold: settings.freeShippingThreshold,
-        announcementText: settings.announcementText,
-        announcementActive: settings.announcementActive,
+        ...INITIAL_SETTINGS,
+        ...(settings as any),
       };
     } catch (e) {
       console.error('Error fetching settings from DB:', e);
     }
   }
-  return mem.settings;
+  return { ...INITIAL_SETTINGS, ...mem.settings };
 }
 
 export async function updateStoreSettings(newSettings: Partial<StoreSettings>): Promise<StoreSettings> {
@@ -89,17 +86,14 @@ export async function updateStoreSettings(newSettings: Partial<StoreSettings>): 
         { new: true, upsert: true }
       ).lean();
       return {
-        storeMode: updated.storeMode,
-        affiliateTag: updated.affiliateTag,
-        freeShippingThreshold: updated.freeShippingThreshold,
-        announcementText: updated.announcementText,
-        announcementActive: updated.announcementActive,
+        ...INITIAL_SETTINGS,
+        ...(updated as any),
       };
     } catch (e) {
       console.error('Error updating settings in DB:', e);
     }
   }
-  mem.settings = { ...mem.settings, ...newSettings };
+  mem.settings = { ...INITIAL_SETTINGS, ...mem.settings, ...newSettings };
   return mem.settings;
 }
 

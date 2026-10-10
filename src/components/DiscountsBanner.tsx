@@ -2,8 +2,11 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useCart } from '@/context/CartContext';
 
 export default function DiscountsBanner() {
+  const { settings } = useCart();
+
   return (
     <section className="py-8 sm:py-12">
       <div className="pettie-container">
@@ -21,23 +24,24 @@ export default function DiscountsBanner() {
             
             {/* Left: 20% Offer Orange Circle Badge */}
             <div className="shrink-0 flex items-center gap-4">
-              <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-[#FF6B35] text-white flex flex-col items-center justify-center shadow-lg border-4 border-white rotate-[-6deg] hover:rotate-0 transition-transform">
-                <span className="font-display font-black text-2xl sm:text-3xl leading-none">20%</span>
-                <span className="font-display font-bold text-lg sm:text-xl leading-none mt-1">Offer</span>
+              <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-[#FF6B35] text-white flex flex-col items-center justify-center shadow-lg border-4 border-white rotate-[-6deg] hover:rotate-0 transition-transform text-center p-2">
+                <span className="font-display font-black text-xl sm:text-2xl leading-tight">
+                  {settings.discountsBadge || '20% Offer'}
+                </span>
               </div>
             </div>
 
             {/* Center: Heading and SHOP NOW button */}
             <div className="text-center space-y-4">
               <h2 className="font-display font-black text-3xl sm:text-5xl text-[#232121] tracking-tight">
-                Get Enticing Discounts
+                {settings.discountsHeading || 'Get Enticing Discounts'}
               </h2>
               <div>
                 <a
                   href="#products-section"
                   className="pettie-btn pettie-btn-primary shadow-lg shadow-[#FF6B35]/30 text-xs hover:scale-105 transition-transform"
                 >
-                  <span>SHOP NOW</span>
+                  <span>{settings.discountsButtonText || 'SHOP NOW'}</span>
                 </a>
               </div>
             </div>

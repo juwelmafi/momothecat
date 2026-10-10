@@ -82,9 +82,67 @@ export interface Lead {
 export type StoreMode = 'hybrid' | 'affiliate_only' | 'retail_only';
 
 export interface StoreSettings {
+  // Store Architecture Mode
   storeMode: StoreMode;
   affiliateTag: string;
   freeShippingThreshold: number;
+
+  // SEO Fields
+  metaTitle: string;
+  metaDescription: string;
+  metaKeywords: string;
+  websiteFavicon: string;
+
+  // Branding Fields
+  websiteLogo: string;
+  brandName: string;
+  brandTagline: string;
+
+  // Header & Announcement
   announcementText: string;
+  announcementCode: string;
   announcementActive: boolean;
+  contactPhone: string;
+  contactEmail: string;
+  contactAddress: string;
+
+  // Hero Section
+  heroSlide1Heading1: string;
+  heroSlide1Heading2: string;
+  heroSlide1Description: string;
+  heroSlide1Badge: string;
+  heroSlide1ButtonText: string;
+
+  heroSlide2Heading1: string;
+  heroSlide2Heading2: string;
+  heroSlide2Description: string;
+  heroSlide2Badge: string;
+  heroSlide2ButtonText: string;
+
+  // Products Section
+  productsHeading: string;
+  productsSubheading: string;
+
+  // Passion Section
+  passionHeading: string;
+  passionDescription: string;
+  passionButtonText: string;
+
+  // Deals Section
+  dealsHeading: string;
+  dealsDescription: string;
+  dealsButtonText: string;
+
+  // Discounts Flash Banner
+  discountsHeading: string;
+  discountsBadge: string;
+  discountsButtonText: string;
+
+  // Testimonials Section
+  testimonialsHeading: string;
+
+  // Footer & Newsletter
+  newsletterHeading: string;
+  newsletterDescription: string;
+  footerDescription: string;
 }

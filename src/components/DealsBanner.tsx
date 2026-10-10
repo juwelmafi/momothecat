@@ -2,8 +2,11 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useCart } from '@/context/CartContext';
 
 export default function DealsBanner() {
+  const { settings } = useCart();
+
   return (
     <section id="deals-section" className="py-12 sm:py-16 bg-[#F8F7F5] relative overflow-hidden border-y border-black/5">
       <div className="pettie-container">
@@ -29,12 +32,12 @@ export default function DealsBanner() {
                 \ | /
               </div>
               <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#232121] leading-tight">
-                Deals Ended Soon
+                {settings.dealsHeading || 'Deals Ended Soon'}
               </h2>
             </div>
 
             <p className="text-sm sm:text-base text-[#555555] max-w-md mx-auto lg:mx-0 leading-relaxed">
-              Don&apos;t miss out on today&apos;s flash discounts! Save up to 40% on top-rated Amazon Prime cat toys, orthopedic beds, and organic treats before timers expire.
+              {settings.dealsDescription || "Don't miss out on today's flash discounts! Save up to 40% on top-rated Amazon Prime cat toys, orthopedic beds, and organic treats before timers expire."}
             </p>
 
             <div className="pt-2">
@@ -42,7 +45,7 @@ export default function DealsBanner() {
                 href="#products-section"
                 className="pettie-btn pettie-btn-primary shadow-md shadow-[#FF6B35]/25 hover:scale-105 transition-all text-xs"
               >
-                <span>CLAIM AMAZON DEALS</span>
+                <span>{settings.dealsButtonText || 'CLAIM AMAZON DEALS'}</span>
               </a>
             </div>
           </div>

@@ -3,8 +3,10 @@
 import React from 'react';
 import Link from 'next/link';
 import { Phone, Mail } from 'lucide-react';
+import { useCart } from '@/context/CartContext';
 
 export default function PassionBanner() {
+  const { settings } = useCart();
   const perks = [
     { title: 'Amazon Prime 1-Day Delivery' },
     { title: '100% Non-Toxic & Vet-Approved' },
@@ -49,12 +51,12 @@ export default function PassionBanner() {
                 \ | /
               </div>
               <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#232121] leading-tight">
-                Our Passion Is Providing Premium Cat Products
+                {settings.passionHeading || 'Our Passion Is Providing Premium Cat Products'}
               </h2>
             </div>
 
             <p className="text-sm sm:text-base text-[#555555] leading-relaxed">
-              Every toy, food recipe, and scratching post on Momo - The Cat is hand-curated from top-tier Amazon Prime sellers and tested for durability, safety, and feline delight. We connect you directly with the best Amazon cat deals with zero hassle.
+              {settings.passionDescription || 'Every toy, food recipe, and scratching post on Momo - The Cat is hand-curated from top-tier Amazon Prime sellers and tested for durability, safety, and feline delight. We connect you directly with the best Amazon cat deals with zero hassle.'}
             </p>
 
             {/* 6 Perks Grid with Paw Bullet Icons */}
@@ -75,7 +77,7 @@ export default function PassionBanner() {
                 href="#products-section"
                 className="pettie-btn pettie-btn-primary text-xs shadow-md shadow-[#FF6B35]/25 hover:scale-105 transition-all"
               >
-                <span>EXPLORE AMAZON PICKS</span>
+                <span>{settings.passionButtonText || 'EXPLORE AMAZON PICKS'}</span>
               </a>
 
               {/* Call Us Box */}
@@ -86,10 +88,10 @@ export default function PassionBanner() {
                 <div>
                   <p className="text-[11px] font-normal text-[#666666]">Product Hotline</p>
                   <a
-                    href="tel:18002286666"
+                    href={`tel:${settings.contactPhone?.replace(/[^0-9+]/g, '') || '18002286666'}`}
                     className="font-bold text-xs sm:text-sm text-[#232121] hover:text-[#FF6B35] transition-colors"
                   >
-                    (+1) 800-CAT-MOMO
+                    {settings.contactPhone || '(+1) 800-CAT-MOMO'}
                   </a>
                 </div>
               </div>
@@ -102,10 +104,10 @@ export default function PassionBanner() {
                 <div>
                   <p className="text-[11px] font-normal text-[#666666]">Recommendations</p>
                   <a
-                    href="mailto:hello@momothecat.shop"
+                    href={`mailto:${settings.contactEmail || 'hello@momothecat.shop'}`}
                     className="font-bold text-xs sm:text-sm text-[#232121] hover:text-[#FF6B35] transition-colors"
                   >
-                    hello@momothecat.shop
+                    {settings.contactEmail || 'hello@momothecat.shop'}
                   </a>
                 </div>
               </div>

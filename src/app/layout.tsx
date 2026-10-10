@@ -21,26 +21,37 @@ const readexPro = Readex_Pro({
   variable: '--font-readex',
 });
 
-export const metadata: Metadata = {
-  title: 'Momo - The Cat | Amazon Affiliate Cat Store & Boutique',
-  description:
-    'Fresh Flavoured Cat Food & Toys. Discover top-rated Amazon Prime essentials and handcrafted Momo Originals.',
-  keywords: [
-    'cat toys',
-    'cat food',
-    'cat scratchers',
-    'cat beds',
-    'Pettie pet theme',
-    'Amazon affiliate cat products',
-    'Momo the cat',
-  ],
-  authors: [{ name: 'Momo - The Cat' }],
-  openGraph: {
-    title: 'Momo - The Cat | Pettie Cat Boutique',
-    description: 'Fresh Flavoured Cat Food & Royalty-Grade Feline Comfort.',
-    type: 'website',
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getStoreSettings();
+  const title = settings.metaTitle || 'Momo - The Cat | Amazon Affiliate Cat Store & Boutique';
+  const description =
+    settings.metaDescription ||
+    'Fresh Flavoured Cat Food & Toys. Discover top-rated Amazon Prime essentials and handcrafted Momo Originals.';
+  const keywords = settings.metaKeywords
+    ? settings.metaKeywords.split(',').map((k) => k.trim())
+    : ['cat toys', 'cat food', 'cat scratchers', 'cat beds', 'Momo the cat'];
+  const favicon =
+    settings.websiteFavicon ||
+    'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/cropped-favicon-32x32.png';
+
+  return {
+    title,
+    description,
+    keywords,
+    icons: {
+      icon: favicon,
+      shortcut: favicon,
+      apple: favicon,
+    },
+    authors: [{ name: settings.brandName || 'Momo - The Cat' }],
+    openGraph: {
+      title,
+      description,
+      type: 'website',
+      images: settings.websiteLogo ? [settings.websiteLogo] : undefined,
+    },
+  };
+}
 
 export default async function RootLayout({
   children,
@@ -52,7 +63,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${fredoka.variable} ${readexPro.variable} scroll-smooth`}>
       <body className="min-h-screen flex flex-col bg-white text-[#000000] antialiased selection:bg-[#FF6B35] selection:text-white">
-        <CartProvider initialStoreMode={settings.storeMode}>
+        <CartProvider initialStoreMode={settings.storeMode} initialSettings={settings}>
           <Header />
           <main className="flex-1 w-full">
             {children}

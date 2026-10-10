@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Star } from 'lucide-react';
+import { useCart } from '@/context/CartContext';
 
 const TESTIMONIALS = [
   {
@@ -25,6 +26,7 @@ const TESTIMONIALS = [
 ];
 
 export default function TestimonialsSection() {
+  const { settings } = useCart();
   const [current, setCurrent] = useState(0);
   const t = TESTIMONIALS[current];
 
@@ -38,7 +40,7 @@ export default function TestimonialsSection() {
             \ | /
           </div>
           <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#232121]">
-            Views Of Our Happy Customers
+            {settings.testimonialsHeading || 'Views Of Our Happy Customers'}
           </h2>
         </div>
 

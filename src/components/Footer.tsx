@@ -14,7 +14,7 @@ import {
 import { CATEGORIES } from '@/lib/initialData';
 
 export default function Footer() {
-  const { showToast } = useCart();
+  const { showToast, settings } = useCart();
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -76,17 +76,17 @@ export default function Footer() {
                 Stay Connected & Save
               </span>
               <h3 className="font-display font-bold text-2xl sm:text-4xl text-white">
-                Join our list and get 15% off your first purchase!
+                {settings.newsletterHeading || 'Join our list and get 15% off your first purchase!'}
               </h3>
               <p className="text-xs sm:text-sm text-slate-400 max-w-lg leading-relaxed">
-                Plus weekly alerts for Amazon Prime cat deals, flash sales & exclusive handcrafted drops.
+                {settings.newsletterDescription || 'Plus weekly alerts for Amazon Prime cat deals, flash sales & exclusive handcrafted drops.'}
               </p>
 
               {subscribed ? (
                 <div className="bg-[#FFC312] text-[#232121] p-3.5 rounded-2xl flex items-center justify-center lg:justify-start gap-3 shadow-md max-w-md">
                   <CheckCircle2 className="w-5 h-5 text-[#232121] shrink-0" />
                   <p className="text-xs font-bold uppercase tracking-wider">
-                    You&apos;re In! Use coupon code: <strong className="text-sm font-black">MOMO15</strong>
+                    You&apos;re In! Use coupon code: <strong className="text-sm font-black">{settings.announcementCode || 'MOMO15'}</strong>
                   </p>
                 </div>
               ) : (
@@ -122,35 +122,44 @@ export default function Footer() {
           {/* Col 1: Brand & Contact (4 cols) */}
           <div className="lg:col-span-4 space-y-4">
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-[#FFC312] flex items-center justify-center text-xl">
-                🐱
-              </div>
+              {settings.websiteLogo ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={settings.websiteLogo}
+                  alt={settings.brandName || 'Logo'}
+                  className="h-10 w-auto object-contain max-w-[120px]"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-[#FFC312] flex items-center justify-center text-xl">
+                  🐱
+                </div>
+              )}
               <div className="flex items-center gap-1">
-                <span className="font-display font-bold text-2xl text-white">Momo</span>
+                <span className="font-display font-bold text-2xl text-white">{settings.brandName || 'Momo'}</span>
                 <span className="w-2.5 h-2.5 rounded-full bg-[#FF6B35] inline-block mb-1" />
               </div>
             </Link>
 
             <p className="text-xs text-slate-400 leading-relaxed max-w-sm">
-              Premium Amazon affiliate cat products and hybrid boutique. Curating top-rated Amazon Prime essentials and feline favorites.
+              {settings.footerDescription || 'Premium Amazon affiliate cat products and hybrid boutique. Curating top-rated Amazon Prime essentials and feline favorites.'}
             </p>
 
             <div className="space-y-2 text-xs text-slate-300 font-medium pt-2">
               <div className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-[#FFC312]" />
-                <a href="tel:18002286666" className="hover:text-white transition-colors">
-                  (+1) 800-CAT-MOMO
+                <a href={`tel:${settings.contactPhone?.replace(/[^0-9+]/g, '') || '18002286666'}`} className="hover:text-white transition-colors">
+                  {settings.contactPhone || '(+1) 800-CAT-MOMO'}
                 </a>
               </div>
               <div className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-[#FFC312]" />
-                <a href="mailto:hello@momothecat.shop" className="hover:text-white transition-colors">
-                  hello@momothecat.shop
+                <a href={`mailto:${settings.contactEmail || 'hello@momothecat.shop'}`} className="hover:text-white transition-colors">
+                  {settings.contactEmail || 'hello@momothecat.shop'}
                 </a>
               </div>
               <div className="flex items-center gap-2.5">
                 <MapPin className="w-4 h-4 text-[#FFC312]" />
-                <span>momothecat.shop · San Francisco, CA</span>
+                <span>{settings.contactAddress || 'momothecat.shop · San Francisco, CA'}</span>
               </div>
             </div>
           </div>

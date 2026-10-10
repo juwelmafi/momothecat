@@ -338,8 +338,75 @@ export const INITIAL_SETTINGS: StoreSettings = {
   storeMode: 'hybrid',
   affiliateTag: 'momothecat-20',
   freeShippingThreshold: 45,
-  announcementText: '🐾 Free Standard Shipping on all Momo Originals over $45! Use code MOMO10 for 10% off',
+
+  // SEO Fields
+  metaTitle: 'Momo - The Cat | Amazon Affiliate Cat Store & Boutique',
+  metaDescription:
+    'Fresh Flavoured Cat Food & Toys. Discover top-rated Amazon Prime essentials and handcrafted Momo Originals.',
+  metaKeywords:
+    'cat toys, cat food, cat scratchers, cat beds, Pettie pet theme, Amazon affiliate cat products, Momo the cat',
+  websiteFavicon:
+    'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/cropped-favicon-32x32.png',
+
+  // Branding Fields
+  websiteLogo:
+    'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Pty-Amount-Logo-1.png',
+  brandName: 'Momo',
+  brandTagline: 'Amazon Cat Boutique',
+
+  // Header & Announcement
+  announcementText: 'Get 15% Off When You Spend $50+ W. Code: MOMO15',
+  announcementCode: 'MOMO15',
   announcementActive: true,
+  contactPhone: '(+1) 800-CAT-MOMO',
+  contactEmail: 'hello@momothecat.shop',
+  contactAddress: 'momothecat.shop · San Francisco, CA',
+
+  // Hero Section
+  heroSlide1Heading1: 'Fresh Flavoured',
+  heroSlide1Heading2: 'Dog & Cat Food',
+  heroSlide1Description:
+    'Nutritious organic meals crafted specifically for feline and canine longevity, shiny coats, and vitality.',
+  heroSlide1Badge: 'GET 20% OFF',
+  heroSlide1ButtonText: 'ORDER NOW',
+
+  heroSlide2Heading1: 'Nutrition Rich',
+  heroSlide2Heading2: 'Pure Cat Treats',
+  heroSlide2Description:
+    'Pure freeze-dried chicken, salmon fillets and organic catnip treats that your feline will leap across the room for.',
+  heroSlide2Badge: 'GET 20% OFF',
+  heroSlide2ButtonText: 'SHOP NOW',
+
+  // Products Section
+  productsHeading: 'Organic & Top-Rated Products',
+  productsSubheading: 'Select category to discover prime essentials and handcrafted comfort',
+
+  // Passion Section
+  passionHeading: 'Our Passion Is Providing Premium Cat Products',
+  passionDescription:
+    'Every toy, food recipe, and scratching post on Momo - The Cat is hand-curated from top-tier Amazon Prime sellers and tested for durability, safety, and feline delight. We connect you directly with the best Amazon cat deals with zero hassle.',
+  passionButtonText: 'EXPLORE AMAZON PICKS',
+
+  // Deals Section
+  dealsHeading: 'Deals Ended Soon',
+  dealsDescription:
+    "Don't miss out on today's flash discounts! Save up to 40% on top-rated Amazon Prime cat toys, orthopedic beds, and organic treats before timers expire.",
+  dealsButtonText: 'CLAIM AMAZON DEALS',
+
+  // Discounts Flash Banner
+  discountsHeading: 'Get Enticing Discounts',
+  discountsBadge: '20% Offer',
+  discountsButtonText: 'SHOP NOW',
+
+  // Testimonials Section
+  testimonialsHeading: 'Views Of Our Happy Customers',
+
+  // Footer & Newsletter
+  newsletterHeading: 'Get 15% Off Your Next Amazon Cat Haul',
+  newsletterDescription:
+    'Sign up for secret Amazon lightning deals, cat care guides, and exclusive discount codes.',
+  footerDescription:
+    'Premium Amazon affiliate cat products and hybrid boutique. Curating top-rated Amazon Prime essentials and feline favorites.',
 };
 
 export const CATEGORIES = [

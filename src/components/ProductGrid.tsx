@@ -43,7 +43,7 @@ export default function ProductGrid({
   activeFilter = 'all',
   storeMode,
 }: ProductGridProps) {
-  const { storeMode: contextMode } = useCart();
+  const { storeMode: contextMode, settings } = useCart();
   const currentMode = storeMode || contextMode || 'hybrid';
 
   const [selectedCategory, setSelectedCategory] = useState(
@@ -116,10 +116,10 @@ export default function ProductGrid({
               \ | /
             </div>
             <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#232121]">
-              Organic & Top-Rated Products
+              {settings.productsHeading || 'Organic & Top-Rated Products'}
             </h2>
             <p className="text-xs sm:text-sm text-[#666666] max-w-md mx-auto">
-              Select category to discover prime essentials and handcrafted comfort
+              {settings.productsSubheading || 'Select category to discover prime essentials and handcrafted comfort'}
             </p>
           </div>
 

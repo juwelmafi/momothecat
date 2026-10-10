@@ -1,7 +1,8 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { RealProduct, MergedProduct, StoreMode } from '@/lib/types';
+import { RealProduct, MergedProduct, StoreMode, StoreSettings } from '@/lib/types';
+import { INITIAL_SETTINGS } from '@/lib/initialData';
 
 export interface CartItem {
   product: RealProduct;
@@ -36,9 +37,11 @@ interface CartContextType {
   // Toast notifications
   toastMessage: string | null;
   showToast: (msg: string) => void;
-  // Storefront Architecture Mode
+  // Storefront Architecture Mode & Full Content Settings
   storeMode: StoreMode;
   setStoreMode: (mode: StoreMode) => void;
+  settings: StoreSettings;
+  setSettings: (s: StoreSettings) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -46,9 +49,11 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({
   children,
   initialStoreMode = 'hybrid',
+  initialSettings = INITIAL_SETTINGS,
 }: {
   children: React.ReactNode;
   initialStoreMode?: StoreMode;
+  initialSettings?: StoreSettings;
 }) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -57,15 +62,19 @@ export function CartProvider({
   const [discountPercent, setDiscountPercent] = useState(0);
   const [quickViewProduct, setQuickViewProduct] = useState<MergedProduct | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [storeMode, setStoreMode] = useState<StoreMode>(initialStoreMode);
+  const [settings, setSettings] = useState<StoreSettings>(initialSettings);
+  const [storeMode, setStoreMode] = useState<StoreMode>(initialSettings?.storeMode || initialStoreMode);
 
-  // Sync mode and load from localStorage on mount
+  // Sync settings & mode on mount
   useEffect(() => {
     fetch('/api/settings')
       .then((res) => res.json())
       .then((data) => {
-        if (data.success && data.settings?.storeMode) {
-          setStoreMode(data.settings.storeMode);
+        if (data.success && data.settings) {
+          setSettings(data.settings);
+          if (data.settings.storeMode) {
+            setStoreMode(data.settings.storeMode);
+          }
         }
       })
       .catch(() => {});
@@ -233,6 +242,8 @@ export function CartProvider({
         showToast,
         storeMode,
         setStoreMode,
+        settings,
+        setSettings,
       }}
     >
       {children}
