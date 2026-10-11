@@ -36,8 +36,8 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div className="product-wrapper group relative flex flex-col justify-between h-full">
-      {/* 1. PRODUCT THUMB CONTAINER (Pettie exact border-radius: 20px, white/soft bg, border) */}
-      <div className="product-thumb relative w-full aspect-square rounded-2xl sm:rounded-[20px] overflow-hidden bg-[#FBF9F7] group-hover:bg-[#FFF9DE]/60 transition-colors duration-300 border border-[#EAEAEA] flex items-center justify-center p-2.5 sm:p-5 lg:p-6 shadow-2xs">
+      {/* 1. PRODUCT THUMB CONTAINER (Pettie exact border-radius: 20px, full-bleed image box) */}
+      <div className="product-thumb relative w-full aspect-square rounded-2xl sm:rounded-[20px] overflow-hidden bg-[#FBF9F7] border border-[#EAEAEA] shadow-2xs">
         {/* Top-Left Discount or Brand Badge */}
         <div className="absolute top-2 left-2 sm:top-3.5 sm:left-3.5 z-10">
           {discountPercent ? (
@@ -67,21 +67,21 @@ export default function ProductCard({ product }: ProductCardProps) {
           className={`absolute top-2 right-2 sm:top-3.5 sm:right-3.5 z-10 w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-all ${
             wishlisted
               ? 'bg-[#FF6B35] text-white shadow-md'
-              : 'bg-white/80 sm:bg-transparent text-[#232121]/70 hover:text-[#FF6B35] hover:scale-110 shadow-xs sm:shadow-none'
+              : 'bg-white/90 backdrop-blur-xs text-[#232121]/75 hover:text-[#FF6B35] hover:scale-110 shadow-xs'
           }`}
           aria-label="Wishlist"
         >
           <Heart className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${wishlisted ? 'fill-current' : 'stroke-[1.5]'}`} />
         </button>
 
-        {/* Product Image */}
+        {/* Product Image - Full Width & Height Fill */}
         {isReal ? (
-          <Link href={`/product/${product._id}`} className="block w-full h-full flex items-center justify-center">
+          <Link href={`/product/${product._id}`} className="block w-full h-full">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={displayImage}
               alt={product.name}
-              className="w-full h-full object-contain group-hover:scale-108 transition-transform duration-500"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               loading="lazy"
             />
           </Link>
@@ -90,13 +90,13 @@ export default function ProductCard({ product }: ProductCardProps) {
             href={affProd?.affiliateLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="block w-full h-full flex items-center justify-center"
+            className="block w-full h-full"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={displayImage}
               alt={product.name}
-              className="w-full h-full object-contain group-hover:scale-108 transition-transform duration-500"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               loading="lazy"
             />
           </a>

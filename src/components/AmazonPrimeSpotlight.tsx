@@ -94,10 +94,10 @@ export default function AmazonPrimeSpotlight() {
               className="group bg-white rounded-2xl sm:rounded-[24px] p-2.5 sm:p-5 border border-slate-200/80 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-full"
             >
               <div>
-                {/* Image Box */}
-                <div className="relative w-full aspect-square rounded-xl sm:rounded-[20px] overflow-hidden bg-[#FBF9F7] mb-2 sm:mb-4 p-2 sm:p-4 flex items-center justify-center border border-slate-100">
+                {/* Image Box - Full Width & Height Fill */}
+                <div className="relative w-full aspect-square rounded-xl sm:rounded-[20px] overflow-hidden bg-[#FBF9F7] mb-2 sm:mb-4 border border-slate-100">
                   {/* Badge */}
-                  <span className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-[#E64A19] text-white text-[8px] sm:text-[10px] font-bold uppercase tracking-wider px-2 sm:px-2.5 py-0.5 rounded-full shadow-xs">
+                  <span className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-[#E64A19] text-white text-[8px] sm:text-[10px] font-bold uppercase tracking-wider px-2 sm:px-2.5 py-0.5 rounded-full shadow-xs z-10">
                     {item.discount}
                   </span>
 
@@ -105,7 +105,7 @@ export default function AmazonPrimeSpotlight() {
                   <img
                     src={item.image}
                     alt={item.title}
-                    className="w-full h-full object-contain group-hover:scale-108 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
 
