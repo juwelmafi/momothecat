@@ -87,17 +87,17 @@ export default function AmazonPrimeSpotlight() {
         </div>
 
         {/* 4 Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 sm:gap-7">
           {SPOTLIGHT_ITEMS.map((item, i) => (
             <div
               key={i}
-              className="group bg-white rounded-[24px] p-5 border border-slate-200/80 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+              className="group bg-white rounded-2xl sm:rounded-[24px] p-2.5 sm:p-5 border border-slate-200/80 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-full"
             >
               <div>
                 {/* Image Box */}
-                <div className="relative w-full aspect-square rounded-[20px] overflow-hidden bg-[#FBF9F7] mb-4 p-4 flex items-center justify-center border border-slate-100">
+                <div className="relative w-full aspect-square rounded-xl sm:rounded-[20px] overflow-hidden bg-[#FBF9F7] mb-2 sm:mb-4 p-2 sm:p-4 flex items-center justify-center border border-slate-100">
                   {/* Badge */}
-                  <span className="absolute top-3 left-3 bg-[#E64A19] text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-xs">
+                  <span className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-[#E64A19] text-white text-[8px] sm:text-[10px] font-bold uppercase tracking-wider px-2 sm:px-2.5 py-0.5 rounded-full shadow-xs">
                     {item.discount}
                   </span>
 
@@ -110,47 +110,47 @@ export default function AmazonPrimeSpotlight() {
                 </div>
 
                 {/* Rating */}
-                <div className="flex items-center gap-1 text-[11px] font-bold text-[#FFC312] mb-1.5">
-                  <Star className="w-3.5 h-3.5 fill-[#FFC312]" />
+                <div className="flex items-center gap-1 text-[9px] sm:text-[11px] font-bold text-[#FFC312] mb-1 sm:mb-1.5">
+                  <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-[#FFC312]" />
                   <span className="text-[#232121]">{item.rating}</span>
-                  <span className="text-slate-400 font-normal">({item.reviews} reviews)</span>
+                  <span className="text-slate-400 font-normal hidden sm:inline">({item.reviews})</span>
                 </div>
 
                 {/* Title */}
-                <h3 className="font-display font-bold text-base text-[#232121] group-hover:text-[#FF6B35] transition-colors line-clamp-2 leading-snug">
+                <h3 className="font-display font-bold text-xs sm:text-base text-[#232121] group-hover:text-[#FF6B35] transition-colors line-clamp-2 leading-tight sm:leading-snug min-h-[28px] sm:min-h-[40px]">
                   {item.title}
                 </h3>
 
                 {/* Price */}
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-xs text-slate-400 line-through">
+                <div className="flex items-center gap-1.5 sm:gap-2 mt-1 sm:mt-2">
+                  <span className="text-[10px] sm:text-xs text-slate-400 line-through">
                     ${item.originalPrice.toFixed(2)}
                   </span>
-                  <span className="font-display font-bold text-lg text-[#232121]">
+                  <span className="font-display font-bold text-xs sm:text-lg text-[#232121]">
                     ${item.price.toFixed(2)}
                   </span>
-                  <span className="text-[10px] font-bold text-[#2FA5FB] bg-[#D2EDF8] px-2 py-0.5 rounded-full ml-auto">
+                  <span className="text-[8px] sm:text-[10px] font-bold text-[#2FA5FB] bg-[#D2EDF8] px-1.5 sm:px-2 py-0.5 rounded-full ml-auto">
                     Prime
                   </span>
                 </div>
 
                 {/* Perk */}
-                <p className="text-[11px] text-[#555555] flex items-center gap-1 mt-2">
-                  <Check className="w-3 h-3 text-[#FF6B35]" />
-                  <span>{item.perk}</span>
+                <p className="text-[9px] sm:text-[11px] text-[#555555] flex items-center gap-1 mt-1 sm:mt-2 line-clamp-1">
+                  <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#FF6B35] shrink-0" />
+                  <span className="truncate">{item.perk}</span>
                 </p>
               </div>
 
               {/* Action Button */}
-              <div className="pt-4">
+              <div className="pt-2 sm:pt-4">
                 <a
                   href={item.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="pettie-btn pettie-btn-primary w-full py-2.5 text-xs shadow-xs flex items-center justify-center gap-1.5"
+                  className="pettie-btn pettie-btn-primary w-full py-1.5 sm:py-2.5 text-[10px] sm:text-xs px-1 sm:px-4 shadow-xs flex items-center justify-center gap-1"
                 >
                   <span>View on Amazon</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
+                  <ExternalLink className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 </a>
               </div>
             </div>

@@ -330,15 +330,15 @@ export default function ViralCatFavorites() {
         </div>
 
         {/* 4 Cards Grid with Rich Product Details & Amazon Affiliate Direct Link */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 sm:gap-7">
           {items.map((item) => (
             <div
               key={item.id}
-              className="group bg-[#FBF9F7] hover:bg-white rounded-[24px] p-5 border border-slate-200/80 hover:border-[#FF6B35]/40 hover:shadow-xl transition-all duration-300 flex flex-col justify-between"
+              className="group bg-[#FBF9F7] hover:bg-white rounded-2xl sm:rounded-[24px] p-2.5 sm:p-5 border border-slate-200/80 hover:border-[#FF6B35]/40 hover:shadow-xl transition-all duration-300 flex flex-col justify-between h-full"
             >
               <div>
                 {/* Image Container with 20px radius */}
-                <div className="relative w-full aspect-square rounded-[20px] overflow-hidden bg-white mb-4 border border-slate-100 flex items-center justify-center">
+                <div className="relative w-full aspect-square rounded-xl sm:rounded-[20px] overflow-hidden bg-white mb-2 sm:mb-4 border border-slate-100 flex items-center justify-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={item.image}
@@ -347,68 +347,68 @@ export default function ViralCatFavorites() {
                   />
 
                   {/* Discount Badge */}
-                  <span className="absolute top-3 left-3 bg-[#FF6B35] text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-xs">
+                  <span className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-[#FF6B35] text-white text-[8px] sm:text-[10px] font-bold uppercase tracking-wider px-2 sm:px-2.5 py-0.5 rounded-full shadow-xs">
                     {item.discount}
                   </span>
 
                   {/* Badge */}
-                  <span className="absolute top-3 right-3 bg-white/90 backdrop-blur-xs text-[#232121] text-[10px] font-bold px-2 py-0.5 rounded-full border border-black/5 shadow-2xs">
+                  <span className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-white/90 backdrop-blur-xs text-[#232121] text-[7px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 rounded-full border border-black/5 shadow-2xs truncate max-w-[70px] sm:max-w-none">
                     {item.badge}
                   </span>
                 </div>
 
                 {/* Rating & Category */}
-                <div className="flex items-center justify-between text-xs mb-1.5">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#FF6B35]">
+                <div className="flex items-center justify-between text-xs mb-1 sm:mb-1.5">
+                  <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#FF6B35] truncate max-w-[80px] sm:max-w-none">
                     {item.category}
                   </span>
-                  <div className="flex items-center gap-1 font-bold text-[11px] text-[#232121]">
-                    <Star className="w-3.5 h-3.5 fill-[#FFC312] text-[#FFC312]" />
+                  <div className="flex items-center gap-1 font-bold text-[9px] sm:text-[11px] text-[#232121]">
+                    <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-[#FFC312] text-[#FFC312]" />
                     <span>{item.rating}</span>
-                    <span className="text-slate-400 font-normal">({item.reviews})</span>
+                    <span className="text-slate-400 font-normal hidden sm:inline">({item.reviews})</span>
                   </div>
                 </div>
 
                 {/* Product Name */}
-                <h3 className="font-display font-bold text-base text-[#232121] group-hover:text-[#FF6B35] transition-colors line-clamp-2 leading-snug">
+                <h3 className="font-display font-bold text-xs sm:text-base text-[#232121] group-hover:text-[#FF6B35] transition-colors line-clamp-2 leading-tight sm:leading-snug min-h-[28px] sm:min-h-[40px]">
                   {item.name}
                 </h3>
 
                 {/* Pricing */}
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-xs text-slate-400 line-through">
+                <div className="flex items-center gap-1.5 sm:gap-2 mt-1 sm:mt-2">
+                  <span className="text-[10px] sm:text-xs text-slate-400 line-through">
                     ${item.originalPrice.toFixed(2)}
                   </span>
-                  <span className="font-display font-bold text-lg text-[#232121]">
+                  <span className="font-display font-bold text-xs sm:text-lg text-[#232121]">
                     ${item.price.toFixed(2)}
                   </span>
-                  <span className="text-[10px] font-bold text-[#2FA5FB] bg-[#D2EDF8] px-2 py-0.5 rounded-full ml-auto">
+                  <span className="text-[8px] sm:text-[10px] font-bold text-[#2FA5FB] bg-[#D2EDF8] px-1.5 sm:px-2 py-0.5 rounded-full ml-auto">
                     Prime
                   </span>
                 </div>
 
                 {/* Feature highlight */}
-                <div className="mt-3 flex items-center gap-1.5 text-[11px] text-[#232121] font-semibold">
+                <div className="mt-2 sm:mt-3 hidden sm:flex items-center gap-1.5 text-[11px] text-[#232121] font-semibold">
                   <CheckCircle2 className="w-3.5 h-3.5 text-[#FF6B35] shrink-0" />
                   <span>{item.highlight}</span>
                 </div>
 
                 {/* Real Verified Buyer Quote */}
-                <p className="mt-2 text-[11px] text-[#666666] italic bg-white group-hover:bg-[#FFF9DE]/60 p-2.5 rounded-xl border border-slate-100 transition-colors line-clamp-2">
+                <p className="mt-2 text-[11px] text-[#666666] italic bg-white group-hover:bg-[#FFF9DE]/60 p-2.5 rounded-xl border border-slate-100 transition-colors line-clamp-2 hidden sm:block">
                   {item.quote}
                 </p>
               </div>
 
               {/* Action Button: Amazon Outbound Affiliate */}
-              <div className="pt-4">
+              <div className="pt-2 sm:pt-4">
                 <a
                   href={item.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="pettie-btn pettie-btn-primary w-full py-2.5 text-xs shadow-xs flex items-center justify-center gap-1.5 hover:scale-102 transition-transform"
+                  className="pettie-btn pettie-btn-primary w-full py-1.5 sm:py-2.5 text-[10px] sm:text-xs px-1 sm:px-4 shadow-xs flex items-center justify-center gap-1 hover:scale-102 transition-transform"
                 >
                   <span>Buy on Amazon</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
+                  <ExternalLink className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 </a>
               </div>
             </div>
