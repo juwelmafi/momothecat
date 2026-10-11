@@ -103,6 +103,7 @@ export async function getMergedProducts(options?: {
   type?: 'all' | 'affiliate' | 'real';
   featuredOnly?: boolean;
   ignoreStoreMode?: boolean;
+  country?: string;
 }): Promise<MergedProduct[]> {
   const db = await connectToDatabase();
   let affiliateList: AffiliateProduct[] = [];
@@ -131,6 +132,9 @@ export async function getMergedProducts(options?: {
         category: doc.category,
         imageUrl: doc.imageUrl,
         affiliateLink: doc.affiliateLink,
+        darazLink: doc.darazLink || '',
+        platform: doc.platform || 'amazon',
+        targetRegion: doc.targetRegion || 'all',
         rating: doc.rating,
         reviewCount: doc.reviewCount,
         badge: doc.badge,
@@ -214,6 +218,21 @@ export async function getMergedProducts(options?: {
     merged = merged.filter((p) => p.isFeatured);
   }
 
+  // Filter by country / targetRegion
+  if (options?.country) {
+    const isBD = options.country.toUpperCase() === 'BD';
+    merged = merged.filter((p) => {
+      if (p.type !== 'affiliate') return true;
+      const aff = p as AffiliateProduct;
+      const region = aff.targetRegion || 'all';
+      if (isBD) {
+        return region !== 'global_only';
+      } else {
+        return region !== 'bd_only';
+      }
+    });
+  }
+
   return merged;
 }
 
@@ -255,6 +274,9 @@ export async function getProductById(id: string): Promise<MergedProduct | null> 
             category: aff.category,
             imageUrl: aff.imageUrl,
             affiliateLink: aff.affiliateLink,
+            darazLink: aff.darazLink || '',
+            platform: aff.platform || 'amazon',
+            targetRegion: aff.targetRegion || 'all',
             rating: aff.rating || 4.8,
             reviewCount: aff.reviewCount || 100,
             badge: aff.badge,
@@ -293,6 +315,9 @@ export async function createAffiliateProduct(
         category: doc.category,
         imageUrl: doc.imageUrl,
         affiliateLink: doc.affiliateLink,
+        darazLink: doc.darazLink || '',
+        platform: doc.platform || 'amazon',
+        targetRegion: doc.targetRegion || 'all',
         rating: doc.rating || 4.8,
         reviewCount: doc.reviewCount || 0,
         badge: doc.badge,
@@ -367,6 +392,9 @@ export interface UpdateProductData {
   isFeatured?: boolean;
   imageUrl?: string;
   affiliateLink?: string;
+  darazLink?: string;
+  platform?: 'amazon' | 'daraz' | 'both';
+  targetRegion?: 'all' | 'bd_only' | 'global_only';
   images?: string[] | string;
   stockQuantity?: number;
   sku?: string;
@@ -391,6 +419,9 @@ export async function updateProduct(
         if (data.category !== undefined) updateData.category = data.category;
         if (data.imageUrl !== undefined) updateData.imageUrl = data.imageUrl;
         if (data.affiliateLink !== undefined) updateData.affiliateLink = data.affiliateLink;
+        if (data.darazLink !== undefined) updateData.darazLink = data.darazLink;
+        if (data.platform !== undefined) updateData.platform = data.platform;
+        if (data.targetRegion !== undefined) updateData.targetRegion = data.targetRegion;
         if (data.badge !== undefined) updateData.badge = data.badge;
         if (data.description !== undefined) updateData.description = data.description;
         if (data.isFeatured !== undefined) updateData.isFeatured = Boolean(data.isFeatured);
@@ -410,6 +441,9 @@ export async function updateProduct(
             category: updated.category,
             imageUrl: updated.imageUrl,
             affiliateLink: updated.affiliateLink,
+            darazLink: updated.darazLink || '',
+            platform: updated.platform || 'amazon',
+            targetRegion: updated.targetRegion || 'all',
             rating: updated.rating || 4.8,
             reviewCount: updated.reviewCount || 0,
             badge: updated.badge,
@@ -494,6 +528,9 @@ export async function updateProduct(
         category: data.category !== undefined ? data.category : existing.category,
         imageUrl: data.imageUrl !== undefined ? data.imageUrl : existing.imageUrl,
         affiliateLink: data.affiliateLink !== undefined ? data.affiliateLink : existing.affiliateLink,
+        darazLink: data.darazLink !== undefined ? data.darazLink : existing.darazLink,
+        platform: data.platform !== undefined ? data.platform : existing.platform,
+        targetRegion: data.targetRegion !== undefined ? data.targetRegion : existing.targetRegion,
         badge: data.badge !== undefined ? data.badge : existing.badge,
         description: data.description !== undefined ? data.description : existing.description,
         isFeatured: data.isFeatured !== undefined ? Boolean(data.isFeatured) : existing.isFeatured,

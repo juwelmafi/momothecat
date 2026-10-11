@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { MergedProduct, StoreMode } from '@/lib/types';
+import { MergedProduct, StoreMode, AffiliateProduct } from '@/lib/types';
 import { useCart } from '@/context/CartContext';
 import ProductCard from './ProductCard';
 import CategoryShowcase from './CategoryShowcase';
@@ -49,7 +49,7 @@ export default function ProductGrid({
   activeFilter = 'all',
   storeMode,
 }: ProductGridProps) {
-  const { storeMode: contextMode, settings } = useCart();
+  const { storeMode: contextMode, settings, isBD } = useCart();
   const currentMode = storeMode || contextMode || 'hybrid';
 
   const [selectedCategory, setSelectedCategory] = useState(
@@ -67,6 +67,14 @@ export default function ProductGrid({
       // Respect storefront mode
       if (currentMode === 'affiliate_only' && product.type !== 'affiliate') return false;
       if (currentMode === 'retail_only' && product.type !== 'real') return false;
+
+      // Geo-targeting filter for Bangladesh vs Global
+      if (product.type === 'affiliate') {
+        const aff = product as AffiliateProduct;
+        const region = aff.targetRegion || 'all';
+        if (isBD && region === 'global_only') return false;
+        if (!isBD && region === 'bd_only') return false;
+      }
 
       if (selectedType === 'affiliate' && product.type !== 'affiliate') return false;
       if (selectedType === 'real' && product.type !== 'real') return false;
@@ -96,7 +104,7 @@ export default function ProductGrid({
       if (!a.isFeatured && b.isFeatured) return 1;
       return 0;
     });
-  }, [initialProducts, currentMode, selectedCategory, selectedType, sortBy, currentSearch]);
+  }, [initialProducts, currentMode, isBD, selectedCategory, selectedType, sortBy, currentSearch]);
 
   return (
     <div className="w-full">
@@ -188,18 +196,20 @@ export default function ProductGrid({
                 All Items ({initialProducts.length})
               </button>
 
-              {/* Amazon Picks: Hidden in Real Product Mode */}
+              {/* Affiliate Picks: Hidden in Real Product Mode */}
               {currentMode !== 'retail_only' && (
                 <button
                   onClick={() => setSelectedType('affiliate')}
                   className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
                     selectedType === 'affiliate'
-                      ? 'bg-[#FF6B35] text-white shadow-xs'
+                      ? isBD
+                        ? 'bg-[#F85606] text-white shadow-xs'
+                        : 'bg-[#FF6B35] text-white shadow-xs'
                       : 'bg-white text-[#232121] hover:bg-slate-100 border border-slate-200'
                   }`}
                 >
                   <Flame className="w-3.5 h-3.5 fill-[#FFC312] text-[#FFC312]" />
-                  <span>Amazon Picks</span>
+                  <span>{isBD ? 'Daraz Picks' : 'Amazon Picks'}</span>
                 </button>
               )}
 

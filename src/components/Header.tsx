@@ -26,7 +26,7 @@ export default function Header() {
     return null;
   }
 
-  const { storeMode, itemCount, subtotal, setIsCartOpen, wishlist, settings } = useCart();
+  const { storeMode, itemCount, subtotal, setIsCartOpen, wishlist, settings, isBD, setUserCountry } = useCart();
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -87,12 +87,12 @@ export default function Header() {
       } ${isScrolled ? 'shadow-lg' : ''}`}
     >
       {/* 1. TOP ANNOUNCEMENT BAR (Pettie Gold #F2D70A) */}
-      <div className="text-[#232121] text-xs font-semibold py-2.5 px-4 sm:px-8 border-b border-[#e2c700]/70">
-        <div className="pettie-container flex items-center justify-center sm:justify-between gap-2">
+      <div className="text-[#232121] text-xs font-semibold py-2 px-4 sm:px-8 border-b border-[#e2c700]/70">
+        <div className="pettie-container flex items-center justify-between gap-2">
           {/* Promo code announcement */}
-          <div className="flex items-center gap-2 text-center md:text-left text-[#232121] mx-auto sm:mx-0">
+          <div className="flex items-center gap-2 text-center md:text-left text-[#232121] truncate">
             <Sparkles className="w-3.5 h-3.5 shrink-0 text-[#232121]" />
-            <span className="tracking-wide text-xs font-bold">
+            <span className="tracking-wide text-[11px] sm:text-xs font-bold truncate">
               {settings?.announcementText || 'Get 15% Off When You Spend $50+ W. Code:'}{' '}
               {settings?.announcementCode && (
                 <strong className="underline underline-offset-2 decoration-[#232121]">
@@ -100,6 +100,20 @@ export default function Header() {
                 </strong>
               )}
             </span>
+          </div>
+
+          {/* Region Switcher: Bangladesh (Daraz) vs Global (Amazon) */}
+          <div className="flex items-center gap-1.5 shrink-0">
+            <button
+              onClick={() => setUserCountry(isBD ? 'US' : 'BD')}
+              className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/10 hover:bg-black/20 text-[#232121] text-[10px] sm:text-xs font-bold transition-all shadow-2xs"
+              title="Click to toggle between Bangladesh (Daraz) and Global (Amazon)"
+            >
+              <span>{isBD ? '🇧🇩 BD (Daraz)' : '🌐 Global (Amazon)'}</span>
+              <span className="text-[9px] bg-[#232121] text-white px-1.5 py-0.2 rounded-full font-mono uppercase">
+                Switch
+              </span>
+            </button>
           </div>
         </div>
       </div>
@@ -149,7 +163,7 @@ export default function Header() {
                 className="hover:text-[#FF6B35] transition-colors py-1 flex items-center gap-1"
               >
                 <Flame className="w-3.5 h-3.5 fill-[#FF6B35] text-[#FF6B35]" />
-                <span>Amazon Picks</span>
+                <span>{isBD ? 'Daraz Picks' : 'Amazon Picks'}</span>
               </Link>
             ) : (
               <Link
@@ -303,7 +317,7 @@ export default function Header() {
               >
                 <div className="flex items-center gap-2">
                   <Flame className="w-4 h-4 fill-[#FF6B35]" />
-                  <span>Amazon Picks</span>
+                  <span>{isBD ? 'Daraz Picks' : 'Amazon Picks'}</span>
                 </div>
                 <span className="text-[10px] bg-[#FFEFEA] px-2 py-0.5 rounded-full font-bold">HOT</span>
               </Link>

@@ -126,6 +126,9 @@ export default function AdminPage() {
     isFeatured: false,
     imageUrl: 'https://images.unsplash.com/photo-1545249390-6bdfa286032f?auto=format&fit=crop&w=800&q=80',
     affiliateLink: 'https://www.amazon.com/dp/B08XJ893Q1?tag=momothecat-20',
+    darazLink: '',
+    platform: 'amazon',
+    targetRegion: 'all',
     images: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80',
     stockQuantity: '25',
     sku: 'MMC-CAT-001',
@@ -366,6 +369,9 @@ export default function AdminPage() {
       isFeatured: false,
       imageUrl: 'https://images.unsplash.com/photo-1545249390-6bdfa286032f?auto=format&fit=crop&w=800&q=80',
       affiliateLink: 'https://www.amazon.com/dp/B08XJ893Q1?tag=momothecat-20',
+      darazLink: '',
+      platform: 'both',
+      targetRegion: 'all',
       images: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80',
       stockQuantity: '25',
       sku: `MMC-CAT-${Math.floor(100 + Math.random() * 900)}`,
@@ -395,6 +401,9 @@ export default function AdminPage() {
       isFeatured: Boolean(p.isFeatured),
       imageUrl: aff?.imageUrl || '',
       affiliateLink: aff?.affiliateLink || '',
+      darazLink: aff?.darazLink || '',
+      platform: aff?.platform || 'amazon',
+      targetRegion: aff?.targetRegion || 'all',
       images: real?.images ? real.images.join(', ') : '',
       stockQuantity: real?.stockQuantity !== undefined ? real.stockQuantity.toString() : '0',
       sku: real?.sku || '',
@@ -423,6 +432,9 @@ export default function AdminPage() {
           category: productForm.category,
           imageUrl: productForm.imageUrl,
           affiliateLink: productForm.affiliateLink,
+          darazLink: productForm.darazLink,
+          platform: productForm.platform,
+          targetRegion: productForm.targetRegion,
           badge: productForm.badge,
           description: productForm.description,
           isFeatured: productForm.isFeatured,
@@ -2625,15 +2637,37 @@ export default function AdminPage() {
 
                             <td className="p-4">
                               {isAff ? (
-                                <a
-                                  href={aff?.affiliateLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 hover:text-blue-800 underline"
-                                >
-                                  <span>Amazon Link</span>
-                                  <ExternalLink className="w-3 h-3" />
-                                </a>
+                                <div className="flex flex-col gap-1">
+                                  {aff?.affiliateLink && (
+                                    <a
+                                      href={aff?.affiliateLink}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 hover:text-blue-800 underline"
+                                    >
+                                      <span>Amazon</span>
+                                      <ExternalLink className="w-2.5 h-2.5" />
+                                    </a>
+                                  )}
+                                  {aff?.darazLink && (
+                                    <a
+                                      href={aff?.darazLink}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-1 text-[11px] font-bold text-orange-600 hover:text-orange-800 underline"
+                                    >
+                                      <span>🇧🇩 Daraz</span>
+                                      <ExternalLink className="w-2.5 h-2.5" />
+                                    </a>
+                                  )}
+                                  <span className="text-[10px] text-slate-400 font-medium">
+                                    {aff?.targetRegion === 'bd_only'
+                                      ? 'BD Only'
+                                      : aff?.targetRegion === 'global_only'
+                                      ? 'Global Only'
+                                      : 'Smart Geo (BD + Global)'}
+                                  </span>
+                                </div>
                               ) : (
                                 <span
                                   className={`font-bold ${
@@ -2960,13 +2994,23 @@ export default function AdminPage() {
                 <h3 className="font-display font-bold text-base sm:text-lg text-slate-900">
                   Amazon Associate Parameters
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="space-y-1">
                     <label className="text-xs font-bold text-slate-700">Amazon Associate Tag</label>
                     <input
                       type="text"
                       value={cmsForm.affiliateTag ?? 'momothecat-20'}
                       onChange={(e) => setCmsForm({ ...cmsForm, affiliateTag: e.target.value })}
+                      className="w-full px-3.5 py-2.5 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-700">Daraz Affiliate Tag (BD)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. momothecat-daraz"
+                      value={cmsForm.darazAffiliateTag ?? ''}
+                      onChange={(e) => setCmsForm({ ...cmsForm, darazAffiliateTag: e.target.value })}
                       className="w-full px-3.5 py-2.5 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
                     />
                   </div>
@@ -3143,16 +3187,52 @@ export default function AdminPage() {
               {newProductType === 'affiliate' ? (
                 <>
                   <div className="space-y-1">
-                    <label className="text-slate-700">Amazon Affiliate Outbound URL</label>
+                    <label className="text-slate-700 font-bold text-xs">Target Region & Audience</label>
+                    <select
+                      value={productForm.targetRegion}
+                      onChange={(e) =>
+                        setProductForm({ ...productForm, targetRegion: e.target.value as any })
+                      }
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 font-medium text-xs"
+                    >
+                      <option value="all">🌐 All Visitors (Smart Geo: Daraz in BD, Amazon Globally)</option>
+                      <option value="bd_only">🇧🇩 Bangladesh Only (Daraz Exclusive)</option>
+                      <option value="global_only">🇺🇸 Global Only (Amazon Exclusive)</option>
+                    </select>
+                    <p className="text-[10px] text-slate-400">
+                      Smart Geo presents Daraz to visitors in Bangladesh and Amazon to everyone else automatically.
+                    </p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-slate-700 font-bold text-xs flex items-center justify-between">
+                      <span>Amazon Affiliate Outbound URL</span>
+                      <span className="text-[10px] text-slate-400 font-normal">Global / US visitors</span>
+                    </label>
                     <input
                       type="url"
-                      required
                       placeholder="https://www.amazon.com/dp/B08XJ893Q1?tag=momothecat-20"
                       value={productForm.affiliateLink}
                       onChange={(e) =>
                         setProductForm({ ...productForm, affiliateLink: e.target.value })
                       }
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 font-medium"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 font-medium text-xs font-mono"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-slate-700 font-bold text-xs flex items-center justify-between">
+                      <span>Daraz Bangladesh Outbound URL</span>
+                      <span className="text-[10px] text-orange-600 font-semibold">Bangladesh visitors 🇧🇩</span>
+                    </label>
+                    <input
+                      type="url"
+                      placeholder="https://www.daraz.com.bd/catalog/?q=... or product link"
+                      value={productForm.darazLink}
+                      onChange={(e) =>
+                        setProductForm({ ...productForm, darazLink: e.target.value })
+                      }
+                      className="w-full px-3.5 py-2.5 bg-orange-50/40 border border-orange-200 rounded-xl outline-none focus:border-orange-500 font-medium text-xs font-mono"
                     />
                   </div>
                   <div className="space-y-1.5">

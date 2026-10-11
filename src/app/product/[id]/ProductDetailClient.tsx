@@ -26,7 +26,7 @@ interface Props {
 
 export default function ProductDetailClient({ product }: Props) {
   const router = useRouter();
-  const { storeMode, addToCart, toggleWishlist, isWishlisted } = useCart();
+  const { storeMode, addToCart, toggleWishlist, isWishlisted, isBD } = useCart();
   const [selectedImgIndex, setSelectedImgIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<'desc' | 'specs' | 'shipping'>('desc');
@@ -34,6 +34,10 @@ export default function ProductDetailClient({ product }: Props) {
   const isReal = product.type === 'real';
   const realProd = isReal ? (product as RealProduct) : null;
   const affProd = !isReal ? (product as AffiliateProduct) : null;
+
+  const isDaraz = isBD && Boolean(affProd?.darazLink);
+  const affUrl = (isDaraz ? affProd?.darazLink : affProd?.affiliateLink) || '#';
+  const affPlatform = isDaraz ? 'Daraz' : 'Amazon';
 
   const images = isReal && realProd ? realProd.images : [affProd!.imageUrl];
   const activeImage = images[selectedImgIndex] || images[0];
@@ -129,9 +133,9 @@ export default function ProductDetailClient({ product }: Props) {
                 Momo Original Retail
               </span>
             ) : (
-              <span className="text-xs font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-lg flex items-center gap-1">
+              <span className={`text-xs font-bold ${isDaraz ? 'text-orange-700 bg-orange-50' : 'text-amber-700 bg-amber-50'} px-2.5 py-1 rounded-lg flex items-center gap-1`}>
                 <ExternalLink className="w-3.5 h-3.5" />
-                Amazon Prime Direct
+                {isDaraz ? 'Daraz Direct Delivery' : 'Amazon Prime Direct'}
               </span>
             )}
           </div>
@@ -254,21 +258,27 @@ export default function ProductDetailClient({ product }: Props) {
                   <Info className="w-4 h-4 shrink-0 text-slate-600" />
                   <span>Storefront is currently in <strong>Real Product Mode</strong>.</span>
                 </p>
-                <p className="text-[11px] text-slate-500">Outbound Amazon links are currently disabled.</p>
+                <p className="text-[11px] text-slate-500">Outbound affiliate links are currently disabled.</p>
               </div>
             ) : (
               <div>
                 <a
-                  href={affProd?.affiliateLink}
+                  href={affUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-4 px-6 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-2xl font-black text-base flex items-center justify-center gap-2.5 shadow-xl shadow-orange-500/25 transition-all hover:scale-[1.01] active:scale-[0.98]"
+                  className={`w-full py-4 px-6 ${
+                    isDaraz
+                      ? 'bg-gradient-to-r from-[#F85606] to-[#ff7a2f] hover:from-[#e04c00] hover:to-[#f0681d] shadow-orange-500/25'
+                      : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 shadow-orange-500/25'
+                  } text-white rounded-2xl font-black text-base flex items-center justify-center gap-2.5 shadow-xl transition-all hover:scale-[1.01] active:scale-[0.98]`}
                 >
-                  <span>Buy Now on Amazon</span>
+                  <span>Buy Now on {affPlatform}</span>
                   <ExternalLink className="w-5 h-5" />
                 </a>
                 <p className="text-[11px] text-slate-400 text-center mt-2 font-medium">
-                  Routes directly to Amazon with Prime 1-day or 2-day delivery benefits.
+                  {isDaraz
+                    ? 'Routes directly to Daraz with express nationwide home delivery across Bangladesh.'
+                    : 'Routes directly to Amazon with Prime 1-day or 2-day delivery benefits.'}
                 </p>
               </div>
             )

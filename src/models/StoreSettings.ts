@@ -11,6 +11,7 @@ const StoreSettingsSchema = new Schema<IStoreSettings>(
       default: 'hybrid',
     },
     affiliateTag: { type: String, default: 'momothecat-20' },
+    darazAffiliateTag: { type: String, default: '' },
     freeShippingThreshold: { type: Number, default: 45 },
 
     // SEO Fields

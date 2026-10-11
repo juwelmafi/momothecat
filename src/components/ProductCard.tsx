@@ -18,7 +18,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const { storeMode, addToCart, toggleWishlist, isWishlisted, setQuickViewProduct } = useCart();
+  const { storeMode, addToCart, toggleWishlist, isWishlisted, setQuickViewProduct, isBD } = useCart();
   const isReal = product.type === 'real';
   const isAffiliate = product.type === 'affiliate';
 
@@ -28,6 +28,13 @@ export default function ProductCard({ product }: ProductCardProps) {
   const displayImage = isReal ? realProd!.images[0] : affProd!.imageUrl;
   const isOutOfStock = isReal && (realProd?.stockQuantity ?? 0) <= 0;
   const wishlisted = isWishlisted(product._id);
+
+  const affUrl = (isBD && affProd?.darazLink ? affProd.darazLink : affProd?.affiliateLink) || '#';
+  const isDaraz = isBD && Boolean(affProd?.darazLink);
+  const affPlatformLabel = isDaraz ? 'Daraz' : 'Amazon';
+  const affBadgeText = isDaraz
+    ? (product.badge && !product.badge.includes('Amazon') ? product.badge : 'Daraz Pick')
+    : (product.badge || 'Amazon Pick');
 
   const discountPercent =
     product.originalPrice && product.originalPrice > product.price
@@ -45,9 +52,13 @@ export default function ProductCard({ product }: ProductCardProps) {
               GET {discountPercent}% OFF
             </span>
           ) : isAffiliate ? (
-            <span className="bg-[#FF6B35] text-white text-[8px] sm:text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full shadow-xs flex items-center gap-1">
+            <span
+              className={`${
+                isDaraz ? 'bg-[#F85606]' : 'bg-[#FF6B35]'
+              } text-white text-[8px] sm:text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full shadow-xs flex items-center gap-1`}
+            >
               <Flame className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-current text-[#FFC312]" />
-              Amazon Pick
+              {affBadgeText}
             </span>
           ) : (
             <span className="bg-[#2FA5FB] text-white text-[8px] sm:text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 sm:px-2.5 sm:py-0.5 rounded-full shadow-xs flex items-center gap-1">
@@ -87,7 +98,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           </Link>
         ) : (
           <a
-            href={affProd?.affiliateLink}
+            href={affUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="block w-full h-full"
@@ -106,12 +117,16 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="absolute inset-x-2 sm:inset-x-3 bottom-2 sm:bottom-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1.5 sm:gap-2">
           {isAffiliate && storeMode !== 'retail_only' ? (
             <a
-              href={affProd?.affiliateLink}
+              href={affUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 min-w-0 px-2.5 sm:px-3 py-1.5 sm:py-2 bg-[#FF6B35] hover:bg-[#FF9933] text-white text-[8px] sm:text-[11px] font-bold uppercase tracking-normal sm:tracking-wider rounded-full shadow-md flex items-center justify-center gap-1 transition-all"
+              className={`flex-1 min-w-0 px-2.5 sm:px-3 py-1.5 sm:py-2 ${
+                isDaraz
+                  ? 'bg-[#F85606] hover:bg-[#e04c00]'
+                  : 'bg-[#FF6B35] hover:bg-[#FF9933]'
+              } text-white text-[8px] sm:text-[11px] font-bold uppercase tracking-normal sm:tracking-wider rounded-full shadow-md flex items-center justify-center gap-1 transition-all`}
             >
-              <span className="truncate">View on Amazon</span>
+              <span className="truncate">View on {affPlatformLabel}</span>
               <ExternalLink className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 shrink-0" />
             </a>
           ) : isReal && storeMode !== 'affiliate_only' ? (
@@ -152,7 +167,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             </Link>
           ) : (
             <a
-              href={affProd?.affiliateLink}
+              href={affUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="font-display font-bold text-xs sm:text-base lg:text-lg text-[#232121] hover:text-[#FF6B35] line-clamp-2 transition-colors leading-tight sm:leading-snug"

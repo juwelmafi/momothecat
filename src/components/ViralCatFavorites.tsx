@@ -12,6 +12,7 @@ import {
   Home,
   Truck,
 } from 'lucide-react';
+import { useCart } from '@/context/CartContext';
 
 interface ViralItem {
   id: string;
@@ -288,6 +289,7 @@ const VIRAL_PRODUCTS: Record<string, ViralItem[]> = {
 };
 
 export default function ViralCatFavorites() {
+  const { isBD } = useCart();
   const [activeTab, setActiveTab] = useState('tech');
   const items = VIRAL_PRODUCTS[activeTab] || [];
 
@@ -298,13 +300,15 @@ export default function ViralCatFavorites() {
         {/* Header Block matching Pettie Theme */}
         <div className="text-center mb-10 space-y-2">
           <div className="text-[#FF6B35] font-black text-sm tracking-widest uppercase">
-            \\ | /
+            \ | /
           </div>
           <h2 className="font-display font-bold text-3xl sm:text-5xl text-[#232121]">
-            Viral Feline Amazon Favorites
+            {isBD ? 'Viral Feline Daraz Favorites' : 'Viral Feline Amazon Favorites'}
           </h2>
           <p className="text-xs sm:text-sm text-[#666666] max-w-lg mx-auto">
-            Internet sensation cat gear, vetted for quality, durability, and endless feline joy
+            {isBD
+              ? 'Trending cat supplies and gadgets vetted for quality with nationwide express home delivery in Bangladesh'
+              : 'Internet sensation cat gear, vetted for quality, durability, and endless feline joy'}
           </p>
         </div>
 
@@ -383,7 +387,7 @@ export default function ViralCatFavorites() {
                     ${item.price.toFixed(2)}
                   </span>
                   <span className="text-[8px] sm:text-[10px] font-bold text-[#2FA5FB] bg-[#D2EDF8] px-1.5 sm:px-2 py-0.5 rounded-full ml-auto">
-                    Prime
+                    {isBD ? 'BD' : 'Prime'}
                   </span>
                 </div>
 
@@ -399,15 +403,23 @@ export default function ViralCatFavorites() {
                 </p>
               </div>
 
-              {/* Action Button: Amazon Outbound Affiliate */}
+              {/* Action Button */}
               <div className="pt-2 sm:pt-4">
                 <a
-                  href={item.link}
+                  href={
+                    isBD
+                      ? `https://www.daraz.com.bd/catalog/?q=${encodeURIComponent(item.name)}`
+                      : item.link
+                  }
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="pettie-btn pettie-btn-primary pettie-btn-card w-full shadow-xs flex items-center justify-center gap-1 hover:scale-102 transition-transform"
+                  className={`pettie-btn ${
+                    isBD
+                      ? 'bg-[#F85606] hover:bg-[#e04c00] text-white'
+                      : 'pettie-btn-primary'
+                  } pettie-btn-card w-full shadow-xs flex items-center justify-center gap-1 hover:scale-102 transition-transform`}
                 >
-                  <span>Buy on Amazon</span>
+                  <span>Buy on {isBD ? 'Daraz' : 'Amazon'}</span>
                   <ExternalLink className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 </a>
               </div>
@@ -415,7 +427,7 @@ export default function ViralCatFavorites() {
           ))}
         </div>
 
-        {/* Bottom Banner with Amazon Affiliate Promise */}
+        {/* Bottom Banner */}
         <div className="mt-12 rounded-[24px] bg-[#FFF9DE] border-2 border-dashed border-[#FFC312] p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-full bg-[#FFC312] flex items-center justify-center shrink-0 shadow-xs text-[#232121]">
@@ -423,22 +435,30 @@ export default function ViralCatFavorites() {
             </div>
             <div>
               <h4 className="font-display font-bold text-lg text-[#232121]">
-                Enjoy Amazon Prime Fast 1-Day Dispatch & Easy Returns
+                {isBD
+                  ? 'Enjoy Daraz Express Fast Home Delivery & Easy Returns'
+                  : 'Enjoy Amazon Prime Fast 1-Day Dispatch & Easy Returns'}
               </h4>
               <p className="text-xs text-[#666666] mt-0.5 max-w-xl">
-                As an Amazon Associate, Momo - The Cat links you directly to the safest, authentic pet sellers. All transactions, shipping, and guarantees are handled securely by Amazon.
+                {isBD
+                  ? 'As a Daraz affiliate partner, Momo - The Cat links you directly to the safest, authentic pet sellers. All transactions, shipping, and guarantees are handled securely by Daraz.'
+                  : 'As an Amazon Associate, Momo - The Cat links you directly to the safest, authentic pet sellers. All transactions, shipping, and guarantees are handled securely by Amazon.'}
               </p>
             </div>
           </div>
 
           <a
-            href="https://www.amazon.com?tag=momothecat-20"
+            href={
+              isBD
+                ? 'https://www.daraz.com.bd/catalog/?q=cat+supplies'
+                : 'https://www.amazon.com?tag=momothecat-20'
+            }
             target="_blank"
             rel="noopener noreferrer"
             className="pettie-btn pettie-btn-dark text-xs shrink-0 flex items-center gap-2"
           >
             <Flame className="w-4 h-4 text-[#FFC312] fill-current" />
-            <span>Visit Amazon Cat Store</span>
+            <span>{isBD ? 'Visit Daraz Cat Store' : 'Visit Amazon Cat Store'}</span>
           </a>
         </div>
 

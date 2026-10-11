@@ -18,6 +18,9 @@ export interface AffiliateProduct extends BaseProduct {
   type: 'affiliate';
   imageUrl: string;
   affiliateLink: string;
+  darazLink?: string;
+  platform?: 'amazon' | 'daraz' | 'both';
+  targetRegion?: 'all' | 'bd_only' | 'global_only';
 }
 
 export interface RealProduct extends BaseProduct {
@@ -85,6 +88,7 @@ export interface StoreSettings {
   // Store Architecture Mode
   storeMode: StoreMode;
   affiliateTag: string;
+  darazAffiliateTag?: string;
   freeShippingThreshold: number;
 
   // SEO Fields

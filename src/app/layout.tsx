@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
 import QuickViewModal from '@/components/QuickViewModal';
 import Toast from '@/components/Toast';
+import { headers, cookies } from 'next/headers';
 import { getStoreSettings } from '@/lib/store';
 
 const fredoka = Fredoka({
@@ -58,12 +59,24 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const settings = await getStoreSettings();
+  const [settings, headerList, cookieStore] = await Promise.all([
+    getStoreSettings(),
+    headers(),
+    cookies(),
+  ]);
+
+  const vercelCountry = headerList.get('x-vercel-ip-country');
+  const cookieCountry = cookieStore.get('user_country')?.value;
+  const initialCountry = (cookieCountry || vercelCountry || 'US').toUpperCase();
 
   return (
     <html lang="en" className={`${fredoka.variable} ${readexPro.variable} scroll-smooth`}>
       <body className="min-h-screen flex flex-col bg-white text-[#000000] antialiased selection:bg-[#FF6B35] selection:text-white">
-        <CartProvider initialStoreMode={settings.storeMode} initialSettings={settings}>
+        <CartProvider
+          initialStoreMode={settings.storeMode}
+          initialSettings={settings}
+          initialCountry={initialCountry}
+        >
           <Header />
           <main className="flex-1 w-full">
             {children}

@@ -10,6 +10,7 @@ export async function GET(req: NextRequest) {
     const type = (searchParams.get('type') as 'all' | 'affiliate' | 'real') || 'all';
     const featuredOnly = searchParams.get('featured') === 'true';
     const ignoreStoreMode = searchParams.get('ignoreStoreMode') === 'true';
+    const country = searchParams.get('country') || undefined;
 
     const products = await getMergedProducts({
       category,
@@ -17,6 +18,7 @@ export async function GET(req: NextRequest) {
       type,
       featuredOnly,
       ignoreStoreMode,
+      country,
     });
 
     return NextResponse.json({ success: true, products });
@@ -51,12 +53,25 @@ export async function POST(req: NextRequest) {
     }
 
     if (type === 'affiliate') {
-      const { name, price, originalPrice, category, imageUrl, affiliateLink, badge, description } = body;
-      if (!name || price === undefined || !category || !imageUrl || !affiliateLink) {
+      const {
+        name,
+        price,
+        originalPrice,
+        category,
+        imageUrl,
+        affiliateLink,
+        darazLink,
+        platform,
+        targetRegion,
+        badge,
+        description,
+      } = body;
+
+      if (!name || price === undefined || !category || !imageUrl || (!affiliateLink && !darazLink)) {
         return NextResponse.json(
           {
             success: false,
-            error: 'Affiliate products require: name, price, category, imageUrl, and affiliateLink',
+            error: 'Affiliate products require: name, price, category, imageUrl, and an affiliate link (Amazon or Daraz)',
           },
           { status: 400 }
         );
@@ -68,8 +83,11 @@ export async function POST(req: NextRequest) {
         originalPrice: originalPrice ? Number(originalPrice) : undefined,
         category,
         imageUrl,
-        affiliateLink,
-        badge: badge || "Amazon's Choice",
+        affiliateLink: affiliateLink || '',
+        darazLink: darazLink || '',
+        platform: platform || (darazLink && !affiliateLink ? 'daraz' : darazLink && affiliateLink ? 'both' : 'amazon'),
+        targetRegion: targetRegion || (darazLink && !affiliateLink ? 'bd_only' : 'all'),
+        badge: badge || (darazLink && !affiliateLink ? 'Daraz Pick' : "Amazon's Choice"),
         description: description || '',
         rating: 4.8,
         reviewCount: Math.floor(Math.random() * 200) + 20,

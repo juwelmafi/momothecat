@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 
 export default function QuickViewModal() {
-  const { quickViewProduct, setQuickViewProduct, addToCart, storeMode } = useCart();
+  const { quickViewProduct, setQuickViewProduct, addToCart, storeMode, isBD } = useCart();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [qty, setQty] = useState(1);
 
@@ -25,6 +25,10 @@ export default function QuickViewModal() {
   const isReal = quickViewProduct.type === 'real';
   const realProd = isReal ? (quickViewProduct as RealProduct) : null;
   const affProd = !isReal ? (quickViewProduct as AffiliateProduct) : null;
+
+  const isDaraz = isBD && Boolean(affProd?.darazLink);
+  const affUrl = (isDaraz ? affProd?.darazLink : affProd?.affiliateLink) || '#';
+  const affPlatform = isDaraz ? 'Daraz' : 'Amazon';
 
   const images = isReal && realProd ? realProd.images : [affProd!.imageUrl];
   const activeImage = images[selectedImageIndex] || images[0];
@@ -192,16 +196,20 @@ export default function QuickViewModal() {
               ) : (
                 storeMode === 'retail_only' ? (
                   <div className="p-3 bg-slate-100 text-slate-600 text-xs font-semibold rounded-xl text-center border border-slate-200">
-                    Amazon affiliate links are disabled in Real Product Mode.
+                    Affiliate outbound links are disabled in Real Product Mode.
                   </div>
                 ) : (
                   <a
-                    href={affProd?.affiliateLink}
+                    href={affUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl font-extrabold text-xs flex items-center justify-center gap-2 shadow-md shadow-orange-500/20 transition-all"
+                    className={`w-full py-3 ${
+                      isDaraz
+                        ? 'bg-gradient-to-r from-[#F85606] to-[#ff7a2f] hover:from-[#e04c00] hover:to-[#f0681d]'
+                        : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600'
+                    } text-white rounded-xl font-extrabold text-xs flex items-center justify-center gap-2 shadow-md shadow-orange-500/20 transition-all`}
                   >
-                    <span>Buy on Amazon</span>
+                    <span>Buy on {affPlatform}</span>
                     <ExternalLink className="w-4 h-4" />
                   </a>
                 )

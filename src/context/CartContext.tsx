@@ -42,6 +42,10 @@ interface CartContextType {
   setStoreMode: (mode: StoreMode) => void;
   settings: StoreSettings;
   setSettings: (s: StoreSettings) => void;
+  // Geo-Targeting: Bangladesh (Daraz) vs Global (Amazon)
+  userCountry: string;
+  isBD: boolean;
+  setUserCountry: (country: string) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -50,10 +54,12 @@ export function CartProvider({
   children,
   initialStoreMode = 'hybrid',
   initialSettings = INITIAL_SETTINGS,
+  initialCountry = 'US',
 }: {
   children: React.ReactNode;
   initialStoreMode?: StoreMode;
   initialSettings?: StoreSettings;
+  initialCountry?: string;
 }) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -64,6 +70,27 @@ export function CartProvider({
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [settings, setSettings] = useState<StoreSettings>(initialSettings);
   const [storeMode, setStoreMode] = useState<StoreMode>(initialSettings?.storeMode || initialStoreMode);
+  const [userCountry, setUserCountryState] = useState<string>(initialCountry);
+
+  const isBD = userCountry.toUpperCase() === 'BD';
+
+  const setUserCountry = (country: string) => {
+    const clean = country.toUpperCase();
+    setUserCountryState(clean);
+    try {
+      localStorage.setItem('momo_country', clean);
+      fetch('/api/geo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ country: clean }),
+      }).catch(() => {});
+    } catch {}
+    if (clean === 'BD') {
+      showToast('Switched to Bangladesh 🇧🇩 — Showing Daraz affiliate picks!');
+    } else {
+      showToast('Switched to Global 🌐 — Showing Amazon affiliate picks!');
+    }
+  };
 
   // Sync settings & mode on mount
   useEffect(() => {
@@ -78,6 +105,35 @@ export function CartProvider({
         }
       })
       .catch(() => {});
+  }, []);
+
+  // Detect and sync country on mount
+  useEffect(() => {
+    try {
+      const savedCountry = localStorage.getItem('momo_country');
+      if (savedCountry) {
+        setUserCountryState(savedCountry.toUpperCase());
+        return;
+      }
+
+      // Check timezone for Bangladesh detection in browser / local dev
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+      if (timeZone.includes('Dhaka') || timeZone.includes('Bangladesh')) {
+        setUserCountryState('BD');
+        localStorage.setItem('momo_country', 'BD');
+        return;
+      }
+
+      // Query geo api for edge Vercel header
+      fetch('/api/geo')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.country) {
+            setUserCountryState(data.country.toUpperCase());
+          }
+        })
+        .catch(() => {});
+    } catch {}
   }, []);
 
   // Load from localStorage on mount
@@ -244,6 +300,9 @@ export function CartProvider({
         setStoreMode,
         settings,
         setSettings,
+        userCountry,
+        isBD,
+        setUserCountry,
       }}
     >
       {children}

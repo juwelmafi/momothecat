@@ -7,6 +7,9 @@ export interface IAffiliateProduct {
   category: string;
   imageUrl: string;
   affiliateLink: string;
+  darazLink?: string;
+  platform?: 'amazon' | 'daraz' | 'both';
+  targetRegion?: 'all' | 'bd_only' | 'global_only';
   rating?: number;
   reviewCount?: number;
   badge?: string;
@@ -22,7 +25,10 @@ const AffiliateProductSchema = new Schema<IAffiliateProduct>(
     originalPrice: { type: Number, min: 0 },
     category: { type: String, required: [true, 'Category is required'], trim: true },
     imageUrl: { type: String, required: [true, 'Image URL is required'] },
-    affiliateLink: { type: String, required: [true, 'Affiliate link is required'] },
+    affiliateLink: { type: String, default: '' },
+    darazLink: { type: String, default: '' },
+    platform: { type: String, enum: ['amazon', 'daraz', 'both'], default: 'amazon' },
+    targetRegion: { type: String, enum: ['all', 'bd_only', 'global_only'], default: 'all' },
     rating: { type: Number, default: 4.8, min: 0, max: 5 },
     reviewCount: { type: Number, default: 85 },
     badge: { type: String, default: "Amazon's Choice" },

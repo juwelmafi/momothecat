@@ -19,7 +19,7 @@ export default function Footer() {
     return null;
   }
 
-  const { showToast, settings } = useCart();
+  const { showToast, settings, isBD } = useCart();
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -216,9 +216,13 @@ export default function Footer() {
 
           {/* Col 4: Affiliate Disclosure (3 cols) */}
           <div className="lg:col-span-3 space-y-3">
-            <h4 className="font-display font-bold text-base text-white">Amazon Associate</h4>
+            <h4 className="font-display font-bold text-base text-white">
+              {isBD ? 'Daraz Affiliate Partner' : 'Amazon Associate'}
+            </h4>
             <p className="text-[11px] text-slate-400 leading-relaxed">
-              As an Amazon Associate and affiliate partner, momothecat.shop earns from qualifying purchases. Outbound links to Amazon generate a commission at zero additional cost to you.
+              {isBD
+                ? 'As a Daraz affiliate partner and pet boutique, momothecat.shop earns from qualifying purchases. Outbound links to Daraz generate a commission at zero additional cost to you.'
+                : 'As an Amazon Associate and affiliate partner, momothecat.shop earns from qualifying purchases. Outbound links to Amazon generate a commission at zero additional cost to you.'}
             </p>
             <div className="pt-2 flex items-center gap-2 text-xs text-[#FFC312] font-bold">
               <ShieldCheck className="w-4 h-4" />
