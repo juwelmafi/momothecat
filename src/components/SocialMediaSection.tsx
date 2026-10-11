@@ -136,7 +136,7 @@ export default function SocialMediaSection() {
             href="https://www.instagram.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="pettie-btn pettie-btn-primary text-xs shrink-0 py-2 sm:py-2.5 px-4 sm:px-6 flex items-center gap-2 hover:scale-105 transition-all shadow-md shadow-[#FF6B35]/30 w-full sm:w-auto justify-center"
+            className="pettie-btn pettie-btn-primary text-[10px] sm:text-xs shrink-0 py-2 sm:py-2.5 px-4 sm:px-6 flex items-center gap-1.5 sm:gap-2 hover:scale-105 transition-all shadow-md shadow-[#FF6B35]/30 w-full sm:w-auto justify-center"
           >
             <Sparkles className="w-3.5 h-3.5 text-white" />
             <span>Tag Us & Get Featured</span>

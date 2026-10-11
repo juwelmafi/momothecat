@@ -39,7 +39,7 @@ export default function DiscountsBanner() {
               <div>
                 <a
                   href="#products-section"
-                  className="pettie-btn pettie-btn-primary shadow-lg shadow-[#FF6B35]/30 text-xs hover:scale-105 transition-transform"
+                  className="pettie-btn pettie-btn-primary shadow-lg shadow-[#FF6B35]/30 text-[11px] sm:text-xs hover:scale-105 transition-transform"
                 >
                   <span>{settings.discountsButtonText || 'SHOP NOW'}</span>
                 </a>

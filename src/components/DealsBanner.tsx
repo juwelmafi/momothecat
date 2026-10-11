@@ -46,7 +46,7 @@ export default function DealsBanner() {
             <div className="pt-2">
               <a
                 href="#products-section"
-                className="pettie-btn pettie-btn-primary shadow-md shadow-[#FF6B35]/25 hover:scale-105 transition-all text-xs"
+                className="pettie-btn pettie-btn-primary shadow-md shadow-[#FF6B35]/25 hover:scale-105 transition-all text-[11px] sm:text-xs"
               >
                 <span>{settings.dealsButtonText || 'CLAIM AMAZON DEALS'}</span>
               </a>

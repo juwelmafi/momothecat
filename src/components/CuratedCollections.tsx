@@ -140,7 +140,7 @@ export default function CuratedCollections() {
                   href={c.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="pettie-btn pettie-btn-primary w-full py-1.5 sm:py-2.5 text-[10px] sm:text-xs px-1 sm:px-4 shadow-xs flex items-center justify-center gap-1"
+                  className="pettie-btn pettie-btn-primary pettie-btn-card w-full shadow-xs flex items-center justify-center gap-1"
                 >
                   <span>View on Amazon</span>
                   <ExternalLink className="w-3 h-3 sm:w-3.5 sm:h-3.5" />

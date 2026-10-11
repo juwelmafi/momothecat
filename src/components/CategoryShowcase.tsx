@@ -75,7 +75,7 @@ export default function CategoryShowcase({ onSelectCategory }: Props) {
               {/* Discover Button in Pettie 12px 42px pill */}
               <button
                 onClick={() => onSelectCategory && onSelectCategory(arch.category)}
-                className="pettie-btn pettie-btn-primary py-1.5 sm:py-2.5 px-3 sm:px-6 text-[10px] sm:text-xs shadow-xs group-hover:scale-105 transition-transform"
+                className="pettie-btn pettie-btn-primary pettie-btn-card shadow-xs group-hover:scale-105 transition-transform"
               >
                 <span>discover</span>
                 <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />

@@ -131,9 +131,9 @@ export default function InstagramFeed() {
             href="https://www.instagram.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="pettie-btn pettie-btn-primary text-xs shadow-md shadow-[#FF6B35]/25 flex items-center gap-2 hover:scale-105 transition-all shrink-0"
+            className="pettie-btn pettie-btn-primary text-[10px] sm:text-xs shadow-md shadow-[#FF6B35]/25 flex items-center gap-1.5 sm:gap-2 hover:scale-105 transition-all shrink-0 py-1.5 sm:py-2.5 px-3 sm:px-6"
           >
-            <InstagramIcon className="w-4 h-4 fill-white" />
+            <InstagramIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-white" />
             <span>Follow on Instagram</span>
           </a>
         </div>

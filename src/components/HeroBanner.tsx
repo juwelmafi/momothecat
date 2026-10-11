@@ -185,7 +185,7 @@ export default function HeroBanner() {
             <div className="pt-3">
               <a
                 href="#products-section"
-                className="pettie-btn pettie-btn-primary text-sm shadow-lg shadow-[#FF6B35]/30 hover:scale-105 active:scale-95 transition-all"
+                className="pettie-btn pettie-btn-primary text-xs sm:text-sm shadow-lg shadow-[#FF6B35]/30 hover:scale-105 active:scale-95 transition-all"
               >
                 <span>{slide.buttonText || 'discover'}</span>
               </a>

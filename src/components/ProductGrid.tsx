@@ -259,7 +259,7 @@ export default function ProductGrid({
                   setSelectedType('all');
                   setCurrentSearch('');
                 }}
-                className="pettie-btn pettie-btn-primary text-xs"
+                className="pettie-btn pettie-btn-primary text-[10px] sm:text-xs"
               >
                 Reset Filters
               </button>
@@ -273,13 +273,13 @@ export default function ProductGrid({
           )}
 
           {/* VIEW ALL BUTTON (Pettie exact layout below product cards) */}
-          <div className="text-center pt-14">
+          <div className="text-center pt-10 sm:pt-14">
             <button
               onClick={() => {
                 setSelectedCategory('All Products');
                 setSelectedType('all');
               }}
-              className="pettie-btn pettie-btn-primary shadow-lg shadow-[#FF6B35]/25 hover:scale-105 transition-all text-xs"
+              className="pettie-btn pettie-btn-primary shadow-lg shadow-[#FF6B35]/25 hover:scale-105 transition-all text-[11px] sm:text-xs"
             >
               <span>VIEW ALL</span>
             </button>

@@ -113,7 +113,7 @@ export default function Footer() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="pettie-btn pettie-btn-primary text-xs shadow-md disabled:opacity-50"
+                    className="pettie-btn pettie-btn-primary text-[11px] sm:text-xs shadow-md disabled:opacity-50 py-2 sm:py-3"
                   >
                     <span>{loading ? 'Subscribing...' : 'Subscribe'}</span>
                     <Send className="w-3.5 h-3.5" />

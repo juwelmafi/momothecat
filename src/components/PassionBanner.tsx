@@ -72,7 +72,7 @@ export default function PassionBanner() {
             <div className="pt-4">
               <a
                 href="#products-section"
-                className="pettie-btn pettie-btn-primary text-xs shadow-md shadow-[#FF6B35]/25 hover:scale-105 transition-all"
+                className="pettie-btn pettie-btn-primary text-[11px] sm:text-xs shadow-md shadow-[#FF6B35]/25 hover:scale-105 transition-all"
               >
                 <span>{settings.passionButtonText || 'EXPLORE AMAZON PICKS'}</span>
               </a>
