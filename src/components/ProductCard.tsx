@@ -103,25 +103,25 @@ export default function ProductCard({ product }: ProductCardProps) {
         )}
 
         {/* Hover Quick Action Overlay */}
-        <div className="absolute inset-x-2 sm:inset-x-3 bottom-2 sm:bottom-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-1.5 sm:gap-2">
+        <div className="absolute inset-x-2 sm:inset-x-3 bottom-2 sm:bottom-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1.5 sm:gap-2">
           {isAffiliate && storeMode !== 'retail_only' ? (
             <a
               href={affProd?.affiliateLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 py-1.5 sm:py-2.5 bg-[#FF6B35] hover:bg-[#FF9933] text-white text-[9px] sm:text-[11px] font-bold uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-1 transition-all"
+              className="flex-1 min-w-0 px-2.5 sm:px-3 py-1.5 sm:py-2 bg-[#FF6B35] hover:bg-[#FF9933] text-white text-[8px] sm:text-[11px] font-bold uppercase tracking-normal sm:tracking-wider rounded-full shadow-md flex items-center justify-center gap-1 transition-all"
             >
-              <span>View on Amazon</span>
-              <ExternalLink className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              <span className="truncate">View on Amazon</span>
+              <ExternalLink className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 shrink-0" />
             </a>
           ) : isReal && storeMode !== 'affiliate_only' ? (
             <button
               onClick={() => addToCart(realProd!)}
               disabled={isOutOfStock}
-              className="flex-1 py-1.5 sm:py-2.5 bg-[#FF6B35] hover:bg-[#FF9933] text-white text-[9px] sm:text-[11px] font-bold uppercase tracking-wider rounded-full shadow-md flex items-center justify-center gap-1 transition-all disabled:opacity-50"
+              className="flex-1 min-w-0 px-2.5 sm:px-3 py-1.5 sm:py-2 bg-[#FF6B35] hover:bg-[#FF9933] text-white text-[8px] sm:text-[11px] font-bold uppercase tracking-normal sm:tracking-wider rounded-full shadow-md flex items-center justify-center gap-1 transition-all disabled:opacity-50"
             >
-              <ShoppingBag className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-              <span>{isOutOfStock ? 'Out of Stock' : 'Add to Cart'}</span>
+              <ShoppingBag className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 shrink-0" />
+              <span className="truncate">{isOutOfStock ? 'Out of Stock' : 'Add to Cart'}</span>
             </button>
           ) : null}
 
@@ -131,10 +131,10 @@ export default function ProductCard({ product }: ProductCardProps) {
               e.stopPropagation();
               setQuickViewProduct(product);
             }}
-            className="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-white hover:bg-slate-100 text-[#232121] flex items-center justify-center shadow-md shrink-0"
+            className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white hover:bg-slate-100 text-[#232121] flex items-center justify-center shadow-md shrink-0"
             aria-label="Quick View"
           >
-            <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#232121]" />
+            <Eye className="w-3 h-3 sm:w-4 sm:h-4 text-[#232121]" />
           </button>
         </div>
       </div>
