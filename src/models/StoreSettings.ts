@@ -50,8 +50,8 @@ const StoreSettingsSchema = new Schema<IStoreSettings>(
     },
     announcementCode: { type: String, default: 'MOMO15' },
     announcementActive: { type: Boolean, default: true },
-    contactPhone: { type: String, default: '(+1) 800-CAT-MOMO' },
-    contactEmail: { type: String, default: 'hello@momothecat.shop' },
+    contactPhone: { type: String, default: '' },
+    contactEmail: { type: String, default: '' },
     contactAddress: {
       type: String,
       default: 'momothecat.shop · San Francisco, CA',

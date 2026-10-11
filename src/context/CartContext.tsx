@@ -123,12 +123,12 @@ export function CartProvider({
 
   const addToCart = (product: RealProduct, quantity = 1) => {
     if (storeMode === 'affiliate_only') {
-      showToast('⚠️ Store is currently in Affiliate Mode. In-house cart is disabled.');
+      showToast('Store is currently in Affiliate Mode. In-house cart is disabled.');
       return;
     }
 
     if (product.stockQuantity <= 0) {
-      showToast(`⚠️ Sorry, ${product.name} is currently out of stock!`);
+      showToast(`Sorry, ${product.name} is currently out of stock!`);
       return;
     }
 
@@ -143,7 +143,7 @@ export function CartProvider({
       return [...prev, { product, quantity: Math.min(product.stockQuantity, quantity) }];
     });
 
-    showToast(`🐾 Added "${product.name}" to cart!`);
+    showToast(`Added "${product.name}" to cart!`);
     setIsCartOpen(true);
   };
 
@@ -178,10 +178,10 @@ export function CartProvider({
       setDiscountCode(clean);
       setDiscountPercent(10);
       localStorage.setItem('momo_discount', JSON.stringify({ code: clean, percent: 10 }));
-      showToast('🎉 10% Discount Code Applied!');
+      showToast('10% Discount Code Applied!');
       return true;
     }
-    showToast('❌ Invalid promo code');
+    showToast('Invalid promo code');
     return false;
   };
 
@@ -198,7 +198,7 @@ export function CartProvider({
         showToast('Removed from favorites');
         return prev.filter((id) => id !== productId);
       } else {
-        showToast('❤️ Added to favorites');
+        showToast('Added to favorites');
         return [...prev, productId];
       }
     });

@@ -1,7 +1,17 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ExternalLink, Flame, Star, Sparkles, Heart, Zap, CheckCircle2 } from 'lucide-react';
+import {
+  ExternalLink,
+  Flame,
+  Star,
+  Sparkles,
+  Heart,
+  Zap,
+  CheckCircle2,
+  Home,
+  Truck,
+} from 'lucide-react';
 
 interface ViralItem {
   id: string;
@@ -20,10 +30,10 @@ interface ViralItem {
 }
 
 const TABS = [
-  { id: 'tech', label: 'Smart Tech & Gadgets', icon: '⚡' },
-  { id: 'toys', label: 'High-Energy Toys', icon: '🧶' },
-  { id: 'cozy', label: 'Cozy Sanctuary', icon: '🛋️' },
-  { id: 'wellness', label: 'Gourmet & Wellness', icon: '🐟' },
+  { id: 'tech', label: 'Smart Tech & Gadgets', icon: Zap },
+  { id: 'toys', label: 'High-Energy Toys', icon: Sparkles },
+  { id: 'cozy', label: 'Cozy Sanctuary', icon: Home },
+  { id: 'wellness', label: 'Gourmet & Wellness', icon: Heart },
 ];
 
 const VIRAL_PRODUCTS: Record<string, ViralItem[]> = {
@@ -312,7 +322,7 @@ export default function ViralCatFavorites() {
                     : 'bg-[#FBF9F7] text-[#232121] hover:bg-[#FFF9DE] border border-slate-200/80'
                 }`}
               >
-                <span>{tab.icon}</span>
+                <tab.icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-[#FF6B35]'}`} />
                 <span>{tab.label}</span>
               </button>
             );
@@ -408,8 +418,8 @@ export default function ViralCatFavorites() {
         {/* Bottom Banner with Amazon Affiliate Promise */}
         <div className="mt-12 rounded-[24px] bg-[#FFF9DE] border-2 border-dashed border-[#FFC312] p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-[#FFC312] flex items-center justify-center text-3xl shrink-0 shadow-xs">
-              📦
+            <div className="w-14 h-14 rounded-full bg-[#FFC312] flex items-center justify-center shrink-0 shadow-xs text-[#232121]">
+              <Truck className="w-7 h-7 text-[#232121]" />
             </div>
             <div>
               <h4 className="font-display font-bold text-lg text-[#232121]">

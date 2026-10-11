@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ExternalLink, Flame, Users, Heart, Sparkles, ArrowUpRight } from 'lucide-react';
+import { ExternalLink, Flame, Users, Heart, Sparkles, ArrowUpRight, Camera } from 'lucide-react';
 
 interface SocialChannel {
   name: string;
@@ -111,14 +111,6 @@ const SOCIAL_CHANNELS: SocialChannel[] = [
 export default function SocialMediaSection() {
   return (
     <section id="social-section" className="py-16 sm:py-24 bg-[#FFC312] relative overflow-hidden">
-      {/* Decorative paw print accents in the background */}
-      <div className="absolute top-6 left-8 text-[#232121]/10 text-5xl pointer-events-none select-none -rotate-12">
-        🐾
-      </div>
-      <div className="absolute bottom-6 right-8 text-[#232121]/10 text-5xl pointer-events-none select-none rotate-12">
-        🐾
-      </div>
-
       <div className="pettie-container relative z-10">
         
         {/* Section Heading matching Pettie Theme */}
@@ -196,8 +188,8 @@ export default function SocialMediaSection() {
         {/* Community Banner */}
         <div className="mt-12 rounded-[24px] bg-[#232121] text-white p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-lg">
           <div className="flex items-center gap-4 text-center sm:text-left">
-            <div className="w-14 h-14 rounded-full bg-[#FF6B35] flex items-center justify-center text-3xl shrink-0 shadow-xs">
-              🐱
+            <div className="w-14 h-14 rounded-full bg-[#FF6B35] flex items-center justify-center shrink-0 shadow-xs text-white">
+              <Camera className="w-6 h-6 text-white" />
             </div>
             <div>
               <h4 className="font-display font-bold text-lg text-white">

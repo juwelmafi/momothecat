@@ -6,11 +6,10 @@ import { usePathname } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import {
   Send,
-  Phone,
-  Mail,
   MapPin,
   CheckCircle2,
   ShieldCheck,
+  Sparkles,
 } from 'lucide-react';
 import { CATEGORIES } from '@/lib/initialData';
 
@@ -39,7 +38,7 @@ export default function Footer() {
       const data = await res.json();
       if (data.success) {
         setSubscribed(true);
-        showToast('🎉 Welcome! 15% discount coupon: MOMO15');
+        showToast('Welcome! 15% discount coupon: MOMO15');
       }
     } catch {
       showToast('Error subscribing. Please try again.');
@@ -139,8 +138,8 @@ export default function Footer() {
                   className="h-10 w-auto object-contain max-w-[120px]"
                 />
               ) : (
-                <div className="w-10 h-10 rounded-full bg-[#FFC312] flex items-center justify-center text-xl">
-                  🐱
+                <div className="w-10 h-10 rounded-full bg-[#FFC312] flex items-center justify-center text-[#232121]">
+                  <Sparkles className="w-5 h-5 text-[#232121]" />
                 </div>
               )}
               <div className="flex items-center gap-1">
@@ -154,18 +153,6 @@ export default function Footer() {
             </p>
 
             <div className="space-y-2 text-xs text-slate-300 font-medium pt-2">
-              <div className="flex items-center gap-2.5">
-                <Phone className="w-4 h-4 text-[#FFC312]" />
-                <a href={`tel:${settings.contactPhone?.replace(/[^0-9+]/g, '') || '18002286666'}`} className="hover:text-white transition-colors">
-                  {settings.contactPhone || '(+1) 800-CAT-MOMO'}
-                </a>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <Mail className="w-4 h-4 text-[#FFC312]" />
-                <a href={`mailto:${settings.contactEmail || 'hello@momothecat.shop'}`} className="hover:text-white transition-colors">
-                  {settings.contactEmail || 'hello@momothecat.shop'}
-                </a>
-              </div>
               <div className="flex items-center gap-2.5">
                 <MapPin className="w-4 h-4 text-[#FFC312]" />
                 <span>{settings.contactAddress || 'momothecat.shop · San Francisco, CA'}</span>

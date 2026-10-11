@@ -1,6 +1,6 @@
 'use client';
 
-import { ExternalLink, Heart, MessageCircle, Sparkles, CheckCircle2 } from 'lucide-react';
+import { ExternalLink, Heart, MessageCircle, Sparkles, CheckCircle2, Camera } from 'lucide-react';
 
 function InstagramIcon({ className = 'w-4 h-4' }: { className?: string }) {
   return (
@@ -26,7 +26,7 @@ const INSTAGRAM_POSTS: InstagramPost[] = [
     image: 'https://images.unsplash.com/photo-1545249390-6bdfa286032f?auto=format&fit=crop&w=800&q=80',
     likes: '3,420',
     comments: '142',
-    caption: 'Momo testing the automated laser chaser robot! 🐾 High-speed zoomies in full effect. Link in bio!',
+    caption: 'Momo testing the automated laser chaser robot! High-speed zoomies in full effect. Link in bio!',
     tag: '#AmazonFinds #CatToys',
     link: 'https://www.instagram.com',
   },
@@ -35,7 +35,7 @@ const INSTAGRAM_POSTS: InstagramPost[] = [
     image: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80',
     likes: '4,890',
     comments: '215',
-    caption: '10/10 nap score in the orthopedic donut cloud bed. Sound asleep for 4 hours straight 😴☁️',
+    caption: '10/10 nap score in the orthopedic donut cloud bed. Sound asleep for 4 hours straight.',
     tag: '#CozyCat #DeepSleep',
     link: 'https://www.instagram.com',
   },
@@ -44,7 +44,7 @@ const INSTAGRAM_POSTS: InstagramPost[] = [
     image: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=800&q=80',
     likes: '2,780',
     comments: '98',
-    caption: 'King of the castle atop the 60-inch natural sisal scratching tower! Curtains are officially safe 🏰',
+    caption: 'King of the castle atop the 60-inch natural sisal scratching tower! Curtains are officially safe.',
     tag: '#SisalCatTree #FelineKing',
     link: 'https://www.instagram.com',
   },
@@ -53,7 +53,7 @@ const INSTAGRAM_POSTS: InstagramPost[] = [
     image: 'https://images.unsplash.com/photo-1518791841217-8f162f1e1131?auto=format&fit=crop&w=800&q=80',
     likes: '5,120',
     comments: '340',
-    caption: 'Hydration check! Fresh triple-filtered flowing water hits different. Never seen him drink so much 💧',
+    caption: 'Hydration check! Fresh triple-filtered flowing water hits different. Never seen him drink so much.',
     tag: '#CatFountain #HealthyCats',
     link: 'https://www.instagram.com',
   },
@@ -62,7 +62,7 @@ const INSTAGRAM_POSTS: InstagramPost[] = [
     image: 'https://images.unsplash.com/photo-1561948955-570b270e7c36?auto=format&fit=crop&w=800&q=80',
     likes: '3,910',
     comments: '164',
-    caption: 'Caught mid-pounce with the organic catnip avocado ball! The intensity in those eyes 👀🥑',
+    caption: 'Caught mid-pounce with the organic catnip avocado ball! The intensity in those eyes.',
     tag: '#CatnipMadness #Playtime',
     link: 'https://www.instagram.com',
   },
@@ -71,7 +71,7 @@ const INSTAGRAM_POSTS: InstagramPost[] = [
     image: 'https://images.unsplash.com/photo-1574158622682-e40e69881006?auto=format&fit=crop&w=800&q=80',
     likes: '4,230',
     comments: '188',
-    caption: 'Cozy Sunday morning basking in the suction window hammock watching backyard birds 🐦☀️',
+    caption: 'Cozy Sunday morning basking in the suction window hammock watching backyard birds.',
     tag: '#WindowPerch #SundayMood',
     link: 'https://www.instagram.com',
   },
@@ -100,8 +100,8 @@ export default function InstagramFeed() {
           <div className="flex items-center gap-4">
             {/* Avatar with Instagram gradient border */}
             <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full p-0.5 bg-gradient-to-tr from-[#FFC312] via-[#FF6B35] to-[#D62976] shrink-0">
-              <div className="w-full h-full rounded-full bg-white flex items-center justify-center text-3xl shadow-inner">
-                🐱
+              <div className="w-full h-full rounded-full bg-white flex items-center justify-center shadow-inner text-[#FF6B35]">
+                <Camera className="w-6 h-6 text-[#FF6B35]" />
               </div>
             </div>
 

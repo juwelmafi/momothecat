@@ -44,11 +44,11 @@ export async function connectToDatabase(): Promise<typeof mongoose | null> {
     cached.promise = mongoose
       .connect(MONGODB_URI, opts)
       .then((m) => {
-        console.log('✅ Connected to MongoDB Atlas successfully.');
+        console.log('Connected to MongoDB Atlas successfully.');
         return m;
       })
       .catch((err) => {
-        console.warn('⚠️ MongoDB connection issue (falling back to local memory store):', err.message);
+        console.warn('MongoDB connection issue (falling back to local memory store):', err.message);
         cached.promise = null;
         return null as unknown as typeof mongoose;
       });

@@ -42,8 +42,8 @@ export default function TestimonialsAndBrands() {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="absolute bottom-1 right-2 w-10 h-10 rounded-full bg-[#FF5838] text-white flex items-center justify-center text-lg shadow-md border-2 border-white">
-                🐾
+              <div className="absolute bottom-1 right-2 w-10 h-10 rounded-full bg-[#FF5838] text-white flex items-center justify-center shadow-md border-2 border-white">
+                <Heart className="w-5 h-5 text-white fill-white" />
               </div>
             </div>
           </div>

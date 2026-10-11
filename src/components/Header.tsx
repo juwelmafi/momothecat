@@ -7,13 +7,14 @@ import {
   ShoppingBag,
   Search,
   Heart,
-  Phone,
-  Mail,
   ShieldCheck,
   Menu,
   X,
   Flame,
   Sparkles,
+  ArrowRight,
+  Share2,
+  MessageSquare,
 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { CATEGORIES } from '@/lib/initialData';
@@ -87,10 +88,10 @@ export default function Header() {
     >
       {/* 1. TOP ANNOUNCEMENT BAR (Pettie Gold #F2D70A) */}
       <div className="text-[#232121] text-xs font-semibold py-2.5 px-4 sm:px-8 border-b border-[#e2c700]/70">
-        <div className="pettie-container flex flex-col md:flex-row items-center justify-between gap-2">
+        <div className="pettie-container flex items-center justify-center sm:justify-between gap-2">
           {/* Promo code announcement */}
-          <div className="flex items-center gap-2 text-center md:text-left text-[#232121]">
-            <span className="text-sm">🐾</span>
+          <div className="flex items-center gap-2 text-center md:text-left text-[#232121] mx-auto sm:mx-0">
+            <Sparkles className="w-3.5 h-3.5 shrink-0 text-[#232121]" />
             <span className="tracking-wide text-xs font-bold">
               {settings?.announcementText || 'Get 15% Off When You Spend $50+ W. Code:'}{' '}
               {settings?.announcementCode && (
@@ -99,33 +100,6 @@ export default function Header() {
                 </strong>
               )}
             </span>
-          </div>
-
-          {/* Contact info and Admin Hub button */}
-          <div className="flex items-center gap-4 text-xs font-semibold">
-            {settings?.contactPhone && (
-              <a
-                href={`tel:${settings.contactPhone.replace(/[^0-9+]/g, '')}`}
-                className="hidden lg:flex items-center gap-1.5 text-[#232121] hover:text-[#FF6B35] transition-colors"
-              >
-                <Phone className="w-3.5 h-3.5 fill-[#232121] text-[#232121]" />
-                <span>{settings.contactPhone}</span>
-              </a>
-            )}
-
-            {settings?.contactPhone && settings?.contactEmail && (
-              <span className="hidden lg:inline text-black/25">|</span>
-            )}
-
-            {settings?.contactEmail && (
-              <a
-                href={`mailto:${settings.contactEmail}`}
-                className="hidden sm:flex items-center gap-1.5 text-[#232121] hover:text-[#FF6B35] transition-colors"
-              >
-                <Mail className="w-3.5 h-3.5" />
-                <span>{settings.contactEmail}</span>
-              </a>
-            )}
           </div>
         </div>
       </div>
@@ -143,8 +117,8 @@ export default function Header() {
                 className="h-10 sm:h-12 w-auto object-contain max-w-[140px] group-hover:scale-105 transition-transform shrink-0"
               />
             ) : (
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#FFC312] flex items-center justify-center text-xl sm:text-2xl shadow-xs group-hover:scale-105 transition-transform shrink-0">
-                🐱
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#FFC312] flex items-center justify-center text-[#232121] shadow-xs group-hover:scale-105 transition-transform shrink-0">
+                <Sparkles className="w-5 h-5 text-[#232121]" />
               </div>
             )}
             <div className="flex flex-col min-w-0">
@@ -318,7 +292,7 @@ export default function Header() {
               className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-[#FFF9DE] transition-colors text-[#232121]"
             >
               <span>Home</span>
-              <span className="text-xs text-[#FF6B35]">🐾</span>
+              <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
             </Link>
 
             {storeMode !== 'retail_only' ? (
@@ -381,7 +355,7 @@ export default function Header() {
               className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-[#FFF9DE] transition-colors text-[#232121]"
             >
               <span>Social Channels</span>
-              <span className="text-xs">🌐</span>
+              <Share2 className="w-3.5 h-3.5 text-slate-400" />
             </Link>
 
             <Link
@@ -404,7 +378,7 @@ export default function Header() {
               className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-[#FFF9DE] transition-colors text-[#232121]"
             >
               <span>Contact Us</span>
-              <span className="text-xs">💬</span>
+              <MessageSquare className="w-3.5 h-3.5 text-slate-400" />
             </Link>
           </nav>
 
@@ -425,25 +399,6 @@ export default function Header() {
                 </Link>
               ))}
             </div>
-          </div>
-
-          {/* Quick Support Info */}
-          <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
-            <a
-              href="tel:18002286666"
-              className="flex items-center gap-1.5 text-xs font-bold text-[#232121] hover:text-[#FF6B35]"
-            >
-              <Phone className="w-3.5 h-3.5 fill-[#232121]" />
-              <span>(+1) 800-CAT-MOMO</span>
-            </a>
-
-            <a
-              href="mailto:hello@momothecat.shop"
-              className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-[#232121]"
-            >
-              <Mail className="w-3.5 h-3.5" />
-              <span>Email Support</span>
-            </a>
           </div>
         </div>
       )}

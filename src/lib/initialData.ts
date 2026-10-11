@@ -358,8 +358,8 @@ export const INITIAL_SETTINGS: StoreSettings = {
   announcementText: 'Get 15% Off When You Spend $50+ W. Code: MOMO15',
   announcementCode: 'MOMO15',
   announcementActive: true,
-  contactPhone: '(+1) 800-CAT-MOMO',
-  contactEmail: 'hello@momothecat.shop',
+  contactPhone: '',
+  contactEmail: '',
   contactAddress: 'momothecat.shop · San Francisco, CA',
 
   // Hero Section

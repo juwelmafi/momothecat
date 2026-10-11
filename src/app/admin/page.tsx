@@ -48,6 +48,13 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   UploadCloud,
+  Heart,
+  Zap,
+  Star,
+  Megaphone,
+  Crown,
+  Palette,
+  Layout,
 } from 'lucide-react';
 import {
   MergedProduct,
@@ -264,7 +271,7 @@ export default function AdminPage() {
       if (data.success) {
         setSettings(data.settings);
         setCmsForm(data.settings);
-        setCmsSuccessMessage('🎉 Website content & SEO settings saved successfully to live store!');
+        setCmsSuccessMessage('Website content & SEO settings saved successfully to live store!');
         setTimeout(() => setCmsSuccessMessage(''), 7000);
       } else {
         setCmsErrorMessage(data.error || 'Failed to save settings.');
@@ -608,8 +615,8 @@ export default function AdminPage() {
   if (isAuthenticated === null) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-[#F8F9FA]">
-        <div className="w-16 h-16 rounded-3xl bg-[#FFC312] flex items-center justify-center text-3xl shadow-lg animate-bounce">
-          🐱
+        <div className="w-16 h-16 rounded-3xl bg-[#FFC312] text-[#232121] flex items-center justify-center shadow-lg animate-bounce">
+          <Sparkles className="w-8 h-8 text-[#232121]" />
         </div>
         <h2 className="mt-4 font-display font-bold text-xl text-[#232121]">
           Verifying Admin Credentials...
@@ -628,8 +635,8 @@ export default function AdminPage() {
           <div className="absolute -bottom-16 -left-16 w-36 h-36 bg-[#FF6B35]/20 rounded-full blur-2xl pointer-events-none" />
 
           <div className="text-center space-y-2 mb-8 relative z-10">
-            <div className="inline-flex w-16 h-16 rounded-full bg-[#FFC312] items-center justify-center text-3xl shadow-sm mb-1">
-              🐱
+            <div className="inline-flex w-16 h-16 rounded-full bg-[#FFC312] text-[#232121] items-center justify-center shadow-sm mb-1">
+              <Sparkles className="w-8 h-8 text-[#232121]" />
             </div>
             <div className="text-[#FF6B35] font-black text-xs tracking-widest uppercase">
               \ | /
@@ -816,8 +823,8 @@ export default function AdminPage() {
       >
         <div className="p-5 border-b border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#FFC312] text-[#232121] flex items-center justify-center text-xl shadow-md font-bold">
-              🐱
+            <div className="w-10 h-10 rounded-2xl bg-[#FFC312] text-[#232121] flex items-center justify-center shadow-md font-bold">
+              <Sparkles className="w-5 h-5 text-[#232121]" />
             </div>
             <div>
               <h2 className="font-display font-bold text-base text-white">Momo The Cat</h2>
@@ -908,8 +915,8 @@ export default function AdminPage() {
         {/* Brand Top Header */}
         <div className={`p-5 border-b border-white/10 flex items-center ${isSidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#FFC312] text-[#232121] flex items-center justify-center text-xl shadow-md font-bold shrink-0">
-              🐱
+            <div className="w-10 h-10 rounded-2xl bg-[#FFC312] text-[#232121] flex items-center justify-center shadow-md font-bold shrink-0">
+              <Sparkles className="w-5 h-5 text-[#232121]" />
             </div>
             {!isSidebarCollapsed && (
               <div className="overflow-hidden">
@@ -1123,8 +1130,9 @@ export default function AdminPage() {
               <button
                 onClick={() => setCmsSuccessMessage('')}
                 className="text-emerald-700 hover:text-emerald-900 p-1"
+                aria-label="Close"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
           )}
@@ -1138,8 +1146,9 @@ export default function AdminPage() {
               <button
                 onClick={() => setCmsErrorMessage('')}
                 className="text-rose-700 hover:text-rose-900 p-1"
+                aria-label="Close"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
           )}
@@ -1391,7 +1400,7 @@ export default function AdminPage() {
               <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-6">
                 <div className="border-b border-slate-100 pb-3">
                   <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
-                    <span>🐱</span> 1. Hero Banner Slides
+                    <Layout className="w-4 h-4 text-[#FF6B35]" /> 1. Hero Banner Slides
                   </h3>
                   <p className="text-xs text-slate-400">
                     The large yellow banner slider at the top of the storefront homepage.
@@ -1499,7 +1508,7 @@ export default function AdminPage() {
               <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
                 <div className="border-b border-slate-100 pb-3">
                   <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
-                    <span>🐾</span> 2. Products Catalog Section
+                    <ShoppingBag className="w-4 h-4 text-[#FF6B35]" /> 2. Products Catalog Section
                   </h3>
                   <p className="text-xs text-slate-400">
                     The title and subtitle appearing above the circular category buttons and product cards grid.
@@ -1532,7 +1541,7 @@ export default function AdminPage() {
               <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
                 <div className="border-b border-slate-100 pb-3">
                   <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
-                    <span>❤️</span> 3. Passion Section
+                    <Heart className="w-4 h-4 text-[#FF6B35]" /> 3. Passion Section
                   </h3>
                   <p className="text-xs text-slate-400">
                     &ldquo;Our Passion Is Providing Premium Cat Products&rdquo; feature section.
@@ -1575,7 +1584,7 @@ export default function AdminPage() {
               <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
                 <div className="border-b border-slate-100 pb-3">
                   <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
-                    <span>⚡</span> 4. Flash Deals Section
+                    <Zap className="w-4 h-4 text-[#FF6B35]" /> 4. Flash Deals Section
                   </h3>
                   <p className="text-xs text-slate-400">
                     &ldquo;Deals Ended Soon&rdquo; limited-time offers banner.
@@ -1618,7 +1627,7 @@ export default function AdminPage() {
               <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
                 <div className="border-b border-slate-100 pb-3">
                   <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
-                    <span>🏷️</span> 5. Discounts Flash Banner
+                    <Tag className="w-4 h-4 text-[#FF6B35]" /> 5. Discounts Flash Banner
                   </h3>
                   <p className="text-xs text-slate-400">
                     The vibrant yellow banner with the round offer badge and &ldquo;Get Enticing Discounts&rdquo;.
@@ -1661,7 +1670,7 @@ export default function AdminPage() {
               <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
                 <div className="border-b border-slate-100 pb-3">
                   <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
-                    <span>⭐</span> 6. Testimonials Section
+                    <Star className="w-4 h-4 text-[#FF6B35]" /> 6. Testimonials Section
                   </h3>
                   <p className="text-xs text-slate-400">
                     Heading for customer reviews and feedback slider.
@@ -1683,7 +1692,7 @@ export default function AdminPage() {
               <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
                 <div className="border-b border-slate-100 pb-3">
                   <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
-                    <span>📢</span> 7. Top Announcement & Footer Newsletter
+                    <Megaphone className="w-4 h-4 text-[#FF6B35]" /> 7. Top Announcement & Footer Newsletter
                   </h3>
                   <p className="text-xs text-slate-400">
                     Top notification bar and newsletter lead capture box.
@@ -1733,14 +1742,14 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              {/* 8. FOOTER & CONTACT DETAILS */}
+              {/* 8. FOOTER & STORE DETAILS */}
               <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
                 <div className="border-b border-slate-100 pb-3">
                   <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
-                    <span>📍</span> 8. Footer Description & Contact Details
+                    <MapPin className="w-4 h-4 text-[#FF6B35]" /> 8. Footer Description & Store Location
                   </h3>
                   <p className="text-xs text-slate-400">
-                    Brand summary and contact information shown across storefront footer and headers.
+                    Brand summary and store address shown across storefront footer.
                   </p>
                 </div>
 
@@ -1754,42 +1763,16 @@ export default function AdminPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 flex items-center gap-1">
-                      <Phone className="w-3.5 h-3.5 text-[#FF6B35]" /> Phone Hotline
-                    </label>
-                    <input
-                      type="text"
-                      value={cmsForm.contactPhone ?? ''}
-                      onChange={(e) => setCmsForm({ ...cmsForm, contactPhone: e.target.value })}
-                      className="w-full px-3.5 py-2.5 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
-                    />
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 flex items-center gap-1">
-                      <Mail className="w-3.5 h-3.5 text-[#FF6B35]" /> Contact Email
-                    </label>
-                    <input
-                      type="text"
-                      value={cmsForm.contactEmail ?? ''}
-                      onChange={(e) => setCmsForm({ ...cmsForm, contactEmail: e.target.value })}
-                      className="w-full px-3.5 py-2.5 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
-                    />
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-700 flex items-center gap-1">
-                      <MapPin className="w-3.5 h-3.5 text-[#FF6B35]" /> Physical Location
-                    </label>
-                    <input
-                      type="text"
-                      value={cmsForm.contactAddress ?? ''}
-                      onChange={(e) => setCmsForm({ ...cmsForm, contactAddress: e.target.value })}
-                      className="w-full px-3.5 py-2.5 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
-                    />
-                  </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 flex items-center gap-1">
+                    <MapPin className="w-3.5 h-3.5 text-[#FF6B35]" /> Physical Location / Store Address
+                  </label>
+                  <input
+                    type="text"
+                    value={cmsForm.contactAddress ?? ''}
+                    onChange={(e) => setCmsForm({ ...cmsForm, contactAddress: e.target.value })}
+                    className="w-full px-3.5 py-2.5 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                  />
                 </div>
               </div>
 
@@ -1963,7 +1946,7 @@ export default function AdminPage() {
               <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-5">
                 <div className="border-b border-slate-100 pb-3">
                   <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
-                    <span>👑</span> 1. Brand Logo & Browser Favicon
+                    <Crown className="w-5 h-5 text-[#FF6B35]" /> 1. Brand Logo & Browser Favicon
                   </h3>
                   <p className="text-xs text-slate-400">
                     Your primary store identity shown in header, footer, and browser navigation tabs.
@@ -1995,7 +1978,7 @@ export default function AdminPage() {
               <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-6">
                 <div className="border-b border-slate-100 pb-3">
                   <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
-                    <span>🐱</span> 2. Hero Banner Slider Images
+                    <ImageIcon className="w-5 h-5 text-[#FF6B35]" /> 2. Hero Banner Slider Images
                   </h3>
                   <p className="text-xs text-slate-400">
                     All pet cutouts, product bags, bowls, and discount badges for Slide 1 & Slide 2.
@@ -2113,7 +2096,7 @@ export default function AdminPage() {
               <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-5">
                 <div className="border-b border-slate-100 pb-3">
                   <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
-                    <span>🌈</span> 3. Category Showcase Arches
+                    <Palette className="w-5 h-5 text-[#FF6B35]" /> 3. Category Showcase Arches
                   </h3>
                   <p className="text-xs text-slate-400">
                     The 3 arch cutout cards positioned directly below the hero banner.
@@ -2154,7 +2137,7 @@ export default function AdminPage() {
               <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-5">
                 <div className="border-b border-slate-100 pb-3">
                   <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
-                    <span>🔥</span> 4. Promotional Banners & Flash Cards
+                    <Flame className="w-5 h-5 text-[#FF6B35]" /> 4. Promotional Banners & Flash Cards
                   </h3>
                   <p className="text-xs text-slate-400">
                     Featured images inside Passion Banner, Deals Ended Soon, Flash Discounts & Promo cards.
@@ -2213,7 +2196,7 @@ export default function AdminPage() {
               <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-5">
                 <div className="border-b border-slate-100 pb-3">
                   <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
-                    <span>⭐</span> 5. Customer Testimonials Portraits
+                    <Users className="w-5 h-5 text-[#FF6B35]" /> 5. Customer Testimonials Portraits
                   </h3>
                   <p className="text-xs text-slate-400">
                     Customer review photos displayed inside circular frames in the testimonial carousel.
@@ -2254,7 +2237,7 @@ export default function AdminPage() {
               <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-5">
                 <div className="border-b border-slate-100 pb-3">
                   <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
-                    <span>💌</span> 6. Newsletter & Footer Graphics
+                    <Mail className="w-5 h-5 text-[#FF6B35]" /> 6. Newsletter & Footer Graphics
                   </h3>
                   <p className="text-xs text-slate-400">
                     Cute pet illustration next to the newsletter signup box and payment logos in the copyright footer.
@@ -2713,8 +2696,8 @@ export default function AdminPage() {
 
               {orders.length === 0 ? (
                 <div className="bg-white rounded-3xl p-12 text-center border border-slate-200/80 space-y-3">
-                  <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto text-xl">
-                    🛍️
+                  <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+                    <ShoppingBag className="w-6 h-6 text-slate-400" />
                   </div>
                   <h3 className="font-bold text-slate-800">No Orders Placed Yet</h3>
                   <p className="text-xs text-slate-400 max-w-sm mx-auto">

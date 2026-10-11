@@ -14,6 +14,7 @@ import {
   Tag,
   AlertCircle,
   Package,
+  ShoppingCart,
 } from 'lucide-react';
 
 export default function CheckoutPage() {
@@ -33,13 +34,13 @@ export default function CheckoutPage() {
   } = useCart();
 
   const [formData, setFormData] = useState({
-    name: 'Sarah Jenkins',
-    email: 'sarah.jenkins@example.com',
-    phone: '+1 (555) 234-5678',
-    street: '742 Evergreen Terrace',
-    city: 'Portland',
-    state: 'OR',
-    zip: '97201',
+    name: '',
+    email: '',
+    phone: '',
+    street: '',
+    city: '',
+    state: '',
+    zip: '',
     country: 'United States',
   });
 
@@ -51,8 +52,8 @@ export default function CheckoutPage() {
   if (storeMode === 'affiliate_only') {
     return (
       <div className="max-w-2xl mx-auto py-16 text-center space-y-6">
-        <div className="w-20 h-20 rounded-3xl bg-amber-100 flex items-center justify-center text-4xl mx-auto">
-          📦
+        <div className="w-20 h-20 rounded-3xl bg-amber-100 flex items-center justify-center mx-auto text-amber-600">
+          <Package className="w-10 h-10 text-amber-600" />
         </div>
         <h1 className="text-2xl font-black text-slate-900">Affiliate Mode Active</h1>
         <p className="text-sm text-slate-500">
@@ -72,8 +73,8 @@ export default function CheckoutPage() {
   if (cart.length === 0) {
     return (
       <div className="max-w-2xl mx-auto py-16 text-center space-y-6">
-        <div className="w-20 h-20 rounded-3xl bg-orange-100 flex items-center justify-center text-4xl mx-auto">
-          🛒
+        <div className="w-20 h-20 rounded-3xl bg-orange-100 flex items-center justify-center mx-auto text-orange-600">
+          <ShoppingCart className="w-10 h-10 text-orange-600" />
         </div>
         <h1 className="text-2xl font-black text-slate-900">Your Cart is Empty</h1>
         <p className="text-sm text-slate-500">
@@ -185,6 +186,7 @@ export default function CheckoutPage() {
                     type="text"
                     required
                     name="name"
+                    placeholder="e.g. Jane Doe"
                     value={formData.name}
                     onChange={handleChange}
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 font-medium text-slate-800"
@@ -197,6 +199,7 @@ export default function CheckoutPage() {
                     type="email"
                     required
                     name="email"
+                    placeholder="you@example.com"
                     value={formData.email}
                     onChange={handleChange}
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 font-medium text-slate-800"
@@ -209,6 +212,7 @@ export default function CheckoutPage() {
                     type="tel"
                     required
                     name="phone"
+                    placeholder="+1 (555) 000-0000"
                     value={formData.phone}
                     onChange={handleChange}
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 font-medium text-slate-800"
@@ -221,6 +225,7 @@ export default function CheckoutPage() {
                     type="text"
                     required
                     name="street"
+                    placeholder="123 Blossom Lane, Apt 4"
                     value={formData.street}
                     onChange={handleChange}
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 font-medium text-slate-800"
@@ -233,6 +238,7 @@ export default function CheckoutPage() {
                     type="text"
                     required
                     name="city"
+                    placeholder="Portland"
                     value={formData.city}
                     onChange={handleChange}
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 font-medium text-slate-800"
@@ -246,6 +252,7 @@ export default function CheckoutPage() {
                       type="text"
                       required
                       name="state"
+                      placeholder="OR"
                       value={formData.state}
                       onChange={handleChange}
                       className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 font-medium text-slate-800"
@@ -257,6 +264,7 @@ export default function CheckoutPage() {
                       type="text"
                       required
                       name="zip"
+                      placeholder="97201"
                       value={formData.zip}
                       onChange={handleChange}
                       className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 font-medium text-slate-800"

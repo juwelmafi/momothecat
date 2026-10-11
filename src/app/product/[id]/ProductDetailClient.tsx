@@ -16,6 +16,8 @@ import {
   Plus,
   Minus,
   CheckCircle2,
+  AlertCircle,
+  Info,
 } from 'lucide-react';
 
 interface Props {
@@ -189,7 +191,10 @@ export default function ProductDetailClient({ product }: Props) {
           {isReal && realProd ? (
             storeMode === 'affiliate_only' ? (
               <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-amber-800 text-xs font-semibold text-center space-y-2">
-                <p>⚠️ Storefront is currently in <strong>Affiliate Mode</strong>.</p>
+                <p className="flex items-center justify-center gap-1.5">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-amber-600" />
+                  <span>Storefront is currently in <strong>Affiliate Mode</strong>.</span>
+                </p>
                 <p className="text-[11px] text-amber-700">In-house ordering for Momo Originals is temporarily disabled.</p>
               </div>
             ) : (
@@ -245,7 +250,10 @@ export default function ProductDetailClient({ product }: Props) {
           ) : (
             storeMode === 'retail_only' ? (
               <div className="p-4 bg-slate-100 border border-slate-200 rounded-2xl text-slate-700 text-xs font-semibold text-center space-y-2">
-                <p>ℹ️ Storefront is currently in <strong>Real Product Mode</strong>.</p>
+                <p className="flex items-center justify-center gap-1.5">
+                  <Info className="w-4 h-4 shrink-0 text-slate-600" />
+                  <span>Storefront is currently in <strong>Real Product Mode</strong>.</span>
+                </p>
                 <p className="text-[11px] text-slate-500">Outbound Amazon links are currently disabled.</p>
               </div>
             ) : (

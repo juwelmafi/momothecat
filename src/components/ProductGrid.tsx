@@ -17,6 +17,12 @@ import SocialMediaSection from './SocialMediaSection';
 import {
   Flame,
   Sparkles,
+  LayoutGrid,
+  Utensils,
+  Activity,
+  Armchair,
+  Palmtree,
+  PackageOpen,
 } from 'lucide-react';
 
 interface ProductGridProps {
@@ -28,12 +34,12 @@ interface ProductGridProps {
 }
 
 const CIRCLE_CATEGORIES = [
-  { name: 'All Products', label: 'All Products', icon: '🐾' },
-  { name: 'Cat Food & Treats', label: 'Cat Food', icon: '🐟' },
-  { name: 'Cat Toys', label: 'Cat Toys', icon: '🧶' },
-  { name: 'Beds & Furniture', label: 'Cat Beds', icon: '🛋️' },
-  { name: 'Scratchers & Trees', label: 'Scratchers', icon: '🌴' },
-  { name: 'Grooming & Care', label: 'Grooming', icon: '🧴' },
+  { name: 'All Products', label: 'All Products', icon: LayoutGrid },
+  { name: 'Cat Food & Treats', label: 'Cat Food', icon: Utensils },
+  { name: 'Cat Toys', label: 'Cat Toys', icon: Activity },
+  { name: 'Beds & Furniture', label: 'Cat Beds', icon: Armchair },
+  { name: 'Scratchers & Trees', label: 'Scratchers', icon: Palmtree },
+  { name: 'Grooming & Care', label: 'Grooming', icon: Sparkles },
 ];
 
 export default function ProductGrid({
@@ -143,13 +149,13 @@ export default function ProductGrid({
 
                   {/* Circular Button */}
                   <div
-                    className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center text-3xl sm:text-4xl shadow-md transition-all duration-300 border-4 ${
+                    className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center shadow-md transition-all duration-300 border-4 ${
                       isSelected
                         ? 'bg-[#FFC312] border-white ring-4 ring-[#FFC312]/30 scale-105'
                         : 'bg-[#FF6B35] border-white group-hover:bg-[#FF9933]'
                     }`}
                   >
-                    <span className="select-none">{cat.icon}</span>
+                    <cat.icon className={`w-8 h-8 sm:w-10 sm:h-10 transition-colors ${isSelected ? 'text-[#232121]' : 'text-white'}`} />
                   </div>
 
                   {/* Title Below Circle */}
@@ -242,7 +248,7 @@ export default function ProductGrid({
           {/* Product Cards 4-Column Grid matching Pettie */}
           {filteredProducts.length === 0 ? (
             <div className="bg-white rounded-3xl p-12 text-center border border-slate-200/80 space-y-3">
-              <div className="text-4xl">🐾</div>
+              <PackageOpen className="w-12 h-12 text-slate-300 mx-auto" />
               <h3 className="font-display font-bold text-lg text-[#232121]">No products found</h3>
               <p className="text-xs text-[#666666]">
                 Try changing the category or reset your filter to view all items.
