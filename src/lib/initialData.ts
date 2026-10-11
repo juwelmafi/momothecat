@@ -369,7 +369,7 @@ export const INITIAL_SETTINGS: StoreSettings = {
 
   // Branding Fields
   websiteLogo:
-    'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Pty-Amount-Logo-1.png',
+    'https://res.cloudinary.com/ccavbngu/image/upload/v1791708449/momothecat/website/momo_logo_paw_v1.png',
   brandName: 'Momo',
   brandTagline: 'Amazon Cat Boutique',
 
