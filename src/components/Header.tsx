@@ -128,7 +128,11 @@ export default function Header() {
               <img
                 src={settings.websiteLogo}
                 alt={settings.brandName || 'Momo'}
-                className="h-10 sm:h-12 w-auto object-contain max-h-12 sm:max-h-14 max-w-[180px] sm:max-w-[240px] group-hover:scale-105 transition-transform shrink-0"
+                style={{
+                  width: settings?.headerLogoWidth ? `${settings.headerLogoWidth}px` : undefined,
+                  maxWidth: '100%',
+                }}
+                className="h-auto max-h-12 sm:max-h-16 w-auto object-contain group-hover:scale-105 transition-transform shrink-0"
               />
             ) : (
               <div className="flex items-center gap-2">
@@ -225,19 +229,21 @@ export default function Header() {
               <Search className="w-4 h-4" />
             </button>
 
-            {/* Wishlist (Desktop & Tablet) */}
-            <Link
-              href="/?view=wishlist"
-              className="hidden sm:flex shrink-0 relative w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-black/15 hover:border-[#FF6B35] bg-white/70 hover:bg-white text-[#232121] hover:text-[#FF6B35] items-center justify-center transition-all shadow-2xs"
-              aria-label="Wishlist"
-            >
-              <Heart className="w-4 h-4" />
-              {wishlist.length > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#FF6B35] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                  {wishlist.length}
-                </span>
-              )}
-            </Link>
+            {/* Wishlist (Desktop & Tablet): Hidden in Affiliate Mode */}
+            {storeMode !== 'affiliate_only' && (
+              <Link
+                href="/?view=wishlist"
+                className="hidden sm:flex shrink-0 relative w-9 h-9 sm:w-10 sm:h-10 rounded-full border border-black/15 hover:border-[#FF6B35] bg-white/70 hover:bg-white text-[#232121] hover:text-[#FF6B35] items-center justify-center transition-all shadow-2xs"
+                aria-label="Wishlist"
+              >
+                <Heart className="w-4 h-4" />
+                {wishlist.length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#FF6B35] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                    {wishlist.length}
+                  </span>
+                )}
+              </Link>
+            )}
 
             {/* Cart Button: Hidden in Affiliate Mode */}
             {storeMode !== 'affiliate_only' && (
@@ -374,19 +380,21 @@ export default function Header() {
               <Share2 className="w-3.5 h-3.5 text-slate-400" />
             </Link>
 
-            <Link
-              href="/?view=wishlist"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-[#FFF9DE] transition-colors text-[#232121]"
-            >
-              <div className="flex items-center gap-2">
-                <Heart className="w-4 h-4 text-[#FF6B35]" />
-                <span>My Wishlist</span>
-              </div>
-              <span className="w-5 h-5 bg-[#FF6B35] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                {wishlist.length}
-              </span>
-            </Link>
+            {storeMode !== 'affiliate_only' && (
+              <Link
+                href="/?view=wishlist"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-[#FFF9DE] transition-colors text-[#232121]"
+              >
+                <div className="flex items-center gap-2">
+                  <Heart className="w-4 h-4 text-[#FF6B35]" />
+                  <span>My Wishlist</span>
+                </div>
+                <span className="w-5 h-5 bg-[#FF6B35] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  {wishlist.length}
+                </span>
+              </Link>
+            )}
 
             <Link
               href="/#footer-section"

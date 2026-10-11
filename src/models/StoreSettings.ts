@@ -39,7 +39,19 @@ const StoreSettingsSchema = new Schema<IStoreSettings>(
     websiteLogo: {
       type: String,
       default:
-        'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Pty-Amount-Logo-1.png',
+        'https://res.cloudinary.com/ccavbngu/image/upload/v1791708449/momothecat/website/momo_logo_paw_v1.png',
+    },
+    footerLogo: {
+      type: String,
+      default: '',
+    },
+    headerLogoWidth: {
+      type: Number,
+      default: 150,
+    },
+    footerLogoWidth: {
+      type: Number,
+      default: 150,
     },
     brandName: { type: String, default: 'Momo' },
     brandTagline: { type: String, default: 'Amazon Cat Boutique' },

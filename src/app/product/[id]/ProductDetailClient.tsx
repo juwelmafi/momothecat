@@ -79,17 +79,19 @@ export default function ProductDetailClient({ product }: Props) {
             )}
           </div>
 
-          {/* Wishlist Button */}
-          <button
-            onClick={() => toggleWishlist(product._id)}
-            className={`absolute top-4 right-4 z-10 w-11 h-11 rounded-2xl flex items-center justify-center transition-all shadow-md ${
-              wishlisted
-                ? 'bg-rose-500 text-white'
-                : 'bg-white/90 hover:bg-white text-slate-600 hover:text-rose-500'
-            }`}
-          >
-            <Heart className={`w-5 h-5 ${wishlisted ? 'fill-current' : ''}`} />
-          </button>
+          {/* Wishlist Button: Hidden in Affiliate Mode */}
+          {storeMode !== 'affiliate_only' && product.type !== 'affiliate' && (
+            <button
+              onClick={() => toggleWishlist(product._id)}
+              className={`absolute top-4 right-4 z-10 w-11 h-11 rounded-2xl flex items-center justify-center transition-all shadow-md ${
+                wishlisted
+                  ? 'bg-rose-500 text-white'
+                  : 'bg-white/90 hover:bg-white text-slate-600 hover:text-rose-500'
+              }`}
+            >
+              <Heart className={`w-5 h-5 ${wishlisted ? 'fill-current' : ''}`} />
+            </button>
+          )}
 
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img

@@ -10,6 +10,7 @@ interface PageProps {
     category?: string;
     search?: string;
     filter?: string;
+    view?: string;
   }>;
 }
 
@@ -18,6 +19,7 @@ export default async function HomePage({ searchParams }: PageProps) {
   const category = params?.category || 'All Products';
   const search = params?.search || '';
   const filter = params?.filter || 'all';
+  const view = params?.view || '';
 
   const [products, settings] = await Promise.all([
     getMergedProducts(),
@@ -35,6 +37,7 @@ export default async function HomePage({ searchParams }: PageProps) {
         activeCategory={category}
         searchQuery={search}
         activeFilter={filter}
+        initialView={view}
         storeMode={settings.storeMode}
       />
     </div>

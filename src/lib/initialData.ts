@@ -370,6 +370,9 @@ export const INITIAL_SETTINGS: StoreSettings = {
   // Branding Fields
   websiteLogo:
     'https://res.cloudinary.com/ccavbngu/image/upload/v1791708449/momothecat/website/momo_logo_paw_v1.png',
+  footerLogo: '',
+  headerLogoWidth: 150,
+  footerLogoWidth: 150,
   brandName: 'Momo',
   brandTagline: 'Amazon Cat Boutique',
 

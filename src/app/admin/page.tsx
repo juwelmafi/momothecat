@@ -1965,14 +1965,23 @@ export default function AdminPage() {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <CloudinaryImageUploader
-                    label="Website Header & Brand Logo"
-                    description="Main logo shown on top left header and footer."
+                    label="Website Header Logo"
+                    description="Main logo shown on top left header."
                     recommendedSize="240x60 PNG / SVG"
                     value={cmsForm.websiteLogo || ''}
                     defaultValue={INITIAL_SETTINGS.websiteLogo}
                     onChange={(url) => setCmsForm({ ...cmsForm, websiteLogo: url })}
+                  />
+
+                  <CloudinaryImageUploader
+                    label="Website Footer Logo"
+                    description="Dedicated footer logo (leave empty to use Header logo)."
+                    recommendedSize="240x60 PNG / SVG"
+                    value={cmsForm.footerLogo || ''}
+                    defaultValue={INITIAL_SETTINGS.footerLogo || ''}
+                    onChange={(url) => setCmsForm({ ...cmsForm, footerLogo: url })}
                   />
 
                   <CloudinaryImageUploader
@@ -1983,6 +1992,63 @@ export default function AdminPage() {
                     defaultValue={INITIAL_SETTINGS.websiteFavicon}
                     onChange={(url) => setCmsForm({ ...cmsForm, websiteFavicon: url })}
                   />
+                </div>
+
+                {/* Header & Footer Logo Width Customizer */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-[#FBF9F7] rounded-2xl border border-slate-200/80">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
+                      <span>Header Logo Width</span>
+                      <span className="text-[#FF6B35] font-mono font-black">{cmsForm.headerLogoWidth || 150}px</span>
+                    </label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="range"
+                        min={60}
+                        max={300}
+                        step={5}
+                        value={cmsForm.headerLogoWidth || 150}
+                        onChange={(e) => setCmsForm({ ...cmsForm, headerLogoWidth: Number(e.target.value) })}
+                        className="w-full accent-[#FF6B35]"
+                      />
+                      <input
+                        type="number"
+                        min={40}
+                        max={400}
+                        value={cmsForm.headerLogoWidth || 150}
+                        onChange={(e) => setCmsForm({ ...cmsForm, headerLogoWidth: Number(e.target.value) })}
+                        className="w-20 px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono font-bold text-center"
+                      />
+                    </div>
+                    <p className="text-[11px] text-slate-400">Controls header logo size on the live store (default: 150px).</p>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
+                      <span>Footer Logo Width</span>
+                      <span className="text-[#FF6B35] font-mono font-black">{cmsForm.footerLogoWidth || 150}px</span>
+                    </label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="range"
+                        min={60}
+                        max={300}
+                        step={5}
+                        value={cmsForm.footerLogoWidth || 150}
+                        onChange={(e) => setCmsForm({ ...cmsForm, footerLogoWidth: Number(e.target.value) })}
+                        className="w-full accent-[#FF6B35]"
+                      />
+                      <input
+                        type="number"
+                        min={40}
+                        max={400}
+                        value={cmsForm.footerLogoWidth || 150}
+                        onChange={(e) => setCmsForm({ ...cmsForm, footerLogoWidth: Number(e.target.value) })}
+                        className="w-20 px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono font-bold text-center"
+                      />
+                    </div>
+                    <p className="text-[11px] text-slate-400">Controls footer logo size in the dark footer (default: 150px).</p>
+                  </div>
                 </div>
               </div>
 
@@ -2445,7 +2511,25 @@ export default function AdminPage() {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                  <CloudinaryImageUploader
+                    label="Website Header Logo"
+                    description="Main logo shown on top header. Transparent PNG or SVG recommended."
+                    recommendedSize="240x60 PNG / SVG"
+                    value={cmsForm.websiteLogo || ''}
+                    defaultValue={INITIAL_SETTINGS.websiteLogo}
+                    onChange={(url) => setCmsForm({ ...cmsForm, websiteLogo: url })}
+                  />
+
+                  <CloudinaryImageUploader
+                    label="Website Footer Logo"
+                    description="Dedicated footer logo (leave empty to use Header logo)."
+                    recommendedSize="240x60 PNG / SVG"
+                    value={cmsForm.footerLogo || ''}
+                    defaultValue={INITIAL_SETTINGS.footerLogo || ''}
+                    onChange={(url) => setCmsForm({ ...cmsForm, footerLogo: url })}
+                  />
+
                   <CloudinaryImageUploader
                     label="Website Browser Favicon"
                     description="Square icon displayed on browser tabs. Standard: 32x32px or 64x64px."
@@ -2454,15 +2538,63 @@ export default function AdminPage() {
                     defaultValue={INITIAL_SETTINGS.websiteFavicon}
                     onChange={(url) => setCmsForm({ ...cmsForm, websiteFavicon: url })}
                   />
+                </div>
 
-                  <CloudinaryImageUploader
-                    label="Website Logo"
-                    description="Main logo shown on top header and footer. Transparent PNG or SVG recommended."
-                    recommendedSize="240x60 PNG / SVG"
-                    value={cmsForm.websiteLogo || ''}
-                    defaultValue={INITIAL_SETTINGS.websiteLogo}
-                    onChange={(url) => setCmsForm({ ...cmsForm, websiteLogo: url })}
-                  />
+                {/* Header & Footer Logo Width Customizer */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-[#FBF9F7] rounded-2xl border border-slate-200/80">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
+                      <span>Header Logo Width</span>
+                      <span className="text-[#FF6B35] font-mono font-black">{cmsForm.headerLogoWidth || 150}px</span>
+                    </label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="range"
+                        min={60}
+                        max={300}
+                        step={5}
+                        value={cmsForm.headerLogoWidth || 150}
+                        onChange={(e) => setCmsForm({ ...cmsForm, headerLogoWidth: Number(e.target.value) })}
+                        className="w-full accent-[#FF6B35]"
+                      />
+                      <input
+                        type="number"
+                        min={40}
+                        max={400}
+                        value={cmsForm.headerLogoWidth || 150}
+                        onChange={(e) => setCmsForm({ ...cmsForm, headerLogoWidth: Number(e.target.value) })}
+                        className="w-20 px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono font-bold text-center"
+                      />
+                    </div>
+                    <p className="text-[11px] text-slate-400">Controls header logo size on the live store (default: 150px).</p>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-700 flex items-center justify-between">
+                      <span>Footer Logo Width</span>
+                      <span className="text-[#FF6B35] font-mono font-black">{cmsForm.footerLogoWidth || 150}px</span>
+                    </label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="range"
+                        min={60}
+                        max={300}
+                        step={5}
+                        value={cmsForm.footerLogoWidth || 150}
+                        onChange={(e) => setCmsForm({ ...cmsForm, footerLogoWidth: Number(e.target.value) })}
+                        className="w-full accent-[#FF6B35]"
+                      />
+                      <input
+                        type="number"
+                        min={40}
+                        max={400}
+                        value={cmsForm.footerLogoWidth || 150}
+                        onChange={(e) => setCmsForm({ ...cmsForm, footerLogoWidth: Number(e.target.value) })}
+                        className="w-20 px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-mono font-bold text-center"
+                      />
+                    </div>
+                    <p className="text-[11px] text-slate-400">Controls footer logo size in the dark footer (default: 150px).</p>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">

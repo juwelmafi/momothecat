@@ -130,12 +130,16 @@ export default function Footer() {
           {/* Col 1: Brand & Contact (4 cols) */}
           <div className="lg:col-span-4 space-y-4">
             <Link href="/" className="inline-block group">
-              {settings.websiteLogo ? (
+              {(settings.footerLogo || settings.websiteLogo) ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
-                  src={settings.websiteLogo}
+                  src={settings.footerLogo || settings.websiteLogo}
                   alt={settings.brandName || 'Logo'}
-                  className="h-10 sm:h-12 w-auto object-contain max-h-12 max-w-[180px] sm:max-w-[220px]"
+                  style={{
+                    width: settings.footerLogoWidth ? `${settings.footerLogoWidth}px` : undefined,
+                    maxWidth: '100%',
+                  }}
+                  className="h-auto max-h-16 w-auto object-contain"
                 />
               ) : (
                 <div className="flex items-center gap-2">

@@ -68,22 +68,24 @@ export default function ProductCard({ product }: ProductCardProps) {
           )}
         </div>
 
-        {/* Top-Right Heart Wishlist Trigger */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            toggleWishlist(product._id);
-          }}
-          className={`absolute top-2 right-2 sm:top-3.5 sm:right-3.5 z-10 w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-all ${
-            wishlisted
-              ? 'bg-[#FF6B35] text-white shadow-md'
-              : 'bg-white/90 backdrop-blur-xs text-[#232121]/75 hover:text-[#FF6B35] hover:scale-110 shadow-xs'
-          }`}
-          aria-label="Wishlist"
-        >
-          <Heart className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${wishlisted ? 'fill-current' : 'stroke-[1.5]'}`} />
-        </button>
+        {/* Top-Right Heart Wishlist Trigger: Hidden for Affiliate mode & Affiliate products */}
+        {storeMode !== 'affiliate_only' && !isAffiliate && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              toggleWishlist(product._id);
+            }}
+            className={`absolute top-2 right-2 sm:top-3.5 sm:right-3.5 z-10 w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-all ${
+              wishlisted
+                ? 'bg-[#FF6B35] text-white shadow-md'
+                : 'bg-white/90 backdrop-blur-xs text-[#232121]/75 hover:text-[#FF6B35] hover:scale-110 shadow-xs'
+            }`}
+            aria-label="Wishlist"
+          >
+            <Heart className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${wishlisted ? 'fill-current' : 'stroke-[1.5]'}`} />
+          </button>
+        )}
 
         {/* Product Image - Full Width & Height Fill */}
         {isReal ? (

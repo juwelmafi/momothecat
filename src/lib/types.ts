@@ -99,6 +99,9 @@ export interface StoreSettings {
 
   // Branding Fields
   websiteLogo: string;
+  footerLogo?: string;
+  headerLogoWidth?: number;
+  footerLogoWidth?: number;
   brandName: string;
   brandTagline: string;
 

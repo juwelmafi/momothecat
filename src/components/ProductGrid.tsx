@@ -30,6 +30,7 @@ interface ProductGridProps {
   activeCategory?: string;
   searchQuery?: string;
   activeFilter?: string;
+  initialView?: string;
   storeMode?: StoreMode;
 }
 
@@ -47,9 +48,10 @@ export default function ProductGrid({
   activeCategory = 'All Products',
   searchQuery = '',
   activeFilter = 'all',
+  initialView = '',
   storeMode,
 }: ProductGridProps) {
-  const { storeMode: contextMode, settings, isBD } = useCart();
+  const { storeMode: contextMode, settings, isBD, wishlist } = useCart();
   const currentMode = storeMode || contextMode || 'hybrid';
 
   const [selectedCategory, setSelectedCategory] = useState(
@@ -67,6 +69,9 @@ export default function ProductGrid({
       // Respect storefront mode
       if (currentMode === 'affiliate_only' && product.type !== 'affiliate') return false;
       if (currentMode === 'retail_only' && product.type !== 'real') return false;
+
+      // Wishlist view filter
+      if (initialView === 'wishlist' && !wishlist.includes(product._id)) return false;
 
       // Geo-targeting filter for Bangladesh vs Global
       if (product.type === 'affiliate') {
@@ -104,7 +109,7 @@ export default function ProductGrid({
       if (!a.isFeatured && b.isFeatured) return 1;
       return 0;
     });
-  }, [initialProducts, currentMode, isBD, selectedCategory, selectedType, sortBy, currentSearch]);
+  }, [initialProducts, currentMode, isBD, wishlist, initialView, selectedCategory, selectedType, sortBy, currentSearch]);
 
   return (
     <div className="w-full">
@@ -123,6 +128,28 @@ export default function ProductGrid({
       {/* 3. SECTION 8-12: CIRCULAR CATEGORY SELECTOR & PRODUCT GRID */}
       <section id="products-section" className="py-16 sm:py-24 bg-[#FBF9F7] border-y border-black/5">
         <div className="pettie-container">
+          
+          {initialView === 'wishlist' && (
+            <div className="mb-8 p-4 sm:p-6 rounded-2xl bg-[#FFF9DE] border border-[#F2D70A] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl sm:text-3xl">❤️</span>
+                <div>
+                  <h2 className="font-display font-bold text-xl sm:text-2xl text-[#232121]">My Wishlist</h2>
+                  <p className="text-xs sm:text-sm text-slate-600">
+                    {filteredProducts.length === 0
+                      ? 'No items saved to your wishlist yet.'
+                      : `Showing ${filteredProducts.length} saved product${filteredProducts.length === 1 ? '' : 's'}.`}
+                  </p>
+                </div>
+              </div>
+              <a
+                href="/"
+                className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-[#232121] text-white text-xs font-bold hover:bg-[#FF6B35] transition-colors self-start sm:self-auto"
+              >
+                Browse All Products
+              </a>
+            </div>
+          )}
           
           {/* Section Heading with decorative \ | / dashes */}
           <div className="text-center mb-10 space-y-2">
