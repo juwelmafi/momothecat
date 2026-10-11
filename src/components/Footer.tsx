@@ -129,23 +129,25 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pt-4 border-b border-white/10 pb-14">
           {/* Col 1: Brand & Contact (4 cols) */}
           <div className="lg:col-span-4 space-y-4">
-            <Link href="/" className="flex items-center gap-2">
+            <Link href="/" className="inline-block group">
               {settings.websiteLogo ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={settings.websiteLogo}
                   alt={settings.brandName || 'Logo'}
-                  className="h-10 w-auto object-contain max-w-[120px]"
+                  className="h-10 sm:h-12 w-auto object-contain max-h-12 max-w-[180px] sm:max-w-[220px]"
                 />
               ) : (
-                <div className="w-10 h-10 rounded-full bg-[#FFC312] flex items-center justify-center text-[#232121]">
-                  <Sparkles className="w-5 h-5 text-[#232121]" />
+                <div className="flex items-center gap-2">
+                  <div className="w-10 h-10 rounded-full bg-[#FFC312] flex items-center justify-center text-[#232121]">
+                    <Sparkles className="w-5 h-5 text-[#232121]" />
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="font-display font-bold text-2xl text-white">{settings.brandName || 'Momo'}</span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#FF6B35] inline-block mb-1" />
+                  </div>
                 </div>
               )}
-              <div className="flex items-center gap-1">
-                <span className="font-display font-bold text-2xl text-white">{settings.brandName || 'Momo'}</span>
-                <span className="w-2.5 h-2.5 rounded-full bg-[#FF6B35] inline-block mb-1" />
-              </div>
             </Link>
 
             <p className="text-xs text-slate-400 leading-relaxed max-w-sm">

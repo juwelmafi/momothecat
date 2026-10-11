@@ -122,30 +122,32 @@ export default function Header() {
       <div className="pettie-container py-3.5">
         <div className="flex items-center justify-between gap-3 sm:gap-6">
           {/* Logo matching Pettie */}
-          <Link href="/" className="flex items-center gap-2 group shrink-0 min-w-0">
+          <Link href="/" className="flex items-center group shrink-0 min-w-0">
             {settings?.websiteLogo ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={settings.websiteLogo}
                 alt={settings.brandName || 'Momo'}
-                className="h-10 sm:h-12 w-auto object-contain max-w-[140px] group-hover:scale-105 transition-transform shrink-0"
+                className="h-10 sm:h-12 w-auto object-contain max-h-12 sm:max-h-14 max-w-[180px] sm:max-w-[240px] group-hover:scale-105 transition-transform shrink-0"
               />
             ) : (
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#FFC312] flex items-center justify-center text-[#232121] shadow-xs group-hover:scale-105 transition-transform shrink-0">
-                <Sparkles className="w-5 h-5 text-[#232121]" />
+              <div className="flex items-center gap-2">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#FFC312] flex items-center justify-center text-[#232121] shadow-xs group-hover:scale-105 transition-transform shrink-0">
+                  <Sparkles className="w-5 h-5 text-[#232121]" />
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <div className="flex items-center gap-1">
+                    <span className="font-display font-bold text-2xl sm:text-3xl tracking-tight text-[#232121] group-hover:text-[#FF6B35] transition-colors truncate">
+                      {settings?.brandName || 'Momo'}
+                    </span>
+                    <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#FF6B35] inline-block mb-1 shrink-0" />
+                  </div>
+                  <span className="text-[9px] sm:text-[10px] font-semibold text-[#555555] tracking-wider uppercase -mt-1 truncate">
+                    {settings?.brandTagline || 'Cat Boutique'}
+                  </span>
+                </div>
               </div>
             )}
-            <div className="flex flex-col min-w-0">
-              <div className="flex items-center gap-1">
-                <span className="font-display font-bold text-2xl sm:text-3xl tracking-tight text-[#232121] group-hover:text-[#FF6B35] transition-colors truncate">
-                  {settings?.brandName || 'Momo'}
-                </span>
-                <span className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#FF6B35] inline-block mb-1 shrink-0" />
-              </div>
-              <span className="text-[9px] sm:text-[10px] font-semibold text-[#555555] tracking-wider uppercase -mt-1 truncate">
-                {settings?.brandTagline || 'Amazon Cat Boutique'}
-              </span>
-            </div>
           </Link>
 
           {/* Desktop Navigation Links */}
