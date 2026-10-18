@@ -100,14 +100,15 @@ export default function ProductGrid({
       // Strict geo-targeting
       if (product.type === 'affiliate') {
         const aff = product as AffiliateProduct;
+        const platform = aff.platform || 'amazon';
         if (isBD) {
-          const hasDarazLink = Boolean(aff.darazLink && aff.darazLink.trim() !== '');
-          const isAmazonOnly = aff.platform === 'amazon' || aff.targetRegion === 'global_only';
-          if (!hasDarazLink || isAmazonOnly) return false;
+          // Visitor from Bangladesh: Show ONLY Daraz affiliate products. Amazon products are hidden!
+          const isDaraz = platform === 'daraz' || (platform === 'both' && Boolean(aff.darazLink));
+          if (!isDaraz) return false;
         } else {
-          const hasAmazonLink = Boolean(aff.affiliateLink && aff.affiliateLink.trim() !== '');
-          const isDarazOnly = aff.platform === 'daraz' || aff.targetRegion === 'bd_only';
-          if (!hasAmazonLink || isDarazOnly) return false;
+          // Visitor from other countries: Show ONLY Amazon affiliate products. Daraz products are hidden!
+          const isAmazon = platform === 'amazon' || (platform === 'both' && Boolean(aff.affiliateLink));
+          if (!isAmazon) return false;
         }
       }
 

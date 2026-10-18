@@ -80,9 +80,10 @@ export default async function ProductDetailPage({ params }: Props) {
     const country = (cookieCountry || vercelCountry || 'US').toUpperCase();
     const isBD = country === 'BD';
 
-    const targetUrl = isBD && aff.darazLink && aff.darazLink.trim() !== ''
-      ? aff.darazLink
-      : (aff.affiliateLink || '/');
+    const isDaraz = aff.platform === 'daraz' || (aff.platform === 'both' && isBD);
+    const targetUrl = isDaraz
+      ? (aff.darazLink || aff.affiliateLink || '/')
+      : (aff.affiliateLink || aff.darazLink || '/');
 
     redirect(targetUrl);
   }

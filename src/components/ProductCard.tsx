@@ -29,10 +29,12 @@ export default function ProductCard({ product }: ProductCardProps) {
   const isOutOfStock = isReal && (realProd?.stockQuantity ?? 0) <= 0;
   const wishlisted = isWishlisted(product._id);
 
-  const affUrl = (isBD ? affProd?.darazLink : affProd?.affiliateLink) || '#';
-  const isDaraz = isBD;
-  const affPlatformLabel = isBD ? 'Daraz' : 'Amazon';
-  const affBadgeText = isBD
+  const isDaraz = affProd?.platform === 'daraz' || (affProd?.platform === 'both' && isBD);
+  const affUrl = isDaraz
+    ? (affProd?.darazLink || affProd?.affiliateLink || '#')
+    : (affProd?.affiliateLink || '#');
+  const affPlatformLabel = isDaraz ? 'Daraz' : 'Amazon';
+  const affBadgeText = isDaraz
     ? (product.badge && !product.badge.toLowerCase().includes('amazon') ? product.badge : 'Daraz Pick')
     : (product.badge || 'Amazon Pick');
 

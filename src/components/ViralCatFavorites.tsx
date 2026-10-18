@@ -40,10 +40,11 @@ export default function ViralCatFavorites({ products = [] }: ViralCatFavoritesPr
     const geoFiltered = products.filter((p) => {
       if (p.type === 'affiliate') {
         const aff = p as AffiliateProduct;
+        const platform = aff.platform || 'amazon';
         if (isBD) {
-          return Boolean(aff.darazLink && aff.darazLink.trim() !== '' && aff.platform !== 'amazon' && aff.targetRegion !== 'global_only');
+          return platform === 'daraz' || (platform === 'both' && Boolean(aff.darazLink));
         } else {
-          return Boolean(aff.affiliateLink && aff.affiliateLink.trim() !== '' && aff.platform !== 'daraz' && aff.targetRegion !== 'bd_only');
+          return platform === 'amazon' || (platform === 'both' && Boolean(aff.affiliateLink));
         }
       }
       return true;
@@ -146,12 +147,13 @@ export default function ViralCatFavorites({ products = [] }: ViralCatFavoritesPr
           {currentItems.map((item) => {
             const isAffiliate = item.type === 'affiliate';
             const aff = isAffiliate ? (item as AffiliateProduct) : null;
+            const isDaraz = aff?.platform === 'daraz' || (aff?.platform === 'both' && isBD);
 
             const itemUrl = isAffiliate
-              ? (isBD ? aff?.darazLink : aff?.affiliateLink) || '#'
+              ? (isDaraz ? (aff?.darazLink || aff?.affiliateLink) : aff?.affiliateLink) || '#'
               : `/product/${item._id}`;
 
-            const itemBadge = isBD
+            const itemBadge = isDaraz
               ? (item.badge && !item.badge.toLowerCase().includes('amazon') ? item.badge : 'Daraz Pick')
               : (item.badge || 'Viral Pick');
             const itemImage = isAffiliate
@@ -166,7 +168,7 @@ export default function ViralCatFavorites({ products = [] }: ViralCatFavoritesPr
               ? `${Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)}% OFF`
               : 'POPULAR';
 
-            const platformName = isAffiliate ? (isBD ? 'Daraz' : 'Amazon') : 'Store';
+            const platformName = isAffiliate ? (isDaraz ? 'Daraz' : 'Amazon') : 'Store';
 
             return (
               <div

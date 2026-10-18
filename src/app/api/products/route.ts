@@ -77,17 +77,21 @@ export async function POST(req: NextRequest) {
         );
       }
 
+      const assignedPlatform = platform || (darazLink && !affiliateLink ? 'daraz' : 'amazon');
+      const finalAffLink = affiliateLink || darazLink || '';
+      const finalDarazLink = assignedPlatform === 'daraz' ? finalAffLink : (darazLink || '');
+
       const product = await createAffiliateProduct({
         name,
         price: Number(price),
         originalPrice: originalPrice ? Number(originalPrice) : undefined,
         category,
         imageUrl,
-        affiliateLink: affiliateLink || '',
-        darazLink: darazLink || '',
-        platform: platform || (darazLink && !affiliateLink ? 'daraz' : darazLink && affiliateLink ? 'both' : 'amazon'),
-        targetRegion: targetRegion || (darazLink && !affiliateLink ? 'bd_only' : 'all'),
-        badge: badge || (darazLink && !affiliateLink ? 'Daraz Pick' : "Amazon's Choice"),
+        affiliateLink: finalAffLink,
+        darazLink: finalDarazLink,
+        platform: assignedPlatform,
+        targetRegion: assignedPlatform === 'daraz' ? 'bd_only' : 'global_only',
+        badge: badge || (assignedPlatform === 'daraz' ? 'Daraz Pick' : "Amazon's Choice"),
         description: description || '',
         rating: 4.8,
         reviewCount: Math.floor(Math.random() * 200) + 20,

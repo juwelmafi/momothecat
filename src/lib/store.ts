@@ -227,20 +227,19 @@ export async function getMergedProducts(options?: {
     merged = merged.filter((p) => p.isFeatured);
   }
 
-  // Filter by country / targetRegion & merchant platform
+  // Filter by country & merchant platform
   if (options?.country) {
     const isBD = options.country.toUpperCase() === 'BD';
     merged = merged.filter((p) => {
       if (p.type !== 'affiliate') return true;
       const aff = p as AffiliateProduct;
+      const platform = aff.platform || 'amazon';
       if (isBD) {
-        const hasDarazLink = Boolean(aff.darazLink && aff.darazLink.trim() !== '');
-        const isAmazonOnly = aff.platform === 'amazon' || aff.targetRegion === 'global_only';
-        return hasDarazLink && !isAmazonOnly;
+        // Visitors in Bangladesh see ONLY Daraz affiliate products. Amazon products are hidden.
+        return platform === 'daraz' || (platform === 'both' && Boolean(aff.darazLink));
       } else {
-        const hasAmazonLink = Boolean(aff.affiliateLink && aff.affiliateLink.trim() !== '');
-        const isDarazOnly = aff.platform === 'daraz' || aff.targetRegion === 'bd_only';
-        return hasAmazonLink && !isDarazOnly;
+        // Visitors in all other countries see ONLY Amazon affiliate products. Daraz products are hidden.
+        return platform === 'amazon' || (platform === 'both' && Boolean(aff.affiliateLink));
       }
     });
   }

@@ -26,9 +26,9 @@ export default function QuickViewModal() {
   const realProd = isReal ? (quickViewProduct as RealProduct) : null;
   const affProd = !isReal ? (quickViewProduct as AffiliateProduct) : null;
 
-  const isDaraz = isBD;
-  const affUrl = (isBD ? affProd?.darazLink : affProd?.affiliateLink) || '#';
-  const affPlatform = isBD ? 'Daraz' : 'Amazon';
+  const isDaraz = affProd?.platform === 'daraz' || (affProd?.platform === 'both' && isBD);
+  const affUrl = (isDaraz ? (affProd?.darazLink || affProd?.affiliateLink) : affProd?.affiliateLink) || '#';
+  const affPlatform = isDaraz ? 'Daraz' : 'Amazon';
 
   const images = isReal && realProd ? realProd.images : [affProd!.imageUrl];
   const activeImage = images[selectedImageIndex] || images[0];

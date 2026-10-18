@@ -591,10 +591,10 @@ export default function AdminPage() {
       badge: "Amazon's Choice",
       isFeatured: false,
       imageUrl: 'https://images.unsplash.com/photo-1545249390-6bdfa286032f?auto=format&fit=crop&w=800&q=80',
-      affiliateLink: 'https://www.amazon.com/dp/B08XJ893Q1?tag=momothecat-20',
+      affiliateLink: '',
       darazLink: '',
-      platform: 'both',
-      targetRegion: 'all',
+      platform: 'amazon',
+      targetRegion: 'global_only',
       images: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80',
       stockQuantity: '25',
       sku: `MMC-CAT-${Math.floor(100 + Math.random() * 900)}`,
@@ -613,6 +613,7 @@ export default function AdminPage() {
 
     const aff = isAff ? (p as AffiliateProduct) : null;
     const real = !isAff ? (p as RealProduct) : null;
+    const platform = aff?.platform || (aff?.darazLink && !aff?.affiliateLink ? 'daraz' : 'amazon');
 
     setProductForm({
       name: p.name,
@@ -620,13 +621,13 @@ export default function AdminPage() {
       originalPrice: p.originalPrice ? p.originalPrice.toString() : '',
       category: p.category,
       description: p.description || '',
-      badge: p.badge || (isAff ? "Amazon's Choice" : 'Momo Original'),
+      badge: p.badge || (isAff ? (platform === 'daraz' ? 'Daraz Pick' : "Amazon's Choice") : 'Momo Original'),
       isFeatured: Boolean(p.isFeatured),
       imageUrl: aff?.imageUrl || '',
-      affiliateLink: aff?.affiliateLink || '',
+      affiliateLink: (platform === 'daraz' ? (aff?.darazLink || aff?.affiliateLink) : aff?.affiliateLink) || '',
       darazLink: aff?.darazLink || '',
-      platform: aff?.platform || 'amazon',
-      targetRegion: aff?.targetRegion || 'all',
+      platform: platform,
+      targetRegion: aff?.targetRegion || (platform === 'daraz' ? 'bd_only' : 'global_only'),
       images: real?.images ? real.images.join(', ') : '',
       stockQuantity: real?.stockQuantity !== undefined ? real.stockQuantity.toString() : '0',
       sku: real?.sku || '',
@@ -647,6 +648,8 @@ export default function AdminPage() {
     try {
       let payload: any;
       if (newProductType === 'affiliate') {
+        const platform = productForm.platform || 'amazon';
+        const link = productForm.affiliateLink?.trim() || '';
         payload = {
           type: 'affiliate',
           name: productForm.name,
@@ -654,11 +657,11 @@ export default function AdminPage() {
           originalPrice: productForm.originalPrice ? parseFloat(productForm.originalPrice) : undefined,
           category: productForm.category,
           imageUrl: productForm.imageUrl,
-          affiliateLink: productForm.affiliateLink,
-          darazLink: productForm.darazLink,
-          platform: productForm.platform,
-          targetRegion: productForm.targetRegion,
-          badge: productForm.badge,
+          affiliateLink: link,
+          darazLink: platform === 'daraz' ? link : '',
+          platform: platform,
+          targetRegion: platform === 'daraz' ? 'bd_only' : 'global_only',
+          badge: productForm.badge || (platform === 'daraz' ? 'Daraz Pick' : "Amazon's Choice"),
           description: productForm.description,
           isFeatured: productForm.isFeatured,
         };
@@ -4093,15 +4096,22 @@ export default function AdminPage() {
                             </td>
 
                             <td className="p-4">
-                              <span
-                                className={`text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full ${
-                                  isAff
-                                    ? 'bg-amber-100 text-amber-800'
-                                    : 'bg-teal-100 text-teal-800'
-                                }`}
-                              >
-                                {isAff ? 'Amazon Affiliate' : 'Momo Retail'}
-                              </span>
+                              {(() => {
+                                const isDarazProd = aff?.platform === 'daraz';
+                                return (
+                                  <span
+                                    className={`text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full ${
+                                      isAff
+                                        ? isDarazProd
+                                          ? 'bg-orange-100 text-orange-800 border border-orange-200'
+                                          : 'bg-amber-100 text-amber-800 border border-amber-200'
+                                        : 'bg-teal-100 text-teal-800'
+                                    }`}
+                                  >
+                                    {isAff ? (isDarazProd ? '🛍️ Daraz Affiliate' : '🛒 Amazon Affiliate') : 'Momo Retail'}
+                                  </span>
+                                );
+                              })()}
                             </td>
 
                             <td className="p-4 text-slate-600 font-semibold">{p.category}</td>
@@ -4118,34 +4128,31 @@ export default function AdminPage() {
                             <td className="p-4">
                               {isAff ? (
                                 <div className="flex flex-col gap-1">
-                                  {aff?.affiliateLink && (
+                                  {aff?.platform === 'daraz' ? (
                                     <a
-                                      href={aff?.affiliateLink}
+                                      href={aff?.darazLink || aff?.affiliateLink || '#'}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 hover:text-blue-800 underline"
+                                      className="inline-flex items-center gap-1 text-[11px] font-bold text-[#F85606] hover:underline"
                                     >
-                                      <span>Amazon</span>
+                                      <span>🇧🇩 Daraz Link</span>
                                       <ExternalLink className="w-2.5 h-2.5" />
                                     </a>
-                                  )}
-                                  {aff?.darazLink && (
+                                  ) : (
                                     <a
-                                      href={aff?.darazLink}
+                                      href={aff?.affiliateLink || '#'}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="inline-flex items-center gap-1 text-[11px] font-bold text-orange-600 hover:text-orange-800 underline"
+                                      className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-700 hover:underline"
                                     >
-                                      <span>🇧🇩 Daraz</span>
+                                      <span>🛒 Amazon Link</span>
                                       <ExternalLink className="w-2.5 h-2.5" />
                                     </a>
                                   )}
                                   <span className="text-[10px] text-slate-400 font-medium">
-                                    {aff?.targetRegion === 'bd_only'
-                                      ? 'BD Only'
-                                      : aff?.targetRegion === 'global_only'
-                                      ? 'Global Only'
-                                      : 'Smart Geo (BD + Global)'}
+                                    {aff?.platform === 'daraz'
+                                      ? '🇧🇩 Bangladesh Only'
+                                      : '🌐 Global (Non-BD)'}
                                   </span>
                                 </div>
                               ) : (
@@ -4666,53 +4673,80 @@ export default function AdminPage() {
 
               {newProductType === 'affiliate' ? (
                 <>
-                  <div className="space-y-1">
-                    <label className="text-slate-700 font-bold text-xs">Target Region & Audience</label>
-                    <select
-                      value={productForm.targetRegion}
-                      onChange={(e) =>
-                        setProductForm({ ...productForm, targetRegion: e.target.value as any })
-                      }
-                      className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 font-medium text-xs"
-                    >
-                      <option value="all">🌐 All Visitors (Smart Geo: Daraz in BD, Amazon Globally)</option>
-                      <option value="bd_only">🇧🇩 Bangladesh Only (Daraz Exclusive)</option>
-                      <option value="global_only">🇺🇸 Global Only (Amazon Exclusive)</option>
-                    </select>
-                    <p className="text-[10px] text-slate-400">
-                      Smart Geo presents Daraz to visitors in Bangladesh and Amazon to everyone else automatically.
+                  <div className="space-y-1.5">
+                    <label className="text-slate-700 font-bold text-xs flex items-center justify-between">
+                      <span>Affiliate Merchant Platform</span>
+                      <span className="text-[10px] text-slate-400 font-normal">Controls Geo Visibility</span>
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setProductForm((prev) => ({
+                            ...prev,
+                            platform: 'amazon',
+                            targetRegion: 'global_only',
+                            badge: prev.badge === 'Daraz Pick' ? "Amazon's Choice" : prev.badge,
+                          }));
+                        }}
+                        className={`py-2.5 px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all ${
+                          productForm.platform === 'amazon'
+                            ? 'bg-amber-500 border-amber-600 text-white shadow-xs'
+                            : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                        }`}
+                      >
+                        <span>🛒 Amazon (Global)</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setProductForm((prev) => ({
+                            ...prev,
+                            platform: 'daraz',
+                            targetRegion: 'bd_only',
+                            badge: prev.badge === "Amazon's Choice" ? 'Daraz Pick' : prev.badge,
+                          }));
+                        }}
+                        className={`py-2.5 px-3 rounded-xl border text-xs font-bold flex items-center justify-center gap-2 transition-all ${
+                          productForm.platform === 'daraz'
+                            ? 'bg-[#F85606] border-[#e04c04] text-white shadow-xs'
+                            : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                        }`}
+                      >
+                        <span>🛍️ Daraz (Bangladesh 🇧🇩)</span>
+                      </button>
+                    </div>
+                    <p className="text-[10px] text-slate-500">
+                      {productForm.platform === 'daraz'
+                        ? '🇧🇩 Daraz products are shown exclusively to visitors located in Bangladesh. Hidden globally.'
+                        : '🌐 Amazon products are shown to all international visitors. Hidden in Bangladesh.'}
                     </p>
                   </div>
 
                   <div className="space-y-1">
                     <label className="text-slate-700 font-bold text-xs flex items-center justify-between">
-                      <span>Amazon Affiliate Outbound URL</span>
-                      <span className="text-[10px] text-slate-400 font-normal">Global / US visitors</span>
+                      <span>
+                        {productForm.platform === 'daraz'
+                          ? 'Daraz Affiliate Product URL'
+                          : 'Amazon Affiliate Product URL'}
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-normal">
+                        {productForm.platform === 'daraz' ? 'Opens on Daraz' : 'Opens on Amazon'}
+                      </span>
                     </label>
                     <input
                       type="url"
-                      placeholder="https://www.amazon.com/dp/B08XJ893Q1?tag=momothecat-20"
+                      required
+                      placeholder={
+                        productForm.platform === 'daraz'
+                          ? 'https://www.daraz.com.bd/products/...'
+                          : 'https://www.amazon.com/dp/...tag=momothecat-20'
+                      }
                       value={productForm.affiliateLink}
                       onChange={(e) =>
                         setProductForm({ ...productForm, affiliateLink: e.target.value })
                       }
                       className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-orange-500 font-medium text-xs font-mono"
-                    />
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-slate-700 font-bold text-xs flex items-center justify-between">
-                      <span>Daraz Bangladesh Outbound URL</span>
-                      <span className="text-[10px] text-orange-600 font-semibold">Bangladesh visitors 🇧🇩</span>
-                    </label>
-                    <input
-                      type="url"
-                      placeholder="https://www.daraz.com.bd/catalog/?q=... or product link"
-                      value={productForm.darazLink}
-                      onChange={(e) =>
-                        setProductForm({ ...productForm, darazLink: e.target.value })
-                      }
-                      className="w-full px-3.5 py-2.5 bg-orange-50/40 border border-orange-200 rounded-xl outline-none focus:border-orange-500 font-medium text-xs font-mono"
                     />
                   </div>
                   <div className="space-y-1.5">

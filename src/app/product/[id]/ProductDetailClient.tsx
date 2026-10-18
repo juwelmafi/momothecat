@@ -35,8 +35,8 @@ export default function ProductDetailClient({ product }: Props) {
   const realProd = isReal ? (product as RealProduct) : null;
   const affProd = !isReal ? (product as AffiliateProduct) : null;
 
-  const isDaraz = isBD && Boolean(affProd?.darazLink);
-  const affUrl = (isDaraz ? affProd?.darazLink : affProd?.affiliateLink) || '#';
+  const isDaraz = affProd?.platform === 'daraz' || (affProd?.platform === 'both' && isBD);
+  const affUrl = (isDaraz ? (affProd?.darazLink || affProd?.affiliateLink) : affProd?.affiliateLink) || '#';
   const affPlatform = isDaraz ? 'Daraz' : 'Amazon';
 
   const images = isReal && realProd ? realProd.images : [affProd!.imageUrl];
