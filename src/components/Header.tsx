@@ -157,10 +157,14 @@ export default function Header() {
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-7 text-[13px] font-bold uppercase tracking-wider text-[#232121]">
+          <nav className="hidden lg:flex items-center gap-3.5 xl:gap-5 2xl:gap-7 text-xs xl:text-[13px] font-bold uppercase tracking-wider text-[#232121] whitespace-nowrap">
             <Link
               href="/"
-              className="hover:text-[#FF6B35] transition-colors relative py-1 text-[#232121] after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#232121] after:rounded-full"
+              className={`hover:text-[#FF6B35] transition-colors relative py-1 text-[#232121] whitespace-nowrap ${
+                pathname === '/'
+                  ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#232121] after:rounded-full font-extrabold"
+                  : ''
+              }`}
             >
               Home
             </Link>
@@ -168,61 +172,61 @@ export default function Header() {
             {storeMode !== 'retail_only' ? (
               <Link
                 href="/#products-section"
-                className="hover:text-[#FF6B35] transition-colors py-1 flex items-center gap-1"
+                className="hover:text-[#FF6B35] transition-colors py-1 whitespace-nowrap"
               >
-                <Flame className="w-3.5 h-3.5 fill-[#FF6B35] text-[#FF6B35]" />
-                <span>{isBD ? 'Daraz Picks' : 'Amazon Picks'}</span>
+                {isBD ? 'Daraz Picks' : 'Amazon Picks'}
               </Link>
             ) : (
               <Link
                 href="/#products-section"
-                className="hover:text-[#FF6B35] transition-colors py-1 flex items-center gap-1"
+                className="hover:text-[#FF6B35] transition-colors py-1 whitespace-nowrap"
               >
-                <Sparkles className="w-3.5 h-3.5 text-[#2FA5FB]" />
-                <span>Momo Originals</span>
+                Momo Originals
               </Link>
             )}
 
             <Link
               href="/#curated-collections"
-              className="hover:text-[#FF6B35] transition-colors py-1"
+              className="hover:text-[#FF6B35] transition-colors py-1 whitespace-nowrap"
             >
               Collections
             </Link>
 
             <Link
               href="/#deals-section"
-              className="hover:text-[#FF6B35] transition-colors py-1 text-[#FF6B35]"
+              className="hover:text-[#FF6B35] transition-colors py-1 text-[#FF6B35] whitespace-nowrap"
             >
               Deals & Offers
             </Link>
 
             <Link
               href="/articles"
-              className="hover:text-[#FF6B35] transition-colors py-1 flex items-center gap-1.5 font-black text-[#232121]"
+              className={`hover:text-[#FF6B35] transition-colors relative py-1 whitespace-nowrap text-[#232121] ${
+                pathname?.startsWith('/articles')
+                  ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#232121] after:rounded-full font-extrabold"
+                  : ''
+              }`}
             >
-              <BookOpen className="w-3.5 h-3.5 text-[#FF6B35]" />
-              <span>Guides & Reviews</span>
+              Guides & Reviews
             </Link>
-
 
             <Link
               href="/#instagram-section"
-              className="hover:text-[#FF6B35] transition-colors py-1"
+              className="hover:text-[#FF6B35] transition-colors py-1 whitespace-nowrap"
             >
               Instagram
             </Link>
 
             <Link
               href="/#social-section"
-              className="hover:text-[#FF6B35] transition-colors py-1"
+              className="hover:text-[#FF6B35] transition-colors py-1 whitespace-nowrap"
             >
               Social
             </Link>
 
             <Link
               href="/#footer-section"
-              className="hover:text-[#FF6B35] transition-colors py-1"
+              className="hover:text-[#FF6B35] transition-colors py-1 whitespace-nowrap"
             >
               Contact
             </Link>
