@@ -194,12 +194,7 @@ export default function Header() {
               </Link>
             )}
 
-            <Link
-              href="/#deals-section"
-              className="hover:text-[#FF6B35] transition-colors py-1 text-[#FF6B35] whitespace-nowrap"
-            >
-              Deals & Offers
-            </Link>
+
 
             <Link
               href="/articles"
@@ -370,14 +365,7 @@ export default function Header() {
               </Link>
             )}
 
-            <Link
-              href="/#deals-section"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-[#FFF9DE] transition-colors text-[#232121]"
-            >
-              <span>Deals & Offers</span>
-              <span className="text-[10px] bg-[#FFC312] text-[#232121] px-2 py-0.5 rounded-full font-bold">20% OFF</span>
-            </Link>
+
 
             <Link
               href="/articles"

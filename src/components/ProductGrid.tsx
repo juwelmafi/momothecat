@@ -53,7 +53,6 @@ const DEFAULT_SECTIONS_ORDER = [
   'categories',
   'passion',
   'products',
-  'deals',
   'promo_cards',
   'spotlight',
   'testimonials',
@@ -372,18 +371,7 @@ export default function ProductGrid({
                 </div>
               )}
 
-              {/* VIEW ALL BUTTON (Pettie exact layout below product cards) */}
-              <div className="text-center pt-10 sm:pt-14">
-                <button
-                  onClick={() => {
-                    setSelectedCategory('All Products');
-                    setSelectedType('all');
-                  }}
-                  className="pettie-btn pettie-btn-primary shadow-lg shadow-[#FF6B35]/25 hover:scale-105 transition-all text-[11px] sm:text-xs"
-                >
-                  <span>VIEW ALL</span>
-                </button>
-              </div>
+
             </div>
           </section>
         );
@@ -397,8 +385,7 @@ export default function ProductGrid({
         );
 
       case 'deals':
-        if (settings.showDealsBanner === false) return null;
-        return <DealsBanner key="deals" />;
+        return null;
 
       case 'spotlight':
         // Only show if explicitly enabled by admin, and uses real products with NO placeholder items
