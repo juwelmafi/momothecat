@@ -185,12 +185,14 @@ export default function Header() {
               </Link>
             )}
 
-            <Link
-              href="/#curated-collections"
-              className="hover:text-[#FF6B35] transition-colors py-1 whitespace-nowrap"
-            >
-              Collections
-            </Link>
+            {storeMode !== 'affiliate_only' && (
+              <Link
+                href="/#curated-collections"
+                className="hover:text-[#FF6B35] transition-colors py-1 whitespace-nowrap"
+              >
+                Collections
+              </Link>
+            )}
 
             <Link
               href="/#deals-section"
@@ -357,14 +359,16 @@ export default function Header() {
               </Link>
             )}
 
-            <Link
-              href="/#curated-collections"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-[#FFF9DE] transition-colors text-[#232121]"
-            >
-              <span>Curated Collections</span>
-              <span className="text-[10px] text-slate-400">Bundles</span>
-            </Link>
+            {storeMode !== 'affiliate_only' && (
+              <Link
+                href="/#curated-collections"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-[#FFF9DE] transition-colors text-[#232121]"
+              >
+                <span>Curated Collections</span>
+                <span className="text-[10px] text-slate-400">Bundles</span>
+              </Link>
+            )}
 
             <Link
               href="/#deals-section"

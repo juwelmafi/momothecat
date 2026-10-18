@@ -15,7 +15,7 @@ import { CATEGORIES } from '@/lib/initialData';
 
 export default function Footer() {
   const pathname = usePathname();
-  const { showToast, settings, isBD } = useCart();
+  const { showToast, settings, isBD, storeMode } = useCart();
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -183,11 +183,13 @@ export default function Footer() {
                   Shop All Products
                 </Link>
               </li>
-              <li>
-                <Link href="/#curated-collections" className="hover:text-[#FFC312] transition-colors">
-                  Curated Collections
-                </Link>
-              </li>
+              {storeMode !== 'affiliate_only' && (
+                <li>
+                  <Link href="/#curated-collections" className="hover:text-[#FFC312] transition-colors">
+                    Curated Collections
+                  </Link>
+                </li>
+              )}
               <li>
                 <Link href="/#instagram-section" className="hover:text-[#FFC312] transition-colors">
                   Instagram Feed
