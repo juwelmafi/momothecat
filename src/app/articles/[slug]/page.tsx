@@ -474,7 +474,7 @@ export default async function ArticleDetailPage({ params }: Props) {
                 <ExternalLink className="w-4 h-4" />
               </a>
 
-              {affiliateProduct && (
+              {affiliateProduct && affiliateProduct.type === 'real' && (
                 <Link
                   href={`/product/${affiliateProduct._id}`}
                   className="w-full sm:w-auto py-3.5 px-6 rounded-2xl bg-white border border-slate-200 text-slate-800 hover:text-[#FF6B35] font-bold text-xs flex items-center justify-center gap-1.5 transition-colors"

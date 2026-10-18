@@ -17,14 +17,26 @@ export default function AmazonPrimeSpotlight({ products = [] }: AmazonPrimeSpotl
   const spotlightItems = React.useMemo(() => {
     if (!products || products.length === 0) return [];
 
+    const geoFiltered = products.filter((p) => {
+      if (p.type === 'affiliate') {
+        const aff = p as AffiliateProduct;
+        if (isBD) {
+          return Boolean(aff.darazLink && aff.darazLink.trim() !== '' && aff.platform !== 'amazon' && aff.targetRegion !== 'global_only');
+        } else {
+          return Boolean(aff.affiliateLink && aff.affiliateLink.trim() !== '' && aff.platform !== 'daraz' && aff.targetRegion !== 'bd_only');
+        }
+      }
+      return true;
+    });
+
     // Prioritize products with active discounts or marked featured
-    const deals = products.filter(
+    const deals = geoFiltered.filter(
       (p) => (p.originalPrice && p.originalPrice > p.price) || p.isFeatured
     );
 
-    const pool = deals.length >= 4 ? deals : [...deals, ...products.filter((p) => !deals.includes(p))];
+    const pool = deals.length >= 4 ? deals : [...deals, ...geoFiltered.filter((p) => !deals.includes(p))];
     return pool.slice(0, 4);
-  }, [products]);
+  }, [products, isBD]);
 
   // Gracefully return null if no real products exist
   if (spotlightItems.length === 0) {
@@ -73,12 +85,13 @@ export default function AmazonPrimeSpotlight({ products = [] }: AmazonPrimeSpotl
             const aff = isAffiliate ? (item as AffiliateProduct) : null;
             
             const itemUrl = isAffiliate
-              ? isBD && aff?.darazLink
-                ? aff.darazLink
-                : aff?.affiliateLink || '#'
+              ? (isBD ? aff?.darazLink : aff?.affiliateLink) || '#'
               : `/product/${item._id}`;
 
-            const itemBadge = item.badge || (isBD ? 'Daraz Pick' : "Amazon's Choice");
+            const itemBadge = isBD
+              ? (item.badge && !item.badge.toLowerCase().includes('amazon') ? item.badge : 'Daraz Pick')
+              : (item.badge || "Amazon's Choice");
+
             const itemImage = isAffiliate
               ? aff?.imageUrl || ''
               : item.images?.[0] || '';
@@ -117,18 +130,52 @@ export default function AmazonPrimeSpotlight({ products = [] }: AmazonPrimeSpotl
                     >
                       {itemBadge}
                     </span>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={itemImage}
-                      alt={item.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
+                    {isAffiliate ? (
+                      <a
+                        href={itemUrl}
+                        target="_blank"
+                        rel="sponsored nofollow noopener noreferrer"
+                        className="block w-full h-full cursor-pointer"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={itemImage}
+                          alt={item.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </a>
+                    ) : (
+                      <Link href={itemUrl} className="block w-full h-full">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={itemImage}
+                          alt={item.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </Link>
+                    )}
                   </div>
 
                   {/* Title */}
-                  <h3 className="font-display font-bold text-xs sm:text-base text-[#232121] group-hover:text-[#FF6B35] transition-colors line-clamp-2 leading-snug">
-                    {item.name}
-                  </h3>
+                  <div className="min-h-[32px] sm:min-h-[40px] flex items-center">
+                    {isAffiliate ? (
+                      <a
+                        href={itemUrl}
+                        target="_blank"
+                        rel="sponsored nofollow noopener noreferrer"
+                        className="font-display font-bold text-xs sm:text-base text-[#232121] group-hover:text-[#FF6B35] transition-colors line-clamp-2 leading-snug cursor-pointer"
+                      >
+                        {item.name}
+                      </a>
+                    ) : (
+                      <Link
+                        href={itemUrl}
+                        className="font-display font-bold text-xs sm:text-base text-[#232121] group-hover:text-[#FF6B35] transition-colors line-clamp-2 leading-snug"
+                      >
+                        {item.name}
+                      </Link>
+                    )}
+                  </div>
 
                   {/* Pricing & Tag */}
                   <div className="flex items-center gap-1.5 sm:gap-2 mt-1 sm:mt-2">

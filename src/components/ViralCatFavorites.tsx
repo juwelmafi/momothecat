@@ -37,12 +37,24 @@ export default function ViralCatFavorites({ products = [] }: ViralCatFavoritesPr
       return { tech: [], toys: [], cozy: [], wellness: [] };
     }
 
+    const geoFiltered = products.filter((p) => {
+      if (p.type === 'affiliate') {
+        const aff = p as AffiliateProduct;
+        if (isBD) {
+          return Boolean(aff.darazLink && aff.darazLink.trim() !== '' && aff.platform !== 'amazon' && aff.targetRegion !== 'global_only');
+        } else {
+          return Boolean(aff.affiliateLink && aff.affiliateLink.trim() !== '' && aff.platform !== 'daraz' && aff.targetRegion !== 'bd_only');
+        }
+      }
+      return true;
+    });
+
     const tech: MergedProduct[] = [];
     const toys: MergedProduct[] = [];
     const cozy: MergedProduct[] = [];
     const wellness: MergedProduct[] = [];
 
-    products.forEach((p) => {
+    geoFiltered.forEach((p) => {
       const cat = p.category.toLowerCase();
       const name = p.name.toLowerCase();
 
@@ -67,10 +79,10 @@ export default function ViralCatFavorites({ products = [] }: ViralCatFavoritesPr
     });
 
     // If tech is empty, borrow from toys or all
-    if (tech.length === 0) tech.push(...products.slice(0, 4));
-    if (toys.length === 0) toys.push(...products.slice(0, 4));
-    if (cozy.length === 0) cozy.push(...products.slice(0, 4));
-    if (wellness.length === 0) wellness.push(...products.slice(0, 4));
+    if (tech.length === 0) tech.push(...geoFiltered.slice(0, 4));
+    if (toys.length === 0) toys.push(...geoFiltered.slice(0, 4));
+    if (cozy.length === 0) cozy.push(...geoFiltered.slice(0, 4));
+    if (wellness.length === 0) wellness.push(...geoFiltered.slice(0, 4));
 
     return {
       tech: tech.slice(0, 4),
@@ -78,7 +90,7 @@ export default function ViralCatFavorites({ products = [] }: ViralCatFavoritesPr
       cozy: cozy.slice(0, 4),
       wellness: wellness.slice(0, 4),
     };
-  }, [products]);
+  }, [products, isBD]);
 
   const currentItems = tabProducts[activeTab as keyof typeof tabProducts] || [];
 
@@ -136,12 +148,12 @@ export default function ViralCatFavorites({ products = [] }: ViralCatFavoritesPr
             const aff = isAffiliate ? (item as AffiliateProduct) : null;
 
             const itemUrl = isAffiliate
-              ? isBD && aff?.darazLink
-                ? aff.darazLink
-                : aff?.affiliateLink || '#'
+              ? (isBD ? aff?.darazLink : aff?.affiliateLink) || '#'
               : `/product/${item._id}`;
 
-            const itemBadge = item.badge || (isBD ? 'Daraz Pick' : 'Viral Pick');
+            const itemBadge = isBD
+              ? (item.badge && !item.badge.toLowerCase().includes('amazon') ? item.badge : 'Daraz Pick')
+              : (item.badge || 'Viral Pick');
             const itemImage = isAffiliate
               ? aff?.imageUrl || ''
               : item.images?.[0] || '';
@@ -174,18 +186,52 @@ export default function ViralCatFavorites({ products = [] }: ViralCatFavoritesPr
                     >
                       {itemBadge}
                     </span>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={itemImage}
-                      alt={item.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
+                    {isAffiliate ? (
+                      <a
+                        href={itemUrl}
+                        target="_blank"
+                        rel="sponsored nofollow noopener noreferrer"
+                        className="block w-full h-full cursor-pointer"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={itemImage}
+                          alt={item.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </a>
+                    ) : (
+                      <Link href={itemUrl} className="block w-full h-full">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={itemImage}
+                          alt={item.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </Link>
+                    )}
                   </div>
 
                   {/* Title */}
-                  <h3 className="font-display font-bold text-xs sm:text-base text-[#232121] group-hover:text-[#FF6B35] transition-colors line-clamp-2 leading-snug">
-                    {item.name}
-                  </h3>
+                  <div className="min-h-[32px] sm:min-h-[40px] flex items-center">
+                    {isAffiliate ? (
+                      <a
+                        href={itemUrl}
+                        target="_blank"
+                        rel="sponsored nofollow noopener noreferrer"
+                        className="font-display font-bold text-xs sm:text-base text-[#232121] group-hover:text-[#FF6B35] transition-colors line-clamp-2 leading-snug cursor-pointer"
+                      >
+                        {item.name}
+                      </a>
+                    ) : (
+                      <Link
+                        href={itemUrl}
+                        className="font-display font-bold text-xs sm:text-base text-[#232121] group-hover:text-[#FF6B35] transition-colors line-clamp-2 leading-snug"
+                      >
+                        {item.name}
+                      </Link>
+                    )}
+                  </div>
 
                   {/* Rating Stars */}
                   <div className="flex items-center gap-1 mt-1 sm:mt-1.5">

@@ -87,7 +87,10 @@ export default function Footer() {
                 {settings.newsletterHeading || 'Join our list and get 15% off your first purchase!'}
               </h3>
               <p className="text-xs sm:text-sm text-slate-400 max-w-lg leading-relaxed">
-                {settings.newsletterDescription || 'Plus weekly alerts for Amazon Prime cat deals, flash sales & exclusive handcrafted drops.'}
+                {settings.newsletterDescription ||
+                  (isBD
+                    ? 'Plus weekly alerts for Daraz cat deals, flash sales & exclusive drops.'
+                    : 'Plus weekly alerts for Amazon Prime cat deals, flash sales & exclusive drops.')}
               </p>
 
               {subscribed ? (

@@ -14,12 +14,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     process.env.NEXT_PUBLIC_SITE_URL ||
     'https://momothecat.vercel.app';
 
-  const productEntries: MetadataRoute.Sitemap = products.map((product) => ({
-    url: `${siteUrl}/product/${product._id}`,
-    lastModified: product.createdAt ? new Date(product.createdAt) : new Date(),
-    changeFrequency: 'weekly',
-    priority: 0.8,
-  }));
+  // Only retail products have dedicated storefront pages
+  const productEntries: MetadataRoute.Sitemap = products
+    .filter((product) => product.type === 'real')
+    .map((product) => ({
+      url: `${siteUrl}/product/${product._id}`,
+      lastModified: product.createdAt ? new Date(product.createdAt) : new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    }));
 
   const articleEntries: MetadataRoute.Sitemap = articles.map((article) => ({
     url: `${siteUrl}/articles/${article.slug}`,

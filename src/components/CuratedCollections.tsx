@@ -17,11 +17,23 @@ export default function CuratedCollections({ products = [] }: CuratedCollections
   const collections = React.useMemo(() => {
     if (!products || products.length === 0) return [];
 
+    const geoFiltered = products.filter((p) => {
+      if (p.type === 'affiliate') {
+        const aff = p as AffiliateProduct;
+        if (isBD) {
+          return Boolean(aff.darazLink && aff.darazLink.trim() !== '' && aff.platform !== 'amazon' && aff.targetRegion !== 'global_only');
+        } else {
+          return Boolean(aff.affiliateLink && aff.affiliateLink.trim() !== '' && aff.platform !== 'daraz' && aff.targetRegion !== 'bd_only');
+        }
+      }
+      return true;
+    });
+
     // Distinct categories if possible
     const selected: MergedProduct[] = [];
     const usedCategories = new Set<string>();
 
-    for (const p of products) {
+    for (const p of geoFiltered) {
       if (!usedCategories.has(p.category)) {
         selected.push(p);
         usedCategories.add(p.category);
@@ -31,7 +43,7 @@ export default function CuratedCollections({ products = [] }: CuratedCollections
 
     // Fill up to 4 if fewer than 4 categories
     if (selected.length < 4) {
-      for (const p of products) {
+      for (const p of geoFiltered) {
         if (!selected.includes(p)) {
           selected.push(p);
           if (selected.length === 4) break;
@@ -40,7 +52,7 @@ export default function CuratedCollections({ products = [] }: CuratedCollections
     }
 
     return selected.slice(0, 4);
-  }, [products]);
+  }, [products, isBD]);
 
   // Gracefully return null if no products
   if (collections.length === 0) {
@@ -73,9 +85,7 @@ export default function CuratedCollections({ products = [] }: CuratedCollections
             const aff = isAffiliate ? (item as AffiliateProduct) : null;
 
             const itemUrl = isAffiliate
-              ? isBD && aff?.darazLink
-                ? aff.darazLink
-                : aff?.affiliateLink || '#'
+              ? (isBD ? aff?.darazLink : aff?.affiliateLink) || '#'
               : `/product/${item._id}`;
 
             const itemBadge = isBD
@@ -104,12 +114,30 @@ export default function CuratedCollections({ products = [] }: CuratedCollections
                       <Flame className="w-2.5 h-2.5 fill-current text-[#FFC312]" />
                       {itemBadge}
                     </span>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={itemImage}
-                      alt={item.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
+                    {isAffiliate ? (
+                      <a
+                        href={itemUrl}
+                        target="_blank"
+                        rel="sponsored nofollow noopener noreferrer"
+                        className="block w-full h-full cursor-pointer"
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={itemImage}
+                          alt={item.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </a>
+                    ) : (
+                      <Link href={itemUrl} className="block w-full h-full">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={itemImage}
+                          alt={item.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </Link>
+                    )}
                   </div>
 
                   {/* Content */}
@@ -118,9 +146,25 @@ export default function CuratedCollections({ products = [] }: CuratedCollections
                       {item.category}
                     </span>
 
-                    <h3 className="font-display font-bold text-xs sm:text-base text-[#232121] group-hover:text-[#FF6B35] transition-colors line-clamp-2 leading-snug">
-                      {item.name}
-                    </h3>
+                    <div className="min-h-[32px] sm:min-h-[40px] flex items-center">
+                      {isAffiliate ? (
+                        <a
+                          href={itemUrl}
+                          target="_blank"
+                          rel="sponsored nofollow noopener noreferrer"
+                          className="font-display font-bold text-xs sm:text-base text-[#232121] group-hover:text-[#FF6B35] transition-colors line-clamp-2 leading-snug cursor-pointer"
+                        >
+                          {item.name}
+                        </a>
+                      ) : (
+                        <Link
+                          href={itemUrl}
+                          className="font-display font-bold text-xs sm:text-base text-[#232121] group-hover:text-[#FF6B35] transition-colors line-clamp-2 leading-snug"
+                        >
+                          {item.name}
+                        </Link>
+                      )}
+                    </div>
 
                     {/* Price */}
                     <p className="font-display font-bold text-xs sm:text-sm text-[#232121]">

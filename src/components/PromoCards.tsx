@@ -6,7 +6,7 @@ import { ArrowRight, Flame, Clock } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 
 export default function PromoCards() {
-  const { settings } = useCart();
+  const { settings, isBD } = useCart();
 
   return (
     <section className="py-10 grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
@@ -64,15 +64,15 @@ export default function PromoCards() {
           </h3>
 
           <p className="text-xs text-[#444444]">
-            {settings.promoCard2Subheading || 'Amazon Prime top-rated interactive toys with guaranteed next-day delivery.'}
+            {settings.promoCard2Subheading || (isBD ? 'Daraz top-rated interactive toys with express home delivery.' : 'Amazon Prime top-rated interactive toys with guaranteed next-day delivery.')}
           </p>
 
           <div className="pt-2">
             <Link
-              href="/?filter=amazon"
+              href="/#products-section"
               className="inline-flex items-center gap-2 px-6 py-3 bg-[#111111] hover:bg-black text-white rounded-full font-black text-xs uppercase tracking-wider shadow-md transition-all hover:scale-105"
             >
-              <span>{settings.promoCard2ButtonText || 'Shop Amazon Picks'}</span>
+              <span>{settings.promoCard2ButtonText || (isBD ? 'Shop Daraz Picks' : 'Shop Amazon Picks')}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>

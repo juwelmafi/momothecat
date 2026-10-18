@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 
 export default function DealsBanner() {
-  const { settings } = useCart();
+  const { settings, isBD } = useCart();
 
   return (
     <section id="deals-section" className="py-12 sm:py-16 bg-[#F8F7F5] relative overflow-hidden border-y border-black/5">
@@ -40,7 +40,10 @@ export default function DealsBanner() {
             </div>
 
             <p className="text-sm sm:text-base text-[#555555] max-w-md mx-auto lg:mx-0 leading-relaxed">
-              {settings.dealsDescription || "Don't miss out on today's flash discounts! Save up to 40% on top-rated Amazon Prime cat toys, orthopedic beds, and organic treats before timers expire."}
+              {settings.dealsDescription ||
+                (isBD
+                  ? "Don't miss out on today's flash discounts! Save up to 40% on top-rated Daraz cat toys, orthopedic beds, and organic treats before timers expire."
+                  : "Don't miss out on today's flash discounts! Save up to 40% on top-rated Amazon Prime cat toys, orthopedic beds, and organic treats before timers expire.")}
             </p>
 
             <div className="pt-2">
@@ -48,7 +51,7 @@ export default function DealsBanner() {
                 href="#products-section"
                 className="pettie-btn pettie-btn-primary shadow-md shadow-[#FF6B35]/25 hover:scale-105 transition-all text-[11px] sm:text-xs"
               >
-                <span>{settings.dealsButtonText || 'CLAIM AMAZON DEALS'}</span>
+                <span>{settings.dealsButtonText || (isBD ? 'CLAIM DARAZ DEALS' : 'CLAIM AMAZON DEALS')}</span>
               </a>
             </div>
           </div>

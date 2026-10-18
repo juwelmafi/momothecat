@@ -6,13 +6,13 @@ import { CheckCircle2 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 
 export default function PassionBanner() {
-  const { settings } = useCart();
+  const { settings, isBD } = useCart();
   const perks = [
-    { title: 'Amazon Prime 1-Day Delivery' },
+    { title: isBD ? 'Daraz Express Home Delivery' : 'Amazon Prime 1-Day Delivery' },
     { title: '100% Non-Toxic & Vet-Approved' },
     { title: 'Handpicked Top-Rated Brands' },
     { title: 'Tested by Real Cat Parents' },
-    { title: 'Hassle-Free Amazon Returns' },
+    { title: isBD ? 'Hassle-Free Daraz Returns' : 'Hassle-Free Amazon Returns' },
     { title: 'Best Value Price Guarantee' },
   ];
 
@@ -53,7 +53,10 @@ export default function PassionBanner() {
             </div>
 
             <p className="text-sm sm:text-base text-[#555555] leading-relaxed">
-              {settings.passionDescription || 'Every toy, food recipe, and scratching post on Momo - The Cat is hand-curated from top-tier Amazon Prime sellers and tested for durability, safety, and feline delight. We connect you directly with the best Amazon cat deals with zero hassle.'}
+              {settings.passionDescription ||
+                (isBD
+                  ? 'Every toy, food recipe, and scratching post on Momo - The Cat is hand-curated from top-tier Daraz verified sellers and tested for durability, safety, and feline delight. We connect you directly with the best Daraz cat deals with zero hassle.'
+                  : 'Every toy, food recipe, and scratching post on Momo - The Cat is hand-curated from top-tier Amazon Prime sellers and tested for durability, safety, and feline delight. We connect you directly with the best Amazon cat deals with zero hassle.')}
             </p>
 
             {/* 6 Perks Grid with Clean Check Icons */}
@@ -74,7 +77,7 @@ export default function PassionBanner() {
                 href="#products-section"
                 className="pettie-btn pettie-btn-primary text-[11px] sm:text-xs shadow-md shadow-[#FF6B35]/25 hover:scale-105 transition-all"
               >
-                <span>{settings.passionButtonText || 'EXPLORE AMAZON PICKS'}</span>
+                <span>{settings.passionButtonText || (isBD ? 'EXPLORE DARAZ PICKS' : 'EXPLORE AMAZON PICKS')}</span>
               </a>
             </div>
 

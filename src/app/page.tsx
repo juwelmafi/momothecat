@@ -1,6 +1,7 @@
 import React from 'react';
 import ProductGrid from '@/components/ProductGrid';
 import { getMergedProducts, getStoreSettings } from '@/lib/store';
+import { headers, cookies } from 'next/headers';
 
 export const revalidate = 0; // Fresh dynamic data on every request
 
@@ -14,11 +15,20 @@ interface PageProps {
 }
 
 export default async function HomePage({ searchParams }: PageProps) {
-  const params = await searchParams;
+  const [params, headerList, cookieStore] = await Promise.all([
+    searchParams,
+    headers(),
+    cookies(),
+  ]);
+
   const category = params?.category || 'All Products';
   const search = params?.search || '';
   const filter = params?.filter || 'all';
   const view = params?.view || '';
+
+  const vercelCountry = headerList.get('x-vercel-ip-country');
+  const cookieCountry = cookieStore.get('user_country')?.value;
+  const serverCountry = (cookieCountry || vercelCountry || 'US').toUpperCase();
 
   const [products, rawSettings] = await Promise.all([
     getMergedProducts(),
@@ -38,6 +48,7 @@ export default async function HomePage({ searchParams }: PageProps) {
         initialView={view}
         storeMode={settings.storeMode}
         serverSettings={settings}
+        serverCountry={serverCountry}
       />
     </div>
   );

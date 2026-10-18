@@ -227,17 +227,20 @@ export async function getMergedProducts(options?: {
     merged = merged.filter((p) => p.isFeatured);
   }
 
-  // Filter by country / targetRegion
+  // Filter by country / targetRegion & merchant platform
   if (options?.country) {
     const isBD = options.country.toUpperCase() === 'BD';
     merged = merged.filter((p) => {
       if (p.type !== 'affiliate') return true;
       const aff = p as AffiliateProduct;
-      const region = aff.targetRegion || 'all';
       if (isBD) {
-        return region !== 'global_only';
+        const hasDarazLink = Boolean(aff.darazLink && aff.darazLink.trim() !== '');
+        const isAmazonOnly = aff.platform === 'amazon' || aff.targetRegion === 'global_only';
+        return hasDarazLink && !isAmazonOnly;
       } else {
-        return region !== 'bd_only';
+        const hasAmazonLink = Boolean(aff.affiliateLink && aff.affiliateLink.trim() !== '');
+        const isDarazOnly = aff.platform === 'daraz' || aff.targetRegion === 'bd_only';
+        return hasAmazonLink && !isDarazOnly;
       }
     });
   }

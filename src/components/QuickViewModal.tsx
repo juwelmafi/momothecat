@@ -26,9 +26,9 @@ export default function QuickViewModal() {
   const realProd = isReal ? (quickViewProduct as RealProduct) : null;
   const affProd = !isReal ? (quickViewProduct as AffiliateProduct) : null;
 
-  const isDaraz = isBD && Boolean(affProd?.darazLink);
-  const affUrl = (isDaraz ? affProd?.darazLink : affProd?.affiliateLink) || '#';
-  const affPlatform = isDaraz ? 'Daraz' : 'Amazon';
+  const isDaraz = isBD;
+  const affUrl = (isBD ? affProd?.darazLink : affProd?.affiliateLink) || '#';
+  const affPlatform = isBD ? 'Daraz' : 'Amazon';
 
   const images = isReal && realProd ? realProd.images : [affProd!.imageUrl];
   const activeImage = images[selectedImageIndex] || images[0];
@@ -102,7 +102,13 @@ export default function QuickViewModal() {
                   {quickViewProduct.category}
                 </span>
                 <span className="text-[11px] font-bold text-teal-700 bg-teal-50 px-2 py-1 rounded-md">
-                  {quickViewProduct.badge || (isReal ? 'Momo Original' : 'Amazon Pick')}
+                  {quickViewProduct.badge && (isBD ? !quickViewProduct.badge.toLowerCase().includes('amazon') : true)
+                    ? quickViewProduct.badge
+                    : isReal
+                    ? 'Momo Original'
+                    : isBD
+                    ? 'Daraz Pick'
+                    : 'Amazon Pick'}
                 </span>
               </div>
 

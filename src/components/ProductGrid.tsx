@@ -36,6 +36,7 @@ interface ProductGridProps {
   initialView?: string;
   storeMode?: StoreMode;
   serverSettings?: StoreSettings;
+  serverCountry?: string;
 }
 
 const CIRCLE_CATEGORIES = [
@@ -71,10 +72,12 @@ export default function ProductGrid({
   initialView = '',
   storeMode,
   serverSettings,
+  serverCountry,
 }: ProductGridProps) {
-  const { storeMode: contextMode, settings: contextSettings, isBD, wishlist } = useCart();
+  const { storeMode: contextMode, settings: contextSettings, isBD: contextIsBD, userCountry, wishlist } = useCart();
   const currentMode = storeMode || contextMode || 'hybrid';
   const settings = { ...serverSettings, ...contextSettings };
+  const isBD = userCountry ? userCountry === 'BD' : (serverCountry ? serverCountry === 'BD' : contextIsBD);
 
   const [selectedCategory, setSelectedCategory] = useState(
     activeCategory === 'All' ? 'All Products' : activeCategory
@@ -85,23 +88,38 @@ export default function ProductGrid({
   const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc' | 'rating'>('featured');
   const [currentSearch, setCurrentSearch] = useState(searchQuery);
 
-  // Filter & Sort
-  const filteredProducts = useMemo(() => {
+  // 1. Base Geo & Architecture Filter:
+  // In Bangladesh: show ONLY Daraz affiliate products (must have valid darazLink, not amazon-only, not global-only)
+  // Outside Bangladesh: show ONLY Amazon affiliate products (must have valid affiliateLink, not daraz-only, not bd-only)
+  const geoFilteredProducts = useMemo(() => {
     return initialProducts.filter((product) => {
       // Respect storefront mode
       if (currentMode === 'affiliate_only' && product.type !== 'affiliate') return false;
       if (currentMode === 'retail_only' && product.type !== 'real') return false;
 
-      // Wishlist view filter
-      if (initialView === 'wishlist' && !wishlist.includes(product._id)) return false;
-
-      // Geo-targeting filter for Bangladesh vs Global
+      // Strict geo-targeting
       if (product.type === 'affiliate') {
         const aff = product as AffiliateProduct;
-        const region = aff.targetRegion || 'all';
-        if (isBD && region === 'global_only') return false;
-        if (!isBD && region === 'bd_only') return false;
+        if (isBD) {
+          const hasDarazLink = Boolean(aff.darazLink && aff.darazLink.trim() !== '');
+          const isAmazonOnly = aff.platform === 'amazon' || aff.targetRegion === 'global_only';
+          if (!hasDarazLink || isAmazonOnly) return false;
+        } else {
+          const hasAmazonLink = Boolean(aff.affiliateLink && aff.affiliateLink.trim() !== '');
+          const isDarazOnly = aff.platform === 'daraz' || aff.targetRegion === 'bd_only';
+          if (!hasAmazonLink || isDarazOnly) return false;
+        }
       }
+
+      return true;
+    });
+  }, [initialProducts, currentMode, isBD]);
+
+  // 2. User Interactive Filter & Sort (Category, Type filter, Search, Wishlist, Sort)
+  const filteredProducts = useMemo(() => {
+    return geoFilteredProducts.filter((product) => {
+      // Wishlist view filter
+      if (initialView === 'wishlist' && !wishlist.includes(product._id)) return false;
 
       if (selectedType === 'affiliate' && product.type !== 'affiliate') return false;
       if (selectedType === 'real' && product.type !== 'real') return false;
@@ -131,7 +149,7 @@ export default function ProductGrid({
       if (!a.isFeatured && b.isFeatured) return 1;
       return 0;
     });
-  }, [initialProducts, currentMode, isBD, wishlist, initialView, selectedCategory, selectedType, sortBy, currentSearch]);
+  }, [geoFilteredProducts, wishlist, initialView, selectedCategory, selectedType, sortBy, currentSearch]);
 
   // Section Ordering (Shopify CMS dynamic order)
   const sectionsOrder = useMemo(() => {
@@ -384,7 +402,7 @@ export default function ProductGrid({
       case 'spotlight':
         // Only show if explicitly enabled by admin, and uses real products with NO placeholder items
         if (!settings.showSpotlight || currentMode === 'retail_only') return null;
-        return <AmazonPrimeSpotlight key="spotlight" products={initialProducts} />;
+        return <AmazonPrimeSpotlight key="spotlight" products={geoFilteredProducts} />;
 
       case 'testimonials':
         if (settings.showTestimonials === false) return null;
@@ -397,12 +415,12 @@ export default function ProductGrid({
       case 'collections':
         // Only show if explicitly enabled by admin, and uses real products with NO placeholder items
         if (!settings.showCuratedCollections) return null;
-        return <CuratedCollections key="collections" products={initialProducts} />;
+        return <CuratedCollections key="collections" products={geoFilteredProducts} />;
 
       case 'viral':
         // Only show if explicitly enabled by admin, and uses real products with NO placeholder items
         if (!settings.showViralFavorites || currentMode === 'retail_only') return null;
-        return <ViralCatFavorites key="viral" products={initialProducts} />;
+        return <ViralCatFavorites key="viral" products={geoFilteredProducts} />;
 
       case 'instagram':
         if (settings.showInstagramFeed === false) return null;
