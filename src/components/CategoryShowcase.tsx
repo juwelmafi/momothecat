@@ -14,8 +14,8 @@ export default function CategoryShowcase({ onSelectCategory }: Props) {
 
   const arches = [
     {
-      title: 'Dog Treats & Food',
-      subtitle: 'Nutritious & Delicious',
+      title: settings.categoryArch1Title || 'Dog Treats & Food',
+      subtitle: settings.categoryArch1Subtitle || 'Nutritious & Delicious',
       image:
         settings.categoryArch1Image ||
         'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/05/Pty-Dog-Image-1.png',
@@ -23,8 +23,8 @@ export default function CategoryShowcase({ onSelectCategory }: Props) {
       category: 'Cat Food & Treats',
     },
     {
-      title: 'Active Toys & Play',
-      subtitle: 'Interactive Teasers',
+      title: settings.categoryArch2Title || 'Active Toys & Play',
+      subtitle: settings.categoryArch2Subtitle || 'Interactive Teasers',
       image:
         settings.categoryArch2Image ||
         'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/05/Pty-bird-Image-1.png',
@@ -32,8 +32,8 @@ export default function CategoryShowcase({ onSelectCategory }: Props) {
       category: 'Cat Toys',
     },
     {
-      title: 'Royal Cat Comfort',
-      subtitle: 'Beds & Scratchers',
+      title: settings.categoryArch3Title || 'Royal Cat Comfort',
+      subtitle: settings.categoryArch3Subtitle || 'Beds & Scratchers',
       image:
         settings.categoryArch3Image ||
         'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/05/Pty-cat-Image-1-1.png',
@@ -43,7 +43,7 @@ export default function CategoryShowcase({ onSelectCategory }: Props) {
   ];
 
   return (
-    <section className="py-6 sm:py-12 -mt-12 sm:-mt-20 relative z-20">
+    <section className="pt-10 sm:pt-16 md:pt-20 pb-12 sm:pb-20 relative z-20">
       <div className="pettie-container">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6 md:gap-8">
           {arches.map((arch, i) => (

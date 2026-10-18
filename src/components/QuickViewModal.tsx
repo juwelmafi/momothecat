@@ -202,7 +202,7 @@ export default function QuickViewModal() {
                   <a
                     href={affUrl}
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="sponsored nofollow noopener noreferrer"
                     className={`w-full py-3 ${
                       isDaraz
                         ? 'bg-gradient-to-r from-[#F85606] to-[#ff7a2f] hover:from-[#e04c00] hover:to-[#f0681d]'

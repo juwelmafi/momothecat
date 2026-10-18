@@ -8,7 +8,6 @@ import {
   ExternalLink,
   Copy,
   RotateCcw,
-  Sparkles,
   Loader2,
   Image as ImageIcon,
 } from 'lucide-react';
@@ -60,9 +59,10 @@ export default function CloudinaryImageUploader({
       }
 
       onChange(data.url);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Image upload error:', err);
-      setError(err.message || 'Failed to upload image to Cloudinary');
+      const errMsg = err instanceof Error ? err.message : 'Failed to upload image to Cloudinary';
+      setError(errMsg);
     } finally {
       setUploading(false);
       if (fileInputRef.current) {

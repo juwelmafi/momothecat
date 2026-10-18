@@ -82,6 +82,31 @@ export interface Lead {
   createdAt: string;
 }
 
+export interface Article {
+  _id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  category: string;
+  coverImage: string;
+  author: string;
+  readTime: string;
+  isFeatured?: boolean;
+  status: 'published' | 'draft';
+  tags: string[];
+  metaTitle?: string;
+  metaDescription?: string;
+  metaKeywords?: string;
+  canonicalUrl?: string;
+  affiliateProductId?: string;
+  affiliateProductCtaText?: string;
+  affiliateProductUrl?: string;
+  views?: number;
+  publishedAt: string;
+  updatedAt?: string;
+}
+
 export type StoreMode = 'hybrid' | 'affiliate_only' | 'retail_only';
 
 export interface StoreSettings {
@@ -91,11 +116,19 @@ export interface StoreSettings {
   darazAffiliateTag?: string;
   freeShippingThreshold: number;
 
-  // SEO Fields
+  // SEO & Webmaster Fields
+  siteUrl?: string;
   metaTitle: string;
   metaDescription: string;
   metaKeywords: string;
   websiteFavicon: string;
+  googleSiteVerification?: string;
+  bingSiteVerification?: string;
+  googleAnalyticsId?: string;
+  openGraphDefaultImage?: string;
+  articlesMetaTitle?: string;
+  articlesMetaDescription?: string;
+  articlesMetaKeywords?: string;
 
   // Branding Fields
   websiteLogo: string;
@@ -184,9 +217,45 @@ export interface StoreSettings {
   newsletterPetImage?: string;
   footerPaymentBadgesImage?: string;
 
+  // Homepage Sections Customization (Shopify CMS)
+  showHeroBanner?: boolean;
+  showCategoryShowcase?: boolean;
+  showPassionBanner?: boolean;
+  showProductGrid?: boolean;
+  showPromoCards?: boolean;
+  showDealsBanner?: boolean;
+  showSpotlight?: boolean;
+  showTestimonials?: boolean;
+  showDiscountsBanner?: boolean;
+  showCuratedCollections?: boolean;
+  showViralFavorites?: boolean;
+  showInstagramFeed?: boolean;
+  showSocialMedia?: boolean;
+  showNewsletter?: boolean;
+  homepageSectionsOrder?: string[];
+
+  // Promo Cards Customization
+  promoCard1Badge?: string;
+  promoCard1Heading?: string;
+  promoCard1Subheading?: string;
+  promoCard1ButtonText?: string;
+  promoCard2Badge?: string;
+  promoCard2Heading?: string;
+  promoCard2Subheading?: string;
+  promoCard2ButtonText?: string;
+
+  // Category Showcase Arches Customization
+  categoryArch1Title?: string;
+  categoryArch1Subtitle?: string;
+  categoryArch2Title?: string;
+  categoryArch2Subtitle?: string;
+  categoryArch3Title?: string;
+  categoryArch3Subtitle?: string;
+
   // Cloudinary Settings
   cloudinaryCloudName?: string;
   cloudinaryApiKey?: string;
   cloudinaryApiSecret?: string;
   cloudinaryUploadPreset?: string;
 }
+

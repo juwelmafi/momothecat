@@ -5,6 +5,7 @@ import RealProductModel from '@/models/RealProduct';
 import OrderModel from '@/models/Order';
 import LeadModel from '@/models/Lead';
 import StoreSettingsModel from '@/models/StoreSettings';
+import ArticleModel from '@/models/Article';
 import {
   AffiliateProduct,
   RealProduct,
@@ -12,6 +13,7 @@ import {
   Order,
   Lead,
   StoreSettings,
+  Article,
 } from './types';
 import {
   INITIAL_AFFILIATE_PRODUCTS,
@@ -19,6 +21,7 @@ import {
   INITIAL_ORDERS,
   INITIAL_LEADS,
   INITIAL_SETTINGS,
+  INITIAL_ARTICLES,
 } from './initialData';
 
 // Fallback in-memory state
@@ -27,12 +30,12 @@ interface MemoryStore {
   realProducts: RealProduct[];
   orders: Order[];
   leads: Lead[];
+  articles: Article[];
   settings: StoreSettings;
   initialized: boolean;
 }
 
 declare global {
-  // eslint-disable-next-line no-var
   var memoryStore: MemoryStore | undefined;
 }
 
@@ -42,6 +45,7 @@ if (!global.memoryStore) {
     realProducts: [...INITIAL_REAL_PRODUCTS],
     orders: [...INITIAL_ORDERS],
     leads: [...INITIAL_LEADS],
+    articles: [...INITIAL_ARTICLES],
     settings: { ...INITIAL_SETTINGS },
     initialized: true,
   };
@@ -55,17 +59,20 @@ export async function getStoreSettings(): Promise<StoreSettings> {
     try {
       let settings = await StoreSettingsModel.findOne().lean();
       if (!settings) {
-        settings = await StoreSettingsModel.create(INITIAL_SETTINGS);
+        const created = await StoreSettingsModel.create(INITIAL_SETTINGS);
+        settings = created.toObject();
       }
-      return {
-        ...INITIAL_SETTINGS,
-        ...(settings as any),
-      };
+      return JSON.parse(
+        JSON.stringify({
+          ...INITIAL_SETTINGS,
+          ...(settings as any),
+        })
+      );
     } catch (e) {
       console.error('Error fetching settings from DB:', e);
     }
   }
-  return { ...INITIAL_SETTINGS, ...mem.settings };
+  return JSON.parse(JSON.stringify({ ...INITIAL_SETTINGS, ...mem.settings }));
 }
 
 export async function updateStoreSettings(newSettings: Partial<StoreSettings>): Promise<StoreSettings> {
@@ -85,16 +92,18 @@ export async function updateStoreSettings(newSettings: Partial<StoreSettings>): 
         { $set: newSettings },
         { new: true, upsert: true }
       ).lean();
-      return {
-        ...INITIAL_SETTINGS,
-        ...(updated as any),
-      };
+      return JSON.parse(
+        JSON.stringify({
+          ...INITIAL_SETTINGS,
+          ...(updated as any),
+        })
+      );
     } catch (e) {
       console.error('Error updating settings in DB:', e);
     }
   }
   mem.settings = { ...INITIAL_SETTINGS, ...mem.settings, ...newSettings };
-  return mem.settings;
+  return JSON.parse(JSON.stringify(mem.settings));
 }
 
 export async function getMergedProducts(options?: {
@@ -114,12 +123,12 @@ export async function getMergedProducts(options?: {
       // Auto seed if empty
       const affCount = await AffiliateProductModel.countDocuments();
       if (affCount === 0) {
-        const affToInsert = INITIAL_AFFILIATE_PRODUCTS.map(({ _id, type, ...rest }) => rest);
+        const affToInsert = INITIAL_AFFILIATE_PRODUCTS.map(({ _id: _unusedId, type: _unusedType, ...rest }) => rest);
         await AffiliateProductModel.insertMany(affToInsert);
       }
       const realCount = await RealProductModel.countDocuments();
       if (realCount === 0) {
-        const realToInsert = INITIAL_REAL_PRODUCTS.map(({ _id, type, ...rest }) => rest);
+        const realToInsert = INITIAL_REAL_PRODUCTS.map(({ _id: _unusedId, type: _unusedType, ...rest }) => rest);
         await RealProductModel.insertMany(realToInsert);
       }
 
@@ -812,3 +821,238 @@ export async function createLead(email: string, source = 'footer_discount_10'): 
   mem.leads.unshift(newLead);
   return { success: true, code: 'MOMO10', isNew: true };
 }
+
+// ========================================================
+// ARTICLE / BLOG SYSTEM FUNCTIONS
+// ========================================================
+
+export async function getArticles(options?: {
+  category?: string;
+  status?: string;
+  limit?: number;
+  search?: string;
+}): Promise<Article[]> {
+  const db = await connectToDatabase();
+  if (db) {
+    try {
+      const query: any = {};
+      if (options?.status && options.status !== 'all') {
+        query.status = options.status;
+      }
+      if (options?.category && options.category !== 'All' && options.category !== 'All Guides') {
+        query.category = options.category;
+      }
+      if (options?.search) {
+        const regex = new RegExp(options.search, 'i');
+        query.$or = [{ title: regex }, { excerpt: regex }, { tags: regex }];
+      }
+
+      let q = ArticleModel.find(query).sort({ publishedAt: -1, createdAt: -1 });
+      if (options?.limit) {
+        q = q.limit(options.limit);
+      }
+      const docs = await q.lean();
+      if (docs && docs.length > 0) {
+        return docs.map((d: any) => ({
+          ...d,
+          _id: d._id.toString(),
+        })) as Article[];
+      }
+    } catch (e) {
+      console.error('Error fetching articles from DB:', e);
+    }
+  }
+
+  let list = [...mem.articles];
+  if (options?.status && options.status !== 'all') {
+    list = list.filter((a) => a.status === options.status);
+  }
+  if (options?.category && options.category !== 'All' && options.category !== 'All Guides') {
+    list = list.filter((a) => a.category.toLowerCase() === options.category!.toLowerCase());
+  }
+  if (options?.search) {
+    const s = options.search.toLowerCase();
+    list = list.filter(
+      (a) =>
+        a.title.toLowerCase().includes(s) ||
+        a.excerpt.toLowerCase().includes(s) ||
+        a.tags.some((t) => t.toLowerCase().includes(s))
+    );
+  }
+  list.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+  if (options?.limit) {
+    list = list.slice(0, options.limit);
+  }
+  return list;
+}
+
+export async function getArticleBySlug(slug: string): Promise<Article | null> {
+  const cleanSlug = slug.toLowerCase().trim();
+  const db = await connectToDatabase();
+  if (db) {
+    try {
+      const doc = await ArticleModel.findOneAndUpdate(
+        { slug: cleanSlug },
+        { $inc: { views: 1 } },
+        { new: true }
+      ).lean();
+      if (doc) {
+        return {
+          ...doc,
+          _id: (doc as any)._id.toString(),
+        } as Article;
+      }
+    } catch (e) {
+      console.error('Error fetching article by slug from DB:', e);
+    }
+  }
+
+  const found = mem.articles.find((a) => a.slug === cleanSlug);
+  if (found) {
+    found.views = (found.views || 0) + 1;
+    return found;
+  }
+  return null;
+}
+
+export async function getArticleById(id: string): Promise<Article | null> {
+  const db = await connectToDatabase();
+  if (db) {
+    try {
+      if (mongoose.Types.ObjectId.isValid(id)) {
+        const doc = await ArticleModel.findById(id).lean();
+        if (doc) {
+          return {
+            ...doc,
+            _id: (doc as any)._id.toString(),
+          } as Article;
+        }
+      }
+    } catch (e) {
+      console.error('Error fetching article by ID from DB:', e);
+    }
+  }
+
+  return mem.articles.find((a) => a._id === id) || null;
+}
+
+export async function createArticle(data: Partial<Article>): Promise<Article> {
+  const slug = (data.slug || data.title || 'untitled')
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+  const newArticle: Article = {
+    _id: 'art_' + Date.now(),
+    title: data.title || 'Untitled Article',
+    slug: slug || `article-${Date.now()}`,
+    excerpt: data.excerpt || '',
+    content: data.content || '',
+    category: data.category || 'Product Reviews',
+    coverImage:
+      data.coverImage ||
+      'https://images.unsplash.com/photo-1545249390-6bdfa286032f?auto=format&fit=crop&w=1200&q=80',
+    author: data.author || 'Momo Editorial Team',
+    readTime: data.readTime || '5 min read',
+    isFeatured: Boolean(data.isFeatured),
+    status: data.status || 'published',
+    tags: Array.isArray(data.tags) ? data.tags : [],
+    metaTitle: data.metaTitle || '',
+    metaDescription: data.metaDescription || '',
+    metaKeywords: data.metaKeywords || '',
+    canonicalUrl: data.canonicalUrl || '',
+    affiliateProductId: data.affiliateProductId || '',
+    affiliateProductCtaText: data.affiliateProductCtaText || 'Check Latest Price on Amazon',
+    affiliateProductUrl: data.affiliateProductUrl || '',
+    views: 0,
+    publishedAt: data.publishedAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  const db = await connectToDatabase();
+  if (db) {
+    try {
+      const created = await ArticleModel.create(newArticle);
+      return {
+        ...created.toObject(),
+        _id: created._id.toString(),
+      } as Article;
+    } catch (e) {
+      console.error('Error creating article in DB:', e);
+    }
+  }
+
+  mem.articles.unshift(newArticle);
+  return newArticle;
+}
+
+export async function updateArticle(id: string, data: Partial<Article>): Promise<Article | null> {
+  const updatePayload: any = {
+    ...data,
+    updatedAt: new Date().toISOString(),
+  };
+
+  if (data.title && !data.slug) {
+    updatePayload.slug = data.title
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/[\s_-]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
+  const db = await connectToDatabase();
+  if (db) {
+    try {
+      if (mongoose.Types.ObjectId.isValid(id)) {
+        const updated = await ArticleModel.findByIdAndUpdate(
+          id,
+          { $set: updatePayload },
+          { new: true }
+        ).lean();
+        if (updated) {
+          return {
+            ...updated,
+            _id: (updated as any)._id.toString(),
+          } as Article;
+        }
+      }
+    } catch (e) {
+      console.error('Error updating article in DB:', e);
+    }
+  }
+
+  const index = mem.articles.findIndex((a) => a._id === id);
+  if (index !== -1) {
+    mem.articles[index] = {
+      ...mem.articles[index],
+      ...updatePayload,
+    };
+    return mem.articles[index];
+  }
+  return null;
+}
+
+export async function deleteArticle(id: string): Promise<boolean> {
+  const db = await connectToDatabase();
+  if (db) {
+    try {
+      if (mongoose.Types.ObjectId.isValid(id)) {
+        await ArticleModel.findByIdAndDelete(id);
+        return true;
+      }
+    } catch (e) {
+      console.error('Error deleting article from DB:', e);
+    }
+  }
+
+  const index = mem.articles.findIndex((a) => a._id === id);
+  if (index !== -1) {
+    mem.articles.splice(index, 1);
+    return true;
+  }
+  return false;
+}
+

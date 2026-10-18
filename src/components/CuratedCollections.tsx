@@ -1,66 +1,51 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { ExternalLink, Flame, CheckCircle2 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
+import { MergedProduct, AffiliateProduct } from '@/lib/types';
 
-const COLLECTIONS = [
-  {
-    title: 'Indoor Boredom Busters Kit',
-    category: 'Interactive Toys',
-    price: 'From $19.99',
-    rating: '4.9',
-    reviews: '2,140',
-    image: 'https://images.unsplash.com/photo-1545249390-6bdfa286032f?auto=format&fit=crop&w=800&q=80',
-    description: 'Automated 360° laser chaser, chirping bird ball & feather teaser keeping indoor cats agile.',
-    features: ['3 Best-Selling Toys', 'Express Delivery', 'Vet Approved'],
-    link: 'https://www.amazon.com/dp/B08XJ893Q1?tag=momothecat-20',
-    darazLink: 'https://www.daraz.com.bd/catalog/?q=interactive+cat+laser+ball',
-    badge: "Amazon's Choice",
-  },
-  {
-    title: 'Royal Slumber & Calming Bed',
-    category: 'Orthopedic Comfort',
-    price: 'From $34.50',
-    rating: '4.8',
-    reviews: '3,890',
-    image: 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80',
-    description: 'Anti-anxiety high-loft donut bed with orthopedic neck support for deep, stress-free slumber.',
-    features: ['Machine Washable', 'Self-Warming Core', 'Anti-Slip Base'],
-    link: 'https://www.amazon.com/dp/B08N567891?tag=momothecat-20',
-    darazLink: 'https://www.daraz.com.bd/catalog/?q=calming+cat+bed+donut',
-    badge: 'Best Seller',
-  },
-  {
-    title: 'Hydration & Nutrition Feast Set',
-    category: 'Feeding & Bowls',
-    price: 'From $27.99',
-    rating: '4.9',
-    reviews: '4,120',
-    image: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=800&q=80',
-    description: 'Ultra-quiet 304 food-grade stainless fountain + whisker-friendly tilted ceramic feeding bowls.',
-    features: ['Triple Filtration', 'Prevents Kidney Stress', 'Dishwasher Safe'],
-    link: 'https://www.amazon.com/dp/B09ABC4567?tag=momothecat-20',
-    darazLink: 'https://www.daraz.com.bd/catalog/?q=cat+water+fountain+stainless+steel',
-    badge: "Amazon's Choice",
-  },
-  {
-    title: 'Precision Grooming & Shed Kit',
-    category: 'Coat & Hygiene',
-    price: 'From $14.99',
-    rating: '4.7',
-    reviews: '1,830',
-    image: 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&fit=crop&w=800&q=80',
-    description: 'Self-cleaning undercoat slicker brush with ergonomic stainless teeth and soft massage tip pins.',
-    features: ['One-Click Ejection', 'Gentle On Skin', 'Reduces Hairballs'],
-    link: 'https://www.amazon.com/dp/B07UVW1234?tag=momothecat-20',
-    darazLink: 'https://www.daraz.com.bd/catalog/?q=cat+deshedding+brush',
-    badge: 'Top Rated',
-  },
-];
+interface CuratedCollectionsProps {
+  products?: MergedProduct[];
+}
 
-export default function CuratedCollections() {
+export default function CuratedCollections({ products = [] }: CuratedCollectionsProps) {
   const { isBD } = useCart();
+
+  // Curate bundles from real store products across categories
+  const collections = React.useMemo(() => {
+    if (!products || products.length === 0) return [];
+
+    // Distinct categories if possible
+    const selected: MergedProduct[] = [];
+    const usedCategories = new Set<string>();
+
+    for (const p of products) {
+      if (!usedCategories.has(p.category)) {
+        selected.push(p);
+        usedCategories.add(p.category);
+        if (selected.length === 4) break;
+      }
+    }
+
+    // Fill up to 4 if fewer than 4 categories
+    if (selected.length < 4) {
+      for (const p of products) {
+        if (!selected.includes(p)) {
+          selected.push(p);
+          if (selected.length === 4) break;
+        }
+      }
+    }
+
+    return selected.slice(0, 4);
+  }, [products]);
+
+  // Gracefully return null if no products
+  if (collections.length === 0) {
+    return null;
+  }
 
   return (
     <section id="curated-collections" className="py-16 sm:py-24 bg-white">
@@ -76,25 +61,36 @@ export default function CuratedCollections() {
           </h2>
           <p className="text-xs sm:text-sm text-[#666666]">
             {isBD
-              ? 'Hand-picked cat supply packages routed directly from top-rated Daraz merchants.'
-              : 'Hand-picked bundles tested by real feline experts with 1-click Amazon checkout.'}
+              ? 'Hand-picked cat supply packages routed directly from top-rated merchants.'
+              : 'Hand-picked bundles tested by real feline experts with 1-click checkout.'}
           </p>
         </div>
 
         {/* 2-Column on Mobile, 4-Column on Desktop */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-          {COLLECTIONS.map((c, i) => {
-            const itemUrl = isBD && c.darazLink ? c.darazLink : c.link;
+          {collections.map((item) => {
+            const isAffiliate = item.type === 'affiliate';
+            const aff = isAffiliate ? (item as AffiliateProduct) : null;
+
+            const itemUrl = isAffiliate
+              ? isBD && aff?.darazLink
+                ? aff.darazLink
+                : aff?.affiliateLink || '#'
+              : `/product/${item._id}`;
+
             const itemBadge = isBD
-              ? c.badge.includes('Amazon')
-                ? 'Daraz Pick'
-                : c.badge
-              : c.badge;
-            const platformName = isBD ? 'Daraz' : 'Amazon';
+              ? (item.badge?.includes('Amazon') ? 'Daraz Pick' : item.badge || 'Popular')
+              : (item.badge || "Curated Pick");
+
+            const itemImage = isAffiliate
+              ? aff?.imageUrl || ''
+              : item.images?.[0] || '';
+
+            const platformName = isAffiliate ? (isBD ? 'Daraz' : 'Amazon') : 'Store';
 
             return (
               <div
-                key={i}
+                key={item._id}
                 className="bg-[#FBF9F7] rounded-2xl sm:rounded-3xl p-2.5 sm:p-5 border border-black/5 hover:border-[#FF6B35]/30 hover:shadow-xl transition-all group flex flex-col justify-between"
               >
                 <div>
@@ -110,8 +106,8 @@ export default function CuratedCollections() {
                     </span>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={c.image}
-                      alt={c.title}
+                      src={itemImage}
+                      alt={item.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   </div>
@@ -119,50 +115,61 @@ export default function CuratedCollections() {
                   {/* Content */}
                   <div className="space-y-1 sm:space-y-2">
                     <span className="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider text-[#FF6B35]">
-                      {c.category}
+                      {item.category}
                     </span>
 
                     <h3 className="font-display font-bold text-xs sm:text-base text-[#232121] group-hover:text-[#FF6B35] transition-colors line-clamp-2 leading-snug">
-                      {c.title}
+                      {item.name}
                     </h3>
 
                     {/* Price */}
                     <p className="font-display font-bold text-xs sm:text-sm text-[#232121]">
-                      {c.price}
+                      From ${item.price.toFixed(2)}
                     </p>
 
                     {/* Description - hidden on mobile for clean card ratio */}
                     <p className="text-[11px] text-[#666666] line-clamp-2 leading-relaxed hidden sm:block">
-                      {c.description}
+                      {item.description || 'Premium feline essentials tested for comfort, durability and delight.'}
                     </p>
 
                     {/* Highlights */}
                     <div className="space-y-1 pt-1 sm:pt-2 hidden sm:block">
-                      {c.features.map((feat, idx) => (
-                        <div key={idx} className="flex items-center gap-1.5 text-[11px] text-[#232121] font-medium">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-[#FF6B35] shrink-0" />
-                          <span>{feat}</span>
-                        </div>
-                      ))}
+                      <div className="flex items-center gap-1.5 text-[11px] text-[#232121] font-medium">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#FF6B35] shrink-0" />
+                        <span>Vet & Feline Approved</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-[11px] text-[#232121] font-medium">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#FF6B35] shrink-0" />
+                        <span>Express Delivery Available</span>
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Action Button */}
                 <div className="pt-2 sm:pt-5">
-                  <a
-                    href={itemUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`pettie-btn ${
-                      isBD
-                        ? 'bg-[#F85606] hover:bg-[#e04c00] text-white'
-                        : 'pettie-btn-primary'
-                    } pettie-btn-card w-full shadow-xs flex items-center justify-center gap-1`}
-                  >
-                    <span>View on {platformName}</span>
-                    <ExternalLink className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                  </a>
+                  {isAffiliate ? (
+                    <a
+                      href={itemUrl}
+                      target="_blank"
+                      rel="sponsored nofollow noopener noreferrer"
+                      className={`pettie-btn ${
+                        isBD
+                          ? 'bg-[#F85606] hover:bg-[#e04c00] text-white'
+                          : 'pettie-btn-primary'
+                      } pettie-btn-card w-full shadow-xs flex items-center justify-center gap-1`}
+                    >
+                      <span>View on {platformName}</span>
+                      <ExternalLink className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                    </a>
+                  ) : (
+                    <Link
+                      href={itemUrl}
+                      className="pettie-btn pettie-btn-primary pettie-btn-card w-full shadow-xs flex items-center justify-center gap-1"
+                    >
+                      <span>View Product</span>
+                    </Link>
+                  )}
                 </div>
               </div>
             );

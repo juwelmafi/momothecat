@@ -14,7 +14,11 @@ const StoreSettingsSchema = new Schema<IStoreSettings>(
     darazAffiliateTag: { type: String, default: '' },
     freeShippingThreshold: { type: Number, default: 45 },
 
-    // SEO Fields
+    // SEO & Webmaster Fields
+    siteUrl: {
+      type: String,
+      default: 'https://momothecat.vercel.app',
+    },
     metaTitle: {
       type: String,
       default: 'Momo - The Cat | Amazon Affiliate Cat Store & Boutique',
@@ -33,6 +37,23 @@ const StoreSettingsSchema = new Schema<IStoreSettings>(
       type: String,
       default:
         'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/cropped-favicon-32x32.png',
+    },
+    googleSiteVerification: { type: String, default: '' },
+    bingSiteVerification: { type: String, default: '' },
+    googleAnalyticsId: { type: String, default: '' },
+    openGraphDefaultImage: { type: String, default: '' },
+    articlesMetaTitle: {
+      type: String,
+      default: 'Cat Care Guides, Tips & Product Reviews | Momo The Cat',
+    },
+    articlesMetaDescription: {
+      type: String,
+      default:
+        'Explore expert cat product reviews, tested toys, health tips, and buyer guides curated to keep indoor cats healthy and playful.',
+    },
+    articlesMetaKeywords: {
+      type: String,
+      default: 'cat care, cat reviews, best cat toys 2026, cat health, pet guides',
     },
 
     // Branding Fields
@@ -272,6 +293,59 @@ const StoreSettingsSchema = new Schema<IStoreSettings>(
       default:
         'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/Pty-Amount-Logo-1.png',
     },
+
+    // Homepage Sections Customization (Shopify CMS Mode)
+    showHeroBanner: { type: Boolean, default: true },
+    showCategoryShowcase: { type: Boolean, default: true },
+    showPassionBanner: { type: Boolean, default: true },
+    showProductGrid: { type: Boolean, default: true },
+    showPromoCards: { type: Boolean, default: false },
+    showDealsBanner: { type: Boolean, default: true },
+    showSpotlight: { type: Boolean, default: false },
+    showTestimonials: { type: Boolean, default: true },
+    showDiscountsBanner: { type: Boolean, default: true },
+    showCuratedCollections: { type: Boolean, default: false },
+    showViralFavorites: { type: Boolean, default: false },
+    showInstagramFeed: { type: Boolean, default: true },
+    showSocialMedia: { type: Boolean, default: true },
+    showNewsletter: { type: Boolean, default: true },
+
+    homepageSectionsOrder: {
+      type: [String],
+      default: [
+        'hero',
+        'categories',
+        'passion',
+        'products',
+        'deals',
+        'promo_cards',
+        'spotlight',
+        'testimonials',
+        'discounts',
+        'collections',
+        'viral',
+        'instagram',
+        'social',
+      ],
+    },
+
+    // Promo Cards Customization
+    promoCard1Badge: { type: String, default: 'Deals Ended Soon' },
+    promoCard1Heading: { type: String, default: 'Save Up To 40% On Momo Loungers & Scratchers' },
+    promoCard1Subheading: { type: String, default: 'Limited stock on our hand-finished velvet beds and sisal climbers.' },
+    promoCard1ButtonText: { type: String, default: 'Buy Now' },
+    promoCard2Badge: { type: String, default: '20% Flash Offer' },
+    promoCard2Heading: { type: String, default: 'Get Enticing Discounts for Your Feline Friend' },
+    promoCard2Subheading: { type: String, default: 'Amazon Prime top-rated interactive toys with guaranteed next-day delivery.' },
+    promoCard2ButtonText: { type: String, default: 'Shop Amazon Picks' },
+
+    // Category Showcase Arches Customization
+    categoryArch1Title: { type: String, default: 'Dog Treats & Food' },
+    categoryArch1Subtitle: { type: String, default: 'Nutritious & Delicious' },
+    categoryArch2Title: { type: String, default: 'Active Toys & Play' },
+    categoryArch2Subtitle: { type: String, default: 'Interactive Teasers' },
+    categoryArch3Title: { type: String, default: 'Royal Cat Comfort' },
+    categoryArch3Subtitle: { type: String, default: 'Beds & Scratchers' },
 
     // Cloudinary Settings
     cloudinaryCloudName: { type: String, default: '' },

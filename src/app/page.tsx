@@ -1,5 +1,4 @@
 import React from 'react';
-import HeroBanner from '@/components/HeroBanner';
 import ProductGrid from '@/components/ProductGrid';
 import { getMergedProducts, getStoreSettings } from '@/lib/store';
 
@@ -21,17 +20,16 @@ export default async function HomePage({ searchParams }: PageProps) {
   const filter = params?.filter || 'all';
   const view = params?.view || '';
 
-  const [products, settings] = await Promise.all([
+  const [products, rawSettings] = await Promise.all([
     getMergedProducts(),
     getStoreSettings(),
   ]);
 
-  return (
-    <div className="space-y-6">
-      {/* Hero Section inspired by Pettie Demo */}
-      <HeroBanner />
+  const settings = JSON.parse(JSON.stringify(rawSettings));
 
-      {/* Dynamic Products Grid with Filter Toolbar */}
+  return (
+    <div className="w-full">
+      {/* Homepage Sections Manager (Dynamic Show/Hide and Order via Shopify CMS) */}
       <ProductGrid
         initialProducts={products}
         activeCategory={category}
@@ -39,6 +37,7 @@ export default async function HomePage({ searchParams }: PageProps) {
         activeFilter={filter}
         initialView={view}
         storeMode={settings.storeMode}
+        serverSettings={settings}
       />
     </div>
   );

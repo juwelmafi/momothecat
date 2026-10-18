@@ -55,6 +55,10 @@ import {
   Crown,
   Palette,
   Layout,
+  ChevronUp,
+  ChevronDown,
+  Info,
+  BookOpen,
 } from 'lucide-react';
 import {
   MergedProduct,
@@ -64,11 +68,14 @@ import {
   Lead,
   StoreSettings,
 } from '@/lib/types';
-import { CATEGORIES, INITIAL_SETTINGS } from '@/lib/initialData';
+import { CATEGORIES, INITIAL_SETTINGS, DEFAULT_HOMEPAGE_SECTIONS_ORDER } from '@/lib/initialData';
 import CloudinaryImageUploader from '@/components/admin/CloudinaryImageUploader';
+import ArticleManager from '@/components/admin/ArticleManager';
 
 type AdminTab =
   | 'overview'
+  | 'articles'
+  | 'sections'
   | 'content'
   | 'media'
   | 'seo'
@@ -102,6 +109,223 @@ export default function AdminPage() {
   const [savingCms, setSavingCms] = useState(false);
   const [cmsSuccessMessage, setCmsSuccessMessage] = useState('');
   const [cmsErrorMessage, setCmsErrorMessage] = useState('');
+
+  // Homepage Sections Customizer (Shopify CMS Mode)
+  const [expandedSectionId, setExpandedSectionId] = useState<string | null>(null);
+
+  const SECTION_DEFINITIONS = [
+    {
+      id: 'hero',
+      name: 'Hero Banner Slider',
+      category: 'Header / Hero',
+      description: 'Vibrant yellow top slider with pet cutout, headings, 2 slides and action buttons.',
+      icon: Layout,
+      color: '#FF6B35',
+      bgColor: '#FFF4EE',
+      visibilityKey: 'showHeroBanner' as keyof StoreSettings,
+      defaultVisible: true,
+    },
+    {
+      id: 'categories',
+      name: 'Category Arches Showcase',
+      category: 'Navigation',
+      description: '3 arched cards showcasing primary pet categories (Dog Treats, Toys, Cat Comfort).',
+      icon: Sparkles,
+      color: '#2FA5FB',
+      bgColor: '#EDF7FD',
+      visibilityKey: 'showCategoryShowcase' as keyof StoreSettings,
+      defaultVisible: true,
+    },
+    {
+      id: 'passion',
+      name: 'Passion Feature Banner',
+      category: 'Brand Story',
+      description: '"Our Passion Is Providing Premium Cat Products" with 6 checkmark perks and owner photo.',
+      icon: Heart,
+      color: '#E11D48',
+      bgColor: '#FFF1F4',
+      visibilityKey: 'showPassionBanner' as keyof StoreSettings,
+      defaultVisible: true,
+    },
+    {
+      id: 'products',
+      name: 'Products Catalog Grid',
+      category: 'E-Commerce',
+      description: 'Main product grid with circular category filter icons, sorting and 4-column product cards.',
+      icon: ShoppingBag,
+      color: '#059669',
+      bgColor: '#ECFDF5',
+      visibilityKey: 'showProductGrid' as keyof StoreSettings,
+      defaultVisible: true,
+    },
+    {
+      id: 'deals',
+      name: 'Flash Deals Banner',
+      category: 'Promotions',
+      description: '"Deals Ended Soon" banner with sleeping dog/cat image, timer text and call-to-action.',
+      icon: Zap,
+      color: '#D97706',
+      bgColor: '#FFFBEB',
+      visibilityKey: 'showDealsBanner' as keyof StoreSettings,
+      defaultVisible: true,
+    },
+    {
+      id: 'promo_cards',
+      name: 'Promo Duo Flash Cards',
+      category: 'Promotions',
+      description: 'Two side-by-side promo cards: 40% Off Velvet Loungers & 20% Flash Amazon Picks.',
+      icon: Tag,
+      color: '#7C3AED',
+      bgColor: '#F5F3FF',
+      visibilityKey: 'showPromoCards' as keyof StoreSettings,
+      defaultVisible: false,
+      notes: 'Optional promo duo cards',
+    },
+    {
+      id: 'spotlight',
+      name: 'Amazon & Daraz Spotlight',
+      category: 'Affiliate Showcase',
+      description: 'Highlights top deals dynamically using real store products (no placeholder mock data).',
+      icon: Crown,
+      color: '#EA580C',
+      bgColor: '#FFF7ED',
+      visibilityKey: 'showSpotlight' as keyof StoreSettings,
+      defaultVisible: false,
+      notes: 'Placeholder products removed; dynamically uses real catalog products',
+    },
+    {
+      id: 'testimonials',
+      name: 'Customer Reviews Slider',
+      category: 'Social Proof',
+      description: '"Views Of Our Happy Customers" 5-star customer review slider with circular portraits.',
+      icon: Star,
+      color: '#EAB308',
+      bgColor: '#FEFCE8',
+      visibilityKey: 'showTestimonials' as keyof StoreSettings,
+      defaultVisible: true,
+    },
+    {
+      id: 'discounts',
+      name: 'Discounts Flash Banner',
+      category: 'Promotions',
+      description: 'Sunflower yellow wide banner with rotating 20% Offer circular badge.',
+      icon: Flame,
+      color: '#DC2626',
+      bgColor: '#FEF2F2',
+      visibilityKey: 'showDiscountsBanner' as keyof StoreSettings,
+      defaultVisible: true,
+    },
+    {
+      id: 'collections',
+      name: 'Curated Bundles & Essentials',
+      category: 'Bundles',
+      description: 'Showcases feline bundles dynamically using real store products (no placeholder mock data).',
+      icon: Package,
+      color: '#0284C7',
+      bgColor: '#F0F9FF',
+      visibilityKey: 'showCuratedCollections' as keyof StoreSettings,
+      defaultVisible: false,
+      notes: 'Placeholder products removed; dynamically uses real catalog products',
+    },
+    {
+      id: 'viral',
+      name: 'Viral Community Favorites',
+      category: 'Social Discovery',
+      description: 'Interactive 4-tab section dynamically using real store products (no placeholder mock data).',
+      icon: Megaphone,
+      color: '#9333EA',
+      bgColor: '#FAF5FF',
+      visibilityKey: 'showViralFavorites' as keyof StoreSettings,
+      defaultVisible: false,
+      notes: 'Placeholder products removed; dynamically uses real catalog products',
+    },
+    {
+      id: 'instagram',
+      name: 'Instagram Community Feed',
+      category: 'Social Proof',
+      description: 'Grid of community Instagram posts with like counts, tags and Momo photos.',
+      icon: ImageIcon,
+      color: '#DB2777',
+      bgColor: '#FDF2F8',
+      visibilityKey: 'showInstagramFeed' as keyof StoreSettings,
+      defaultVisible: true,
+    },
+    {
+      id: 'social',
+      name: 'Social Media Channels',
+      category: 'Community',
+      description: 'Follow buttons and community channel count badges (Instagram, TikTok, YouTube, Facebook).',
+      icon: Globe,
+      color: '#4F46E5',
+      bgColor: '#EEF2FF',
+      visibilityKey: 'showSocialMedia' as keyof StoreSettings,
+      defaultVisible: true,
+    },
+  ];
+
+  const isSectionVisible = (sectionId: string): boolean => {
+    const def = SECTION_DEFINITIONS.find((d) => d.id === sectionId);
+    if (!def) return true;
+    const val = cmsForm[def.visibilityKey];
+    if (val !== undefined && val !== null) return Boolean(val);
+    return def.defaultVisible;
+  };
+
+  const toggleSectionVisibility = (sectionId: string) => {
+    const def = SECTION_DEFINITIONS.find((d) => d.id === sectionId);
+    if (!def) return;
+    const current = isSectionVisible(sectionId);
+    setCmsForm((prev) => ({
+      ...prev,
+      [def.visibilityKey]: !current,
+    }));
+  };
+
+  const moveSection = (sectionId: string, direction: 'up' | 'down') => {
+    const currentOrder = [
+      ...(cmsForm.homepageSectionsOrder?.length
+        ? cmsForm.homepageSectionsOrder
+        : DEFAULT_HOMEPAGE_SECTIONS_ORDER),
+    ];
+    SECTION_DEFINITIONS.forEach((d) => {
+      if (!currentOrder.includes(d.id)) currentOrder.push(d.id);
+    });
+
+    const index = currentOrder.indexOf(sectionId);
+    if (index === -1) return;
+
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= currentOrder.length) return;
+
+    const updated = [...currentOrder];
+    const [moved] = updated.splice(index, 1);
+    updated.splice(newIndex, 0, moved);
+
+    setCmsForm((prev) => ({
+      ...prev,
+      homepageSectionsOrder: updated,
+    }));
+  };
+
+  const resetSectionsLayout = () => {
+    setCmsForm((prev) => ({
+      ...prev,
+      showHeroBanner: true,
+      showCategoryShowcase: true,
+      showPassionBanner: true,
+      showProductGrid: true,
+      showPromoCards: false,
+      showDealsBanner: true,
+      showSpotlight: false,
+      showTestimonials: true,
+      showDiscountsBanner: true,
+      showCuratedCollections: false,
+      showViralFavorites: false,
+      showInstagramFeed: true,
+      showSocialMedia: true,
+      homepageSectionsOrder: [...DEFAULT_HOMEPAGE_SECTIONS_ORDER],
+    }));
+  };
 
   // Search & Filter in Admin
   const [productSearch, setProductSearch] = useState('');
@@ -184,7 +408,6 @@ export default function AdminPage() {
         setSettings(setData.settings);
         setCmsForm(setData.settings);
       }
-      checkCloudinaryStatus();
     } catch (err) {
       console.error('Error fetching admin data:', err);
     } finally {
@@ -761,6 +984,20 @@ export default function AdminPage() {
       badge: null,
     },
     {
+      id: 'articles' as AdminTab,
+      label: 'Articles & SEO Guides',
+      description: 'Reviews, Tips & Blog Posts',
+      icon: BookOpen,
+      badge: 'SEO Hub',
+    },
+    {
+      id: 'sections' as AdminTab,
+      label: 'Homepage Sections',
+      description: 'Show/Hide & Shopify CMS',
+      icon: Layers,
+      badge: 'Theme CMS',
+    },
+    {
       id: 'content' as AdminTab,
       label: 'Website Content',
       description: 'Headings, Hero & Body Text',
@@ -1312,7 +1549,25 @@ export default function AdminPage() {
               </div>
 
               {/* Quick Navigation Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+                <div
+                  onClick={() => setActiveTab('sections')}
+                  className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-xs hover:border-orange-400 hover:shadow-md transition-all cursor-pointer group"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="w-10 h-10 rounded-2xl bg-orange-100 text-[#FF6B35] flex items-center justify-center">
+                      <Layers className="w-5 h-5" />
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-slate-400 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                  <h3 className="font-display font-bold text-base text-slate-900 mb-1">
+                    Homepage Sections (Shopify CMS)
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Show/hide any section on the homepage and reorder sections with 1-click controls.
+                  </p>
+                </div>
+
                 <div
                   onClick={() => setActiveTab('content')}
                   className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-xs hover:border-orange-300 hover:shadow-md transition-all cursor-pointer group"
@@ -1323,7 +1578,7 @@ export default function AdminPage() {
                     </div>
                     <ChevronRight className="w-5 h-5 text-slate-400 group-hover:translate-x-1 transition-transform" />
                   </div>
-                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 mb-1">
+                  <h3 className="font-display font-bold text-base text-slate-900 mb-1">
                     Edit Website Content (CMS)
                   </h3>
                   <p className="text-xs text-slate-500">
@@ -1341,7 +1596,7 @@ export default function AdminPage() {
                     </div>
                     <ChevronRight className="w-5 h-5 text-slate-400 group-hover:translate-x-1 transition-transform" />
                   </div>
-                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 mb-1">
+                  <h3 className="font-display font-bold text-base text-slate-900 mb-1">
                     Images & Cloudinary
                   </h3>
                   <p className="text-xs text-slate-500">
@@ -1359,12 +1614,771 @@ export default function AdminPage() {
                     </div>
                     <ChevronRight className="w-5 h-5 text-slate-400 group-hover:translate-x-1 transition-transform" />
                   </div>
-                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 mb-1">
+                  <h3 className="font-display font-bold text-base text-slate-900 mb-1">
                     SEO & Branding
                   </h3>
                   <p className="text-xs text-slate-500">
                     Update Google Search meta title, description, keywords, favicon, and brand logo.
                   </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ======================================================== */}
+          {/* TAB: ARTICLES & SEO BLOG GUIDES */}
+          {/* ======================================================== */}
+          {activeTab === 'articles' && (
+            <ArticleManager
+              products={products}
+              siteUrl={cmsForm.siteUrl || 'https://momothecat.vercel.app'}
+            />
+          )}
+
+          {/* ======================================================== */}
+          {/* TAB: HOMEPAGE SECTIONS (SHOPIFY CMS MODE) */}
+          {/* ======================================================== */}
+          {activeTab === 'sections' && (
+            <div className="space-y-6">
+              {/* Header with Save & Action Buttons */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-xs">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-orange-100 text-[#FF6B35]">
+                      Shopify CMS Customizer
+                    </span>
+                    <span className="text-xs text-slate-400">· Real-Time Theme Engine</span>
+                  </div>
+                  <h2 className="font-display font-black text-xl sm:text-2xl text-slate-900 mt-1">
+                    Homepage Sections Manager
+                  </h2>
+                  <p className="text-xs text-slate-500 mt-1 max-w-2xl">
+                    Control which sections appear on your storefront homepage, reorder them dynamically, and configure section content. Hardcoded placeholder products have been removed so all sections display your real inventory.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <Link
+                    href="/"
+                    target="_blank"
+                    className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors"
+                  >
+                    <span>Visit Live Storefront</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </Link>
+
+                  <button
+                    type="button"
+                    onClick={resetSectionsLayout}
+                    className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors"
+                    title="Reset to standard recommended layout"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Reset Layout</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleSaveCmsSettings()}
+                    disabled={savingCms}
+                    className="px-5 py-2.5 bg-[#FF6B35] hover:bg-[#e65a25] text-white rounded-xl text-xs font-black flex items-center gap-2 shadow-md shadow-orange-500/20 active:scale-95 transition-all disabled:opacity-50"
+                  >
+                    <Save className="w-4 h-4" />
+                    <span>{savingCms ? 'Saving...' : 'Save & Publish Changes'}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Success / Error Messages */}
+              {cmsSuccessMessage && (
+                <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-2.5 text-xs text-emerald-800 font-bold animate-in fade-in">
+                  <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
+                  <span>{cmsSuccessMessage}</span>
+                </div>
+              )}
+              {cmsErrorMessage && (
+                <div className="p-4 bg-red-50 border border-red-200 rounded-2xl flex items-center gap-2.5 text-xs text-red-700 font-bold animate-in fade-in">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-red-500" />
+                  <span>{cmsErrorMessage}</span>
+                </div>
+              )}
+
+              {/* Status & Inventory Note Strip */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+                <div className="md:col-span-8 bg-gradient-to-r from-orange-50/80 via-amber-50/50 to-white p-4 sm:p-5 rounded-2xl border border-orange-200/80 flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-[#FF6B35] text-white flex items-center justify-center shrink-0 shadow-xs">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div className="text-xs space-y-1">
+                    <p className="font-bold text-slate-800">
+                      Placeholder Products Removed & Replaced With Real Catalog Inventory
+                    </p>
+                    <p className="text-slate-600 text-[11px] leading-relaxed">
+                      Previously hardcoded mock items in Spotlight, Curated Collections, and Viral Favorites have been eliminated. Sections now dynamically pull your actual store products (e.g. active deals, featured products, and category-filtered items). You can show or hide any section below with one click.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="md:col-span-4 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
+                      Active On Storefront
+                    </span>
+                    <div className="flex items-baseline gap-2 mt-1">
+                      <span className="text-2xl font-black text-slate-900 font-display">
+                        {SECTION_DEFINITIONS.filter((s) => isSectionVisible(s.id)).length}
+                      </span>
+                      <span className="text-xs text-slate-500 font-bold">
+                        of {SECTION_DEFINITIONS.length} sections visible
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-extrabold">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>Live</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Reorderable Section Cards List (Shopify Style) */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between px-2 pt-2">
+                  <span className="text-xs font-black uppercase tracking-wider text-slate-500">
+                    Homepage Section Sequence (Top to Bottom)
+                  </span>
+                  <span className="text-xs text-slate-400 font-medium">
+                    Use Up/Down arrows to reorder
+                  </span>
+                </div>
+
+                {(() => {
+                  const currentOrder = [
+                    ...(cmsForm.homepageSectionsOrder?.length
+                      ? cmsForm.homepageSectionsOrder
+                      : DEFAULT_HOMEPAGE_SECTIONS_ORDER),
+                  ];
+                  SECTION_DEFINITIONS.forEach((d) => {
+                    if (!currentOrder.includes(d.id)) currentOrder.push(d.id);
+                  });
+
+                  return currentOrder.map((sectionId, index) => {
+                    const def = SECTION_DEFINITIONS.find((d) => d.id === sectionId);
+                    if (!def) return null;
+
+                    const isVisible = isSectionVisible(def.id);
+                    const isExpanded = expandedSectionId === def.id;
+                    const Icon = def.icon;
+
+                    return (
+                      <div
+                        key={def.id}
+                        className={`rounded-2xl sm:rounded-3xl border transition-all ${
+                          isVisible
+                            ? 'bg-white border-slate-200/90 shadow-xs hover:border-slate-300'
+                            : 'bg-slate-50/90 border-slate-200/60 opacity-80'
+                        }`}
+                      >
+                        {/* Section Header Row */}
+                        <div className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                          {/* Left: Reorder Arrows & Info */}
+                          <div className="flex items-center gap-3 sm:gap-4 flex-1">
+                            {/* Order Badge & Reorder Arrows */}
+                            <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl shrink-0">
+                              <span className="text-[11px] font-black text-slate-600 px-2">
+                                #{index + 1}
+                              </span>
+                              <div className="flex flex-col gap-0.5">
+                                <button
+                                  type="button"
+                                  onClick={() => moveSection(def.id, 'up')}
+                                  disabled={index === 0}
+                                  title="Move section up"
+                                  className="p-1 text-slate-500 hover:text-slate-900 hover:bg-white rounded-md disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                                >
+                                  <ChevronUp className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => moveSection(def.id, 'down')}
+                                  disabled={index === currentOrder.length - 1}
+                                  title="Move section down"
+                                  className="p-1 text-slate-500 hover:text-slate-900 hover:bg-white rounded-md disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                                >
+                                  <ChevronDown className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Section Icon */}
+                            <div
+                              className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-xs"
+                              style={{ backgroundColor: def.bgColor, color: def.color }}
+                            >
+                              <Icon className="w-5 h-5" />
+                            </div>
+
+                            {/* Section Details */}
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <h3 className="font-display font-bold text-sm sm:text-base text-slate-900 truncate">
+                                  {def.name}
+                                </h3>
+                                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                                  {def.category}
+                                </span>
+                                {def.notes && (
+                                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 hidden sm:inline-block">
+                                    {def.notes}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">
+                                {def.description}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Right: Visibility Toggle & Customize Button */}
+                          <div className="flex items-center gap-2 sm:gap-3 self-end md:self-auto shrink-0">
+                            {/* Visibility Toggle Button */}
+                            <button
+                              type="button"
+                              onClick={() => toggleSectionVisibility(def.id)}
+                              className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 border transition-all ${
+                                isVisible
+                                  ? 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100'
+                                  : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
+                              }`}
+                              title={isVisible ? 'Click to hide this section from homepage' : 'Click to show this section on homepage'}
+                            >
+                              {isVisible ? (
+                                <>
+                                  <Eye className="w-4 h-4 text-emerald-600" />
+                                  <span>Visible</span>
+                                </>
+                              ) : (
+                                <>
+                                  <EyeOff className="w-4 h-4 text-slate-400" />
+                                  <span>Hidden</span>
+                                </>
+                              )}
+                              <span
+                                className={`w-2 h-2 rounded-full ${
+                                  isVisible ? 'bg-emerald-500' : 'bg-slate-400'
+                                }`}
+                              />
+                            </button>
+
+                            {/* Expand / Customize Button */}
+                            <button
+                              type="button"
+                              onClick={() => setExpandedSectionId(isExpanded ? null : def.id)}
+                              className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
+                                isExpanded
+                                  ? 'bg-slate-900 text-white'
+                                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                              }`}
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                              <span>{isExpanded ? 'Close' : 'Customize'}</span>
+                              {isExpanded ? (
+                                <ChevronUp className="w-3.5 h-3.5" />
+                              ) : (
+                                <ChevronDown className="w-3.5 h-3.5" />
+                              )}
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Expandable Section Customizer Form */}
+                        {isExpanded && (
+                          <div className="border-t border-slate-100 p-5 sm:p-6 bg-[#FCFBFA] rounded-b-2xl sm:rounded-b-3xl space-y-5 animate-in fade-in duration-200">
+                            <div className="flex items-center justify-between pb-3 border-b border-slate-200/80">
+                              <div>
+                                <h4 className="font-display font-bold text-sm text-slate-900">
+                                  Customize {def.name} Content
+                                </h4>
+                                <p className="text-[11px] text-slate-500">
+                                  Modify section text, badges, and button links. Click &ldquo;Save & Publish Changes&rdquo; above or below when done.
+                                </p>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => handleSaveCmsSettings()}
+                                disabled={savingCms}
+                                className="px-3.5 py-1.5 bg-[#FF6B35] hover:bg-[#e65a25] text-white rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs"
+                              >
+                                <Save className="w-3.5 h-3.5" />
+                                <span>{savingCms ? 'Saving...' : 'Save'}</span>
+                              </button>
+                            </div>
+
+                            {/* Section-Specific Form Fields */}
+                            {def.id === 'hero' && (
+                              <div className="space-y-4">
+                                <div className="bg-white p-4 rounded-2xl border border-slate-200/80 space-y-3">
+                                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
+                                    Slide 1
+                                  </span>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                      <label className="text-xs font-bold text-slate-700">Heading 1</label>
+                                      <input
+                                        type="text"
+                                        value={cmsForm.heroSlide1Heading1 ?? ''}
+                                        onChange={(e) => setCmsForm({ ...cmsForm, heroSlide1Heading1: e.target.value })}
+                                        className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-xs font-bold text-slate-700">Heading 2</label>
+                                      <input
+                                        type="text"
+                                        value={cmsForm.heroSlide1Heading2 ?? ''}
+                                        onChange={(e) => setCmsForm({ ...cmsForm, heroSlide1Heading2: e.target.value })}
+                                        className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                      />
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <label className="text-xs font-bold text-slate-700">Description</label>
+                                    <textarea
+                                      rows={2}
+                                      value={cmsForm.heroSlide1Description ?? ''}
+                                      onChange={(e) => setCmsForm({ ...cmsForm, heroSlide1Description: e.target.value })}
+                                      className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-medium outline-none focus:border-[#FF6B35]"
+                                    />
+                                  </div>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                      <label className="text-xs font-bold text-slate-700">Badge Text</label>
+                                      <input
+                                        type="text"
+                                        value={cmsForm.heroSlide1Badge ?? ''}
+                                        onChange={(e) => setCmsForm({ ...cmsForm, heroSlide1Badge: e.target.value })}
+                                        className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-xs font-bold text-slate-700">Button Label</label>
+                                      <input
+                                        type="text"
+                                        value={cmsForm.heroSlide1ButtonText ?? ''}
+                                        onChange={(e) => setCmsForm({ ...cmsForm, heroSlide1ButtonText: e.target.value })}
+                                        className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="bg-white p-4 rounded-2xl border border-slate-200/80 space-y-3">
+                                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
+                                    Slide 2
+                                  </span>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                      <label className="text-xs font-bold text-slate-700">Heading 1</label>
+                                      <input
+                                        type="text"
+                                        value={cmsForm.heroSlide2Heading1 ?? ''}
+                                        onChange={(e) => setCmsForm({ ...cmsForm, heroSlide2Heading1: e.target.value })}
+                                        className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-xs font-bold text-slate-700">Heading 2</label>
+                                      <input
+                                        type="text"
+                                        value={cmsForm.heroSlide2Heading2 ?? ''}
+                                        onChange={(e) => setCmsForm({ ...cmsForm, heroSlide2Heading2: e.target.value })}
+                                        className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                      />
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <label className="text-xs font-bold text-slate-700">Description</label>
+                                    <textarea
+                                      rows={2}
+                                      value={cmsForm.heroSlide2Description ?? ''}
+                                      onChange={(e) => setCmsForm({ ...cmsForm, heroSlide2Description: e.target.value })}
+                                      className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-medium outline-none focus:border-[#FF6B35]"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {def.id === 'categories' && (
+                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div className="bg-white p-3.5 rounded-xl border border-slate-200/80 space-y-2">
+                                  <span className="text-[10px] font-black uppercase text-blue-600 block">Arch Card 1</span>
+                                  <div>
+                                    <label className="text-[11px] font-bold text-slate-700">Title</label>
+                                    <input
+                                      type="text"
+                                      value={cmsForm.categoryArch1Title ?? ''}
+                                      onChange={(e) => setCmsForm({ ...cmsForm, categoryArch1Title: e.target.value })}
+                                      placeholder="Dog Treats & Food"
+                                      className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="text-[11px] font-bold text-slate-700">Subtitle</label>
+                                    <input
+                                      type="text"
+                                      value={cmsForm.categoryArch1Subtitle ?? ''}
+                                      onChange={(e) => setCmsForm({ ...cmsForm, categoryArch1Subtitle: e.target.value })}
+                                      placeholder="Nutritious & Delicious"
+                                      className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                    />
+                                  </div>
+                                </div>
+
+                                <div className="bg-white p-3.5 rounded-xl border border-slate-200/80 space-y-2">
+                                  <span className="text-[10px] font-black uppercase text-amber-600 block">Arch Card 2</span>
+                                  <div>
+                                    <label className="text-[11px] font-bold text-slate-700">Title</label>
+                                    <input
+                                      type="text"
+                                      value={cmsForm.categoryArch2Title ?? ''}
+                                      onChange={(e) => setCmsForm({ ...cmsForm, categoryArch2Title: e.target.value })}
+                                      placeholder="Active Toys & Play"
+                                      className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="text-[11px] font-bold text-slate-700">Subtitle</label>
+                                    <input
+                                      type="text"
+                                      value={cmsForm.categoryArch2Subtitle ?? ''}
+                                      onChange={(e) => setCmsForm({ ...cmsForm, categoryArch2Subtitle: e.target.value })}
+                                      placeholder="Interactive Teasers"
+                                      className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                    />
+                                  </div>
+                                </div>
+
+                                <div className="bg-white p-3.5 rounded-xl border border-slate-200/80 space-y-2">
+                                  <span className="text-[10px] font-black uppercase text-rose-600 block">Arch Card 3</span>
+                                  <div>
+                                    <label className="text-[11px] font-bold text-slate-700">Title</label>
+                                    <input
+                                      type="text"
+                                      value={cmsForm.categoryArch3Title ?? ''}
+                                      onChange={(e) => setCmsForm({ ...cmsForm, categoryArch3Title: e.target.value })}
+                                      placeholder="Royal Cat Comfort"
+                                      className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="text-[11px] font-bold text-slate-700">Subtitle</label>
+                                    <input
+                                      type="text"
+                                      value={cmsForm.categoryArch3Subtitle ?? ''}
+                                      onChange={(e) => setCmsForm({ ...cmsForm, categoryArch3Subtitle: e.target.value })}
+                                      placeholder="Beds & Scratchers"
+                                      className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {def.id === 'passion' && (
+                              <div className="bg-white p-4 rounded-2xl border border-slate-200/80 space-y-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                  <div>
+                                    <label className="text-xs font-bold text-slate-700">Section Heading</label>
+                                    <input
+                                      type="text"
+                                      value={cmsForm.passionHeading ?? ''}
+                                      onChange={(e) => setCmsForm({ ...cmsForm, passionHeading: e.target.value })}
+                                      className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="text-xs font-bold text-slate-700">Button Label</label>
+                                    <input
+                                      type="text"
+                                      value={cmsForm.passionButtonText ?? ''}
+                                      onChange={(e) => setCmsForm({ ...cmsForm, passionButtonText: e.target.value })}
+                                      className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                    />
+                                  </div>
+                                </div>
+                                <div>
+                                  <label className="text-xs font-bold text-slate-700">Description Body</label>
+                                  <textarea
+                                    rows={2}
+                                    value={cmsForm.passionDescription ?? ''}
+                                    onChange={(e) => setCmsForm({ ...cmsForm, passionDescription: e.target.value })}
+                                    className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-medium outline-none focus:border-[#FF6B35]"
+                                  />
+                                </div>
+                              </div>
+                            )}
+
+                            {def.id === 'products' && (
+                              <div className="bg-white p-4 rounded-2xl border border-slate-200/80 space-y-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                  <div>
+                                    <label className="text-xs font-bold text-slate-700">Catalog Heading</label>
+                                    <input
+                                      type="text"
+                                      value={cmsForm.productsHeading ?? ''}
+                                      onChange={(e) => setCmsForm({ ...cmsForm, productsHeading: e.target.value })}
+                                      className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="text-xs font-bold text-slate-700">Catalog Subtitle</label>
+                                    <input
+                                      type="text"
+                                      value={cmsForm.productsSubheading ?? ''}
+                                      onChange={(e) => setCmsForm({ ...cmsForm, productsSubheading: e.target.value })}
+                                      className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {def.id === 'deals' && (
+                              <div className="bg-white p-4 rounded-2xl border border-slate-200/80 space-y-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                  <div>
+                                    <label className="text-xs font-bold text-slate-700">Heading</label>
+                                    <input
+                                      type="text"
+                                      value={cmsForm.dealsHeading ?? ''}
+                                      onChange={(e) => setCmsForm({ ...cmsForm, dealsHeading: e.target.value })}
+                                      className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="text-xs font-bold text-slate-700">Button Label</label>
+                                    <input
+                                      type="text"
+                                      value={cmsForm.dealsButtonText ?? ''}
+                                      onChange={(e) => setCmsForm({ ...cmsForm, dealsButtonText: e.target.value })}
+                                      className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                    />
+                                  </div>
+                                </div>
+                                <div>
+                                  <label className="text-xs font-bold text-slate-700">Description</label>
+                                  <textarea
+                                    rows={2}
+                                    value={cmsForm.dealsDescription ?? ''}
+                                    onChange={(e) => setCmsForm({ ...cmsForm, dealsDescription: e.target.value })}
+                                    className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-medium outline-none focus:border-[#FF6B35]"
+                                  />
+                                </div>
+                              </div>
+                            )}
+
+                            {def.id === 'promo_cards' && (
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div className="bg-white p-3.5 rounded-xl border border-slate-200/80 space-y-2">
+                                  <span className="text-[10px] font-black uppercase text-red-600 block">Card 1 (Flash Loungers)</span>
+                                  <div>
+                                    <label className="text-[11px] font-bold text-slate-700">Badge Text</label>
+                                    <input
+                                      type="text"
+                                      value={cmsForm.promoCard1Badge ?? ''}
+                                      onChange={(e) => setCmsForm({ ...cmsForm, promoCard1Badge: e.target.value })}
+                                      placeholder="Deals Ended Soon"
+                                      className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="text-[11px] font-bold text-slate-700">Heading</label>
+                                    <input
+                                      type="text"
+                                      value={cmsForm.promoCard1Heading ?? ''}
+                                      onChange={(e) => setCmsForm({ ...cmsForm, promoCard1Heading: e.target.value })}
+                                      className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="text-[11px] font-bold text-slate-700">Button Label</label>
+                                    <input
+                                      type="text"
+                                      value={cmsForm.promoCard1ButtonText ?? ''}
+                                      onChange={(e) => setCmsForm({ ...cmsForm, promoCard1ButtonText: e.target.value })}
+                                      className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                    />
+                                  </div>
+                                </div>
+
+                                <div className="bg-white p-3.5 rounded-xl border border-slate-200/80 space-y-2">
+                                  <span className="text-[10px] font-black uppercase text-amber-600 block">Card 2 (20% Flash Offer)</span>
+                                  <div>
+                                    <label className="text-[11px] font-bold text-slate-700">Badge Text</label>
+                                    <input
+                                      type="text"
+                                      value={cmsForm.promoCard2Badge ?? ''}
+                                      onChange={(e) => setCmsForm({ ...cmsForm, promoCard2Badge: e.target.value })}
+                                      placeholder="20% Flash Offer"
+                                      className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="text-[11px] font-bold text-slate-700">Heading</label>
+                                    <input
+                                      type="text"
+                                      value={cmsForm.promoCard2Heading ?? ''}
+                                      onChange={(e) => setCmsForm({ ...cmsForm, promoCard2Heading: e.target.value })}
+                                      className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="text-[11px] font-bold text-slate-700">Button Label</label>
+                                    <input
+                                      type="text"
+                                      value={cmsForm.promoCard2ButtonText ?? ''}
+                                      onChange={(e) => setCmsForm({ ...cmsForm, promoCard2ButtonText: e.target.value })}
+                                      className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {def.id === 'spotlight' && (
+                              <div className="bg-white p-4 rounded-2xl border border-slate-200/80 space-y-2 text-xs text-slate-600">
+                                <p className="font-bold text-slate-900">
+                                  Dynamic Real Product Spotlight
+                                </p>
+                                <p>
+                                  This section features top-rated products and discounted deals automatically from your catalog ({products.length} products). All mock placeholder products have been removed. Toggle the visibility button above to show or hide this section on your homepage.
+                                </p>
+                              </div>
+                            )}
+
+                            {def.id === 'testimonials' && (
+                              <div className="bg-white p-4 rounded-2xl border border-slate-200/80 space-y-3">
+                                <div>
+                                  <label className="text-xs font-bold text-slate-700">Section Title</label>
+                                  <input
+                                    type="text"
+                                    value={cmsForm.testimonialsHeading ?? ''}
+                                    onChange={(e) => setCmsForm({ ...cmsForm, testimonialsHeading: e.target.value })}
+                                    className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                  />
+                                </div>
+                              </div>
+                            )}
+
+                            {def.id === 'discounts' && (
+                              <div className="bg-white p-4 rounded-2xl border border-slate-200/80 space-y-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                  <div>
+                                    <label className="text-xs font-bold text-slate-700">Badge Text</label>
+                                    <input
+                                      type="text"
+                                      value={cmsForm.discountsBadge ?? ''}
+                                      onChange={(e) => setCmsForm({ ...cmsForm, discountsBadge: e.target.value })}
+                                      placeholder="20% Offer"
+                                      className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="text-xs font-bold text-slate-700">Heading</label>
+                                    <input
+                                      type="text"
+                                      value={cmsForm.discountsHeading ?? ''}
+                                      onChange={(e) => setCmsForm({ ...cmsForm, discountsHeading: e.target.value })}
+                                      className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="text-xs font-bold text-slate-700">Button Label</label>
+                                    <input
+                                      type="text"
+                                      value={cmsForm.discountsButtonText ?? ''}
+                                      onChange={(e) => setCmsForm({ ...cmsForm, discountsButtonText: e.target.value })}
+                                      className="w-full px-3 py-2 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold outline-none focus:border-[#FF6B35]"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {def.id === 'collections' && (
+                              <div className="bg-white p-4 rounded-2xl border border-slate-200/80 space-y-2 text-xs text-slate-600">
+                                <p className="font-bold text-slate-900">
+                                  Dynamic Real Product Bundles
+                                </p>
+                                <p>
+                                  This section features curated packs derived from your active store categories and products. All hardcoded placeholder mock bundles have been removed.
+                                </p>
+                              </div>
+                            )}
+
+                            {def.id === 'viral' && (
+                              <div className="bg-white p-4 rounded-2xl border border-slate-200/80 space-y-2 text-xs text-slate-600">
+                                <p className="font-bold text-slate-900">
+                                  Interactive Tabbed Real Products
+                                </p>
+                                <p>
+                                  Organizes your real store inventory across 4 tabs: Smart Tech & Gadgets, High-Energy Toys, Cozy Sanctuary, and Gourmet & Wellness. All mock placeholder products have been removed.
+                                </p>
+                              </div>
+                            )}
+
+                            {def.id === 'instagram' && (
+                              <div className="bg-white p-4 rounded-2xl border border-slate-200/80 space-y-2 text-xs text-slate-600">
+                                <p className="font-bold text-slate-900">
+                                  Community Instagram Showcase
+                                </p>
+                                <p>
+                                  Displays social post photos and engagement hashtags. Toggle visibility above to show or hide.
+                                </p>
+                              </div>
+                            )}
+
+                            {def.id === 'social' && (
+                              <div className="bg-white p-4 rounded-2xl border border-slate-200/80 space-y-2 text-xs text-slate-600">
+                                <p className="font-bold text-slate-900">
+                                  Social Media Community Links
+                                </p>
+                                <p>
+                                  Links visitors to your Instagram, TikTok, YouTube, and Facebook communities. Toggle visibility above to show or hide.
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  });
+                })()}
+              </div>
+
+              {/* Bottom Sticky Action Bar */}
+              <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xs">
+                <div className="flex items-center gap-2 text-xs text-slate-500">
+                  <Info className="w-4 h-4 text-slate-400 shrink-0" />
+                  <span>Changes apply to the storefront homepage immediately when saved.</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={resetSectionsLayout}
+                    className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-colors"
+                  >
+                    Reset Layout
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSaveCmsSettings()}
+                    disabled={savingCms}
+                    className="px-6 py-2.5 bg-[#FF6B35] hover:bg-[#e65a25] text-white rounded-xl text-xs font-black flex items-center gap-2 shadow-md shadow-orange-500/20 active:scale-95 transition-all disabled:opacity-50"
+                  >
+                    <Save className="w-4 h-4" />
+                    <span>{savingCms ? 'Saving...' : 'Save & Publish Changes'}</span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -1410,13 +2424,36 @@ export default function AdminPage() {
 
               {/* 1. HERO BANNER SLIDES */}
               <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-6">
-                <div className="border-b border-slate-100 pb-3">
-                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
-                    <Layout className="w-4 h-4 text-[#FF6B35]" /> 1. Hero Banner Slides
-                  </h3>
-                  <p className="text-xs text-slate-400">
-                    The large yellow banner slider at the top of the storefront homepage.
-                  </p>
+                <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
+                      <Layout className="w-4 h-4 text-[#FF6B35]" /> 1. Hero Banner Slides
+                    </h3>
+                    <p className="text-xs text-slate-400">
+                      The large yellow banner slider at the top of the storefront homepage.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => toggleSectionVisibility('hero')}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 border transition-all self-start sm:self-auto ${
+                      isSectionVisible('hero')
+                        ? 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100'
+                        : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
+                    }`}
+                  >
+                    {isSectionVisible('hero') ? (
+                      <>
+                        <Eye className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Visible on Homepage</span>
+                      </>
+                    ) : (
+                      <>
+                        <EyeOff className="w-3.5 h-3.5 text-slate-400" />
+                        <span>Hidden on Homepage</span>
+                      </>
+                    )}
+                  </button>
                 </div>
 
                 {/* Slide 1 */}
@@ -1518,13 +2555,36 @@ export default function AdminPage() {
 
               {/* 2. PRODUCT CATALOG SECTION */}
               <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
-                <div className="border-b border-slate-100 pb-3">
-                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
-                    <ShoppingBag className="w-4 h-4 text-[#FF6B35]" /> 2. Products Catalog Section
-                  </h3>
-                  <p className="text-xs text-slate-400">
-                    The title and subtitle appearing above the circular category buttons and product cards grid.
-                  </p>
+                <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
+                      <ShoppingBag className="w-4 h-4 text-[#FF6B35]" /> 2. Products Catalog Section
+                    </h3>
+                    <p className="text-xs text-slate-400">
+                      The title and subtitle appearing above the circular category buttons and product cards grid.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => toggleSectionVisibility('products')}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 border transition-all self-start sm:self-auto ${
+                      isSectionVisible('products')
+                        ? 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100'
+                        : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
+                    }`}
+                  >
+                    {isSectionVisible('products') ? (
+                      <>
+                        <Eye className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Visible on Homepage</span>
+                      </>
+                    ) : (
+                      <>
+                        <EyeOff className="w-3.5 h-3.5 text-slate-400" />
+                        <span>Hidden on Homepage</span>
+                      </>
+                    )}
+                  </button>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1551,13 +2611,36 @@ export default function AdminPage() {
 
               {/* 3. PASSION FEATURE SECTION */}
               <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
-                <div className="border-b border-slate-100 pb-3">
-                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
-                    <Heart className="w-4 h-4 text-[#FF6B35]" /> 3. Passion Section
-                  </h3>
-                  <p className="text-xs text-slate-400">
-                    &ldquo;Our Passion Is Providing Premium Cat Products&rdquo; feature section.
-                  </p>
+                <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
+                      <Heart className="w-4 h-4 text-[#FF6B35]" /> 3. Passion Section
+                    </h3>
+                    <p className="text-xs text-slate-400">
+                      &ldquo;Our Passion Is Providing Premium Cat Products&rdquo; feature section.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => toggleSectionVisibility('passion')}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 border transition-all self-start sm:self-auto ${
+                      isSectionVisible('passion')
+                        ? 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100'
+                        : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
+                    }`}
+                  >
+                    {isSectionVisible('passion') ? (
+                      <>
+                        <Eye className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Visible on Homepage</span>
+                      </>
+                    ) : (
+                      <>
+                        <EyeOff className="w-3.5 h-3.5 text-slate-400" />
+                        <span>Hidden on Homepage</span>
+                      </>
+                    )}
+                  </button>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1594,13 +2677,36 @@ export default function AdminPage() {
 
               {/* 4. FLASH DEALS SECTION */}
               <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
-                <div className="border-b border-slate-100 pb-3">
-                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
-                    <Zap className="w-4 h-4 text-[#FF6B35]" /> 4. Flash Deals Section
-                  </h3>
-                  <p className="text-xs text-slate-400">
-                    &ldquo;Deals Ended Soon&rdquo; limited-time offers banner.
-                  </p>
+                <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
+                      <Zap className="w-4 h-4 text-[#FF6B35]" /> 4. Flash Deals Section
+                    </h3>
+                    <p className="text-xs text-slate-400">
+                      &ldquo;Deals Ended Soon&rdquo; limited-time offers banner.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => toggleSectionVisibility('deals')}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 border transition-all self-start sm:self-auto ${
+                      isSectionVisible('deals')
+                        ? 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100'
+                        : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
+                    }`}
+                  >
+                    {isSectionVisible('deals') ? (
+                      <>
+                        <Eye className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Visible on Homepage</span>
+                      </>
+                    ) : (
+                      <>
+                        <EyeOff className="w-3.5 h-3.5 text-slate-400" />
+                        <span>Hidden on Homepage</span>
+                      </>
+                    )}
+                  </button>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1637,13 +2743,36 @@ export default function AdminPage() {
 
               {/* 5. DISCOUNTS FLASH BANNER */}
               <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
-                <div className="border-b border-slate-100 pb-3">
-                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
-                    <Tag className="w-4 h-4 text-[#FF6B35]" /> 5. Discounts Flash Banner
-                  </h3>
-                  <p className="text-xs text-slate-400">
-                    The vibrant yellow banner with the round offer badge and &ldquo;Get Enticing Discounts&rdquo;.
-                  </p>
+                <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
+                      <Tag className="w-4 h-4 text-[#FF6B35]" /> 5. Discounts Flash Banner
+                    </h3>
+                    <p className="text-xs text-slate-400">
+                      The vibrant yellow banner with the round offer badge and &ldquo;Get Enticing Discounts&rdquo;.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => toggleSectionVisibility('discounts')}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 border transition-all self-start sm:self-auto ${
+                      isSectionVisible('discounts')
+                        ? 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100'
+                        : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
+                    }`}
+                  >
+                    {isSectionVisible('discounts') ? (
+                      <>
+                        <Eye className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Visible on Homepage</span>
+                      </>
+                    ) : (
+                      <>
+                        <EyeOff className="w-3.5 h-3.5 text-slate-400" />
+                        <span>Hidden on Homepage</span>
+                      </>
+                    )}
+                  </button>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -1680,13 +2809,36 @@ export default function AdminPage() {
 
               {/* 6. TESTIMONIALS SECTION */}
               <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
-                <div className="border-b border-slate-100 pb-3">
-                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
-                    <Star className="w-4 h-4 text-[#FF6B35]" /> 6. Testimonials Section
-                  </h3>
-                  <p className="text-xs text-slate-400">
-                    Heading for customer reviews and feedback slider.
-                  </p>
+                <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
+                      <Star className="w-4 h-4 text-[#FF6B35]" /> 6. Testimonials Section
+                    </h3>
+                    <p className="text-xs text-slate-400">
+                      Heading for customer reviews and feedback slider.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => toggleSectionVisibility('testimonials')}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 border transition-all self-start sm:self-auto ${
+                      isSectionVisible('testimonials')
+                        ? 'bg-emerald-50 text-emerald-800 border-emerald-200 hover:bg-emerald-100'
+                        : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'
+                    }`}
+                  >
+                    {isSectionVisible('testimonials') ? (
+                      <>
+                        <Eye className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Visible on Homepage</span>
+                      </>
+                    ) : (
+                      <>
+                        <EyeOff className="w-3.5 h-3.5 text-slate-400" />
+                        <span>Hidden on Homepage</span>
+                      </>
+                    )}
+                  </button>
                 </div>
 
                 <div className="space-y-1">
@@ -2417,7 +3569,7 @@ export default function AdminPage() {
                       }}
                     />
                     <span className="font-semibold text-slate-800 truncate">
-                      https://momothecat.vercel.app
+                      {cmsForm.siteUrl || 'https://momothecat.vercel.app'}
                     </span>
                     <span className="text-slate-400">›</span>
                     <span className="text-slate-500 truncate">{cmsForm.brandName || 'Momo'}</span>
@@ -2619,6 +3771,202 @@ export default function AdminPage() {
                     />
                   </div>
                 </div>
+              </div>
+
+              {/* PRIMARY DOMAIN & SEARCH ENGINE DISCOVERY */}
+              <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-5">
+                <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
+                      <Globe className="w-4 h-4 text-[#FF6B35]" /> Primary Domain & Search Discovery
+                    </h3>
+                    <p className="text-xs text-slate-400">
+                      Configure your active site URL, canonical URLs, and inspect live search engine directives.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={`${cmsForm.siteUrl || 'https://momothecat.vercel.app'}/sitemap.xml`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-[#FF6B35] font-bold text-xs flex items-center gap-1.5 transition-colors"
+                    >
+                      <span>View sitemap.xml</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                    <a
+                      href={`${cmsForm.siteUrl || 'https://momothecat.vercel.app'}/robots.txt`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1.5 transition-colors"
+                    >
+                      <span>View robots.txt</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-slate-700">Primary Canonical Website URL</label>
+                    <span className="text-[10px] text-slate-400 font-mono">
+                      Current: {cmsForm.siteUrl || 'https://momothecat.vercel.app'}
+                    </span>
+                  </div>
+                  <input
+                    type="url"
+                    value={cmsForm.siteUrl ?? ''}
+                    onChange={(e) => setCmsForm({ ...cmsForm, siteUrl: e.target.value })}
+                    placeholder="https://momothecat.vercel.app (or your custom domain when connected)"
+                    className="w-full px-4 py-3 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-mono text-slate-900 outline-none focus:border-[#FF6B35]"
+                  />
+                  <p className="text-[11px] text-slate-400">
+                    Used to generate canonical tags, sitemaps, and OpenGraph link previews. When you connect a custom domain in the future, simply update this URL!
+                  </p>
+                </div>
+              </div>
+
+              {/* SEARCH CONSOLE & ANALYTICS VERIFICATION */}
+              <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-5">
+                <div className="border-b border-slate-100 pb-3">
+                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600" /> Webmaster Verification & Tracking
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Verify domain ownership in Google Search Console, Bing Webmaster, and track visitor traffic.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-700">
+                      Google Search Console Verification Code
+                    </label>
+                    <input
+                      type="text"
+                      value={cmsForm.googleSiteVerification ?? ''}
+                      onChange={(e) => setCmsForm({ ...cmsForm, googleSiteVerification: e.target.value })}
+                      placeholder="e.g. google-site-verification code token"
+                      className="w-full px-3.5 py-2.5 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-mono text-slate-900 outline-none focus:border-[#FF6B35]"
+                    />
+                    <p className="text-[10px] text-slate-400">
+                      Auto-injected into HTML header meta tags for instant GSC property verification.
+                    </p>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-700">
+                      Bing Webmaster Tools Verification Token
+                    </label>
+                    <input
+                      type="text"
+                      value={cmsForm.bingSiteVerification ?? ''}
+                      onChange={(e) => setCmsForm({ ...cmsForm, bingSiteVerification: e.target.value })}
+                      placeholder="e.g. msvalidate.01 token"
+                      className="w-full px-3.5 py-2.5 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-mono text-slate-900 outline-none focus:border-[#FF6B35]"
+                    />
+                    <p className="text-[10px] text-slate-400">
+                      Auto-injected into HTML header meta tags for Bing & Yahoo search indexation.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5 pt-2">
+                  <label className="text-xs font-bold text-slate-700">
+                    Google Analytics 4 (GA4) Measurement ID
+                  </label>
+                  <input
+                    type="text"
+                    value={cmsForm.googleAnalyticsId ?? ''}
+                    onChange={(e) => setCmsForm({ ...cmsForm, googleAnalyticsId: e.target.value })}
+                    placeholder="e.g. G-XXXXXXXXXX"
+                    className="w-full px-3.5 py-2.5 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-mono text-slate-900 outline-none focus:border-[#FF6B35]"
+                  />
+                  <p className="text-[10px] text-slate-400">
+                    Enter your GA4 tag ID to automatically track visitors, page views, and affiliate outbound click events.
+                  </p>
+                </div>
+              </div>
+
+              {/* ARTICLES & GUIDES HUB SEO */}
+              <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-5">
+                <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+                  <div>
+                    <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
+                      <BookOpen className="w-4 h-4 text-[#FF6B35]" /> Articles & Reviews Hub SEO
+                    </h3>
+                    <p className="text-xs text-slate-400">
+                      Meta tags specifically for your public &ldquo;/articles&rdquo; guides directory.
+                    </p>
+                  </div>
+                  <span className="text-[10px] font-bold text-[#FF6B35] bg-orange-50 px-2 py-0.5 rounded-full">
+                    /articles
+                  </span>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-slate-700">Articles Hub Meta Title</label>
+                    <span className="text-[11px] text-slate-400">
+                      {cmsForm.articlesMetaTitle?.length || 0} / 60 characters
+                    </span>
+                  </div>
+                  <input
+                    type="text"
+                    value={cmsForm.articlesMetaTitle ?? ''}
+                    onChange={(e) => setCmsForm({ ...cmsForm, articlesMetaTitle: e.target.value })}
+                    placeholder="Cat Care Guides, Tips & Product Reviews | Momo The Cat"
+                    className="w-full px-4 py-3 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 outline-none focus:border-[#FF6B35]"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-slate-700">Articles Hub Meta Description</label>
+                    <span className="text-[11px] text-slate-400">
+                      {cmsForm.articlesMetaDescription?.length || 0} / 160 characters
+                    </span>
+                  </div>
+                  <textarea
+                    rows={2}
+                    value={cmsForm.articlesMetaDescription ?? ''}
+                    onChange={(e) => setCmsForm({ ...cmsForm, articlesMetaDescription: e.target.value })}
+                    placeholder="Explore expert cat product reviews, tested toys, health tips, and buyer guides curated to keep indoor cats healthy and playful."
+                    className="w-full px-4 py-3 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-medium text-slate-900 outline-none focus:border-[#FF6B35]"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-slate-700">Articles Meta Keywords</label>
+                  <input
+                    type="text"
+                    value={cmsForm.articlesMetaKeywords ?? ''}
+                    onChange={(e) => setCmsForm({ ...cmsForm, articlesMetaKeywords: e.target.value })}
+                    placeholder="cat care, cat reviews, best cat toys 2026, cat health, pet guides"
+                    className="w-full px-4 py-3 bg-[#FBF9F7] border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 outline-none focus:border-[#FF6B35]"
+                  />
+                </div>
+              </div>
+
+              {/* SOCIAL SHARING DEFAULT IMAGE (OPEN GRAPH) */}
+              <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs space-y-4">
+                <div className="border-b border-slate-100 pb-3">
+                  <h3 className="font-display font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
+                    <Tag className="w-4 h-4 text-purple-600" /> Social Sharing Image (Open Graph / Twitter)
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Preview image shown when someone shares your website link on Facebook, Twitter, WhatsApp, or iMessage (1200x630 recommended).
+                  </p>
+                </div>
+
+                <CloudinaryImageUploader
+                  label="Default Social Share Image"
+                  description="High-resolution banner (1200x630) used as fallback for all social shares."
+                  recommendedSize="1200x630 PNG / JPG"
+                  value={cmsForm.openGraphDefaultImage || ''}
+                  defaultValue=""
+                  onChange={(url) => setCmsForm({ ...cmsForm, openGraphDefaultImage: url })}
+                />
               </div>
 
               {/* Bottom Sticky Save Bar */}

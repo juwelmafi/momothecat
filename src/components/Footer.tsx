@@ -15,14 +15,14 @@ import { CATEGORIES } from '@/lib/initialData';
 
 export default function Footer() {
   const pathname = usePathname();
-  if (pathname?.startsWith('/admin')) {
-    return null;
-  }
-
   const { showToast, settings, isBD } = useCart();
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -198,6 +198,11 @@ export default function Footer() {
               <li>
                 <Link href="/#testimonials-section" className="hover:text-[#FFC312] transition-colors">
                   Customer Reviews
+                </Link>
+              </li>
+              <li>
+                <Link href="/articles" className="hover:text-[#FFC312] transition-colors text-[#FFC312] font-bold">
+                  Guides & Product Reviews
                 </Link>
               </li>
             </ul>

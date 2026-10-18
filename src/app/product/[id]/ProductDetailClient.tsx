@@ -267,14 +267,14 @@ export default function ProductDetailClient({ product }: Props) {
                 <a
                   href={affUrl}
                   target="_blank"
-                  rel="noopener noreferrer"
+                  rel="sponsored nofollow noopener noreferrer"
                   className={`w-full py-4 px-6 ${
                     isDaraz
                       ? 'bg-gradient-to-r from-[#F85606] to-[#ff7a2f] hover:from-[#e04c00] hover:to-[#f0681d] shadow-orange-500/25'
                       : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 shadow-orange-500/25'
                   } text-white rounded-2xl font-black text-base flex items-center justify-center gap-2.5 shadow-xl transition-all hover:scale-[1.01] active:scale-[0.98]`}
                 >
-                  <span>Buy Now on {affPlatform}</span>
+                  <span>Check Price & Buy on {affPlatform}</span>
                   <ExternalLink className="w-5 h-5" />
                 </a>
                 <p className="text-[11px] text-slate-400 text-center mt-2 font-medium">
@@ -282,6 +282,9 @@ export default function ProductDetailClient({ product }: Props) {
                     ? 'Routes directly to Daraz with express nationwide home delivery across Bangladesh.'
                     : 'Routes directly to Amazon with Prime 1-day or 2-day delivery benefits.'}
                 </p>
+                <div className="mt-3 p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-[10px] text-slate-500 text-center leading-relaxed">
+                  <strong>Affiliate Disclosure:</strong> As an {isDaraz ? 'affiliate partner' : 'Amazon Associate'}, we earn from qualifying purchases at no extra cost to you.
+                </div>
               </div>
             )
           )}

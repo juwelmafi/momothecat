@@ -112,15 +112,17 @@ export function CartProvider({
     try {
       const savedCountry = localStorage.getItem('momo_country');
       if (savedCountry) {
-        setUserCountryState(savedCountry.toUpperCase());
+        queueMicrotask(() => setUserCountryState(savedCountry.toUpperCase()));
         return;
       }
 
       // Check timezone for Bangladesh detection in browser / local dev
       const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
       if (timeZone.includes('Dhaka') || timeZone.includes('Bangladesh')) {
-        setUserCountryState('BD');
-        localStorage.setItem('momo_country', 'BD');
+        queueMicrotask(() => {
+          setUserCountryState('BD');
+          localStorage.setItem('momo_country', 'BD');
+        });
         return;
       }
 
@@ -140,17 +142,18 @@ export function CartProvider({
   useEffect(() => {
     try {
       const savedCart = localStorage.getItem('momo_cart');
-      if (savedCart) setCart(JSON.parse(savedCart));
-
       const savedWishlist = localStorage.getItem('momo_wishlist');
-      if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
-
       const savedDiscount = localStorage.getItem('momo_discount');
-      if (savedDiscount) {
-        const d = JSON.parse(savedDiscount);
-        setDiscountCode(d.code);
-        setDiscountPercent(d.percent);
-      }
+
+      queueMicrotask(() => {
+        if (savedCart) setCart(JSON.parse(savedCart));
+        if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
+        if (savedDiscount) {
+          const d = JSON.parse(savedDiscount);
+          setDiscountCode(d.code);
+          setDiscountPercent(d.percent);
+        }
+      });
     } catch (e) {
       console.error('Failed to load persisted state:', e);
     }

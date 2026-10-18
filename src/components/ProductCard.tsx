@@ -88,32 +88,15 @@ export default function ProductCard({ product }: ProductCardProps) {
         )}
 
         {/* Product Image - Full Width & Height Fill */}
-        {isReal ? (
-          <Link href={`/product/${product._id}`} className="block w-full h-full">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={displayImage}
-              alt={product.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              loading="lazy"
-            />
-          </Link>
-        ) : (
-          <a
-            href={affUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block w-full h-full"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={displayImage}
-              alt={product.name}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              loading="lazy"
-            />
-          </a>
-        )}
+        <Link href={`/product/${product._id}`} className="block w-full h-full">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={displayImage}
+            alt={product.name}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            loading="lazy"
+          />
+        </Link>
 
         {/* Hover Quick Action Overlay */}
         <div className="absolute inset-x-2 sm:inset-x-3 bottom-2 sm:bottom-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center gap-1.5 sm:gap-2">
@@ -121,7 +104,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             <a
               href={affUrl}
               target="_blank"
-              rel="noopener noreferrer"
+              rel="sponsored nofollow noopener noreferrer"
               className={`flex-1 min-w-0 px-2.5 sm:px-3 py-1.5 sm:py-2 ${
                 isDaraz
                   ? 'bg-[#F85606] hover:bg-[#e04c00]'
@@ -160,23 +143,12 @@ export default function ProductCard({ product }: ProductCardProps) {
       <div className="product-details pt-2 sm:pt-3.5 pb-1 sm:pb-2 text-center space-y-0.5 sm:space-y-1">
         {/* Title in Fredoka One bold */}
         <div className="product-title min-h-[32px] sm:min-h-[40px] flex items-center justify-center">
-          {isReal ? (
-            <Link
-              href={`/product/${product._id}`}
-              className="font-display font-bold text-xs sm:text-base lg:text-lg text-[#232121] hover:text-[#FF6B35] line-clamp-2 transition-colors leading-tight sm:leading-snug"
-            >
-              {product.name}
-            </Link>
-          ) : (
-            <a
-              href={affUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-display font-bold text-xs sm:text-base lg:text-lg text-[#232121] hover:text-[#FF6B35] line-clamp-2 transition-colors leading-tight sm:leading-snug"
-            >
-              {product.name}
-            </a>
-          )}
+          <Link
+            href={`/product/${product._id}`}
+            className="font-display font-bold text-xs sm:text-base lg:text-lg text-[#232121] hover:text-[#FF6B35] line-clamp-2 transition-colors leading-tight sm:leading-snug"
+          >
+            {product.name}
+          </Link>
         </div>
 
         {/* Price Centered below title */}

@@ -1,14 +1,65 @@
 import React from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getProductById, getMergedProducts } from '@/lib/store';
+import { getProductById, getMergedProducts, getStoreSettings } from '@/lib/store';
 import { RealProduct, AffiliateProduct } from '@/lib/types';
+import type { Metadata } from 'next';
 import ProductDetailClient from './ProductDetailClient';
 import ProductCard from '@/components/ProductCard';
 import { ChevronRight } from 'lucide-react';
 
 interface Props {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+  const product = await getProductById(id);
+
+  if (!product) {
+    return {
+      title: 'Product Not Found',
+      description: 'The requested cat product could not be found.',
+    };
+  }
+
+  const settings = await getStoreSettings();
+  const siteUrl =
+    settings.siteUrl ||
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    'https://momothecat.vercel.app';
+  const pageUrl = `${siteUrl}/product/${product._id}`;
+  const image =
+    product.type === 'real'
+      ? (product as RealProduct).images?.[0]
+      : (product as AffiliateProduct).imageUrl;
+
+  const title = `${product.name} | Cat Essentials & Reviews`;
+  const description =
+    product.description && product.description.length > 155
+      ? `${product.description.slice(0, 152)}...`
+      : product.description || 'Discover top-rated cat essentials and Amazon Prime picks on Momo The Cat.';
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: pageUrl,
+    },
+    openGraph: {
+      title,
+      description,
+      url: pageUrl,
+      type: 'website',
+      images: image ? [{ url: image, alt: product.name }] : undefined,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: image ? [image] : undefined,
+    },
+  };
 }
 
 export default async function ProductDetailPage({ params }: Props) {
@@ -19,6 +70,73 @@ export default async function ProductDetailPage({ params }: Props) {
     notFound();
   }
 
+  const settings = await getStoreSettings();
+  const siteUrl =
+    settings.siteUrl ||
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    'https://momothecat.vercel.app';
+  const pageUrl = `${siteUrl}/product/${product._id}`;
+  const image =
+    product.type === 'real'
+      ? (product as RealProduct).images?.[0]
+      : (product as AffiliateProduct).imageUrl;
+
+  // JSON-LD Structured Data for Google Rich Snippets
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    image: image ? [image] : undefined,
+    description: product.description,
+    brand: {
+      '@type': 'Brand',
+      name: 'Momo - The Cat',
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: product.rating.toString(),
+      reviewCount: product.reviewCount.toString(),
+      bestRating: '5',
+      worstRating: '1',
+    },
+    offers: {
+      '@type': 'Offer',
+      url: pageUrl,
+      priceCurrency: 'USD',
+      price: product.price.toFixed(2),
+      availability: 'https://schema.org/InStock',
+      seller: {
+        '@type': 'Organization',
+        name: 'Momo - The Cat',
+      },
+    },
+  };
+
+  const breadcrumbLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: siteUrl,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: product.category,
+        item: `${siteUrl}/?category=${encodeURIComponent(product.category)}`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: product.name,
+        item: pageUrl,
+      },
+    ],
+  };
+
   // Related products from same category
   const allProducts = await getMergedProducts();
   const relatedProducts = allProducts
@@ -27,6 +145,16 @@ export default async function ProductDetailPage({ params }: Props) {
 
   return (
     <div className="space-y-12 py-4">
+      {/* Schema.org JSON-LD for Google Rich Results */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
+
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500">
         <Link href="/" className="hover:text-orange-600 transition-colors">

@@ -15,6 +15,7 @@ import {
   ArrowRight,
   Share2,
   MessageSquare,
+  BookOpen,
 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { CATEGORIES } from '@/lib/initialData';
@@ -22,9 +23,6 @@ import { CATEGORIES } from '@/lib/initialData';
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
-  if (pathname?.startsWith('/admin')) {
-    return null;
-  }
 
   const { storeMode, itemCount, subtotal, setIsCartOpen, wishlist, settings, isBD, setUserCountry } = useCart();
   const [searchOpen, setSearchOpen] = useState(false);
@@ -79,6 +77,10 @@ export default function Header() {
       setMobileMenuOpen(false);
     }
   };
+
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
 
   return (
     <header
@@ -193,6 +195,14 @@ export default function Header() {
               className="hover:text-[#FF6B35] transition-colors py-1 text-[#FF6B35]"
             >
               Deals & Offers
+            </Link>
+
+            <Link
+              href="/articles"
+              className="hover:text-[#FF6B35] transition-colors py-1 flex items-center gap-1.5 font-black text-[#232121]"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-[#FF6B35]" />
+              <span>Guides & Reviews</span>
             </Link>
 
 
@@ -359,6 +369,18 @@ export default function Header() {
             >
               <span>Deals & Offers</span>
               <span className="text-[10px] bg-[#FFC312] text-[#232121] px-2 py-0.5 rounded-full font-bold">20% OFF</span>
+            </Link>
+
+            <Link
+              href="/articles"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center justify-between py-2.5 px-3 rounded-xl bg-orange-50/70 hover:bg-[#FFF9DE] transition-colors text-[#232121] font-bold"
+            >
+              <div className="flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-[#FF6B35]" />
+                <span>Guides & Reviews</span>
+              </div>
+              <span className="text-[10px] bg-[#FF6B35] text-white px-2 py-0.5 rounded-full font-bold">Tips</span>
             </Link>
 
 
