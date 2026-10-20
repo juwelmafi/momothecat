@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Fredoka, Readex_Pro } from 'next/font/google';
+import { Fredoka, Readex_Pro, Inter } from 'next/font/google';
 import './globals.css';
 import { CartProvider } from '@/context/CartContext';
 import Header from '@/components/Header';
@@ -20,6 +20,13 @@ const readexPro = Readex_Pro({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],
   variable: '--font-readex',
+});
+
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-inter',
+  display: 'swap',
 });
 
 import Script from 'next/script';
@@ -118,7 +125,7 @@ export default async function RootLayout({
   const initialCountry = (cookieCountry || vercelCountry || 'US').toUpperCase();
 
   return (
-    <html lang="en" className={`${fredoka.variable} ${readexPro.variable} scroll-smooth`}>
+    <html lang="en" className={`${fredoka.variable} ${readexPro.variable} ${inter.variable} scroll-smooth`}>
       <body className="min-h-screen flex flex-col bg-white text-[#000000] antialiased selection:bg-[#FF6B35] selection:text-white">
         {settings.googleAnalyticsId && (
           <>

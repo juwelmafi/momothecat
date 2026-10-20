@@ -526,7 +526,7 @@ export default function ArticleManager({ products, siteUrl }: Props) {
                   <BookOpen className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="font-display font-black text-base sm:text-lg text-slate-900">
+                  <h3 className="font-standard font-bold text-base sm:text-lg text-slate-900">
                     {editingArticle ? 'Edit Article & SEO' : 'Create New Guide / Product Review'}
                   </h3>
                   <p className="text-[11px] text-slate-400">

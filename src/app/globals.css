@@ -3,6 +3,7 @@
 @theme {
   --font-sans: var(--font-readex), 'Readex Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-heading: var(--font-fredoka), 'Fredoka One', 'Fredoka', cursive, sans-serif;
+  --font-standard: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
   --color-pettie-primary: #FFC312;
   --color-pettie-hero: #F2D70A;
@@ -34,6 +35,33 @@ body {
 
 h1, h2, h3, h4, h5, h6, .font-display {
   font-family: var(--font-heading);
+}
+
+/* Standard Font Utility for Clean, Modern Typography */
+.font-standard {
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+}
+
+/* Article Reading System: Enforces crisp, clean, user-friendly editorial typography */
+.article-reader,
+.article-prose {
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.article-reader h1,
+.article-reader h2,
+.article-reader h3,
+.article-reader h4,
+.article-reader h5,
+.article-reader h6,
+.article-prose h1,
+.article-prose h2,
+.article-prose h3,
+.article-prose h4,
+.article-prose h5,
+.article-prose h6 {
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+  letter-spacing: -0.015em;
 }
 
 /* Pettie custom container matching Elementor 1280px */
