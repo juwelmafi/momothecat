@@ -165,18 +165,18 @@ export default async function ArticlesPage({ searchParams }: Props) {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute top-4 left-4">
-                  <span className="bg-[#FF6B35] text-white text-[11px] sm:text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-full shadow-md flex items-center gap-1.5">
+                  <span className="bg-[#FF6B35] text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5" />
-                    Featured Spotlight
+                    Featured
                   </span>
                 </div>
               </div>
 
               <div className="lg:col-span-5 p-6 sm:p-10 space-y-4">
-                <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-[#FF6B35] uppercase tracking-wider">
-                  <span>{featuredArticle.category}</span>
+                <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs sm:text-sm text-slate-500 font-medium">
+                  <span className="text-[#FF6B35] font-semibold whitespace-nowrap">{featuredArticle.category}</span>
                   <span className="text-slate-300">•</span>
-                  <span className="flex items-center gap-1 text-slate-400 font-medium">
+                  <span className="inline-flex items-center gap-1 text-slate-400 whitespace-nowrap">
                     <Clock className="w-3.5 h-3.5" />
                     {featuredArticle.readTime}
                   </span>
@@ -262,13 +262,13 @@ export default async function ArticlesPage({ searchParams }: Props) {
 
                     <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-3">
                       <div className="space-y-2">
-                        <div className="flex items-center gap-3 text-xs sm:text-sm text-slate-400 font-medium">
-                          <span className="flex items-center gap-1">
+                        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-slate-400 font-medium">
+                          <span className="inline-flex items-center gap-1 whitespace-nowrap">
                             <Clock className="w-3.5 h-3.5 text-[#FF6B35]" />
                             {article.readTime}
                           </span>
-                          <span>•</span>
-                          <span className="flex items-center gap-1">
+                          <span className="text-slate-300">•</span>
+                          <span className="inline-flex items-center gap-1 whitespace-nowrap">
                             <Calendar className="w-3.5 h-3.5" />
                             {new Date(article.publishedAt).toLocaleDateString('en-US', {
                               month: 'short',

@@ -406,30 +406,30 @@ export default async function ArticleDetailPage({ params }: Props) {
             {article.excerpt}
           </p>
 
-          <div className="pt-2 pb-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-4 text-xs sm:text-sm text-slate-500 font-medium">
-            <div className="flex items-center gap-3">
-              <span className="font-bold text-slate-800">By {article.author}</span>
-              <span>•</span>
-              <span className="flex items-center gap-1">
-                <Calendar className="w-3.5 h-3.5" />
-                {new Date(article.publishedAt).toLocaleDateString('en-US', {
-                  month: 'long',
-                  day: 'numeric',
-                  year: 'numeric',
-                })}
-              </span>
-              <span>•</span>
-              <span className="flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5 text-[#FF6B35]" />
-                {article.readTime}
-              </span>
-            </div>
-
+          <div className="pt-2 pb-4 border-b border-slate-200 flex flex-wrap items-center gap-x-3.5 gap-y-2 text-xs sm:text-sm text-slate-500 font-medium">
+            <span className="font-bold text-slate-800 whitespace-nowrap">By {article.author}</span>
+            <span className="text-slate-300 hidden sm:inline">•</span>
+            <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+              <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+              {new Date(article.publishedAt).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+              })}
+            </span>
+            <span className="text-slate-300 hidden sm:inline">•</span>
+            <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+              <Clock className="w-3.5 h-3.5 text-[#FF6B35] shrink-0" />
+              {article.readTime}
+            </span>
             {article.views !== undefined && article.views > 0 && (
-              <div className="flex items-center gap-1 text-slate-400 font-medium">
-                <Eye className="w-3.5 h-3.5" />
-                <span>{article.views} views</span>
-              </div>
+              <>
+                <span className="text-slate-300 hidden sm:inline">•</span>
+                <span className="inline-flex items-center gap-1.5 text-slate-400 whitespace-nowrap sm:ml-auto">
+                  <Eye className="w-3.5 h-3.5 shrink-0" />
+                  <span>{article.views} views</span>
+                </span>
+              </>
             )}
           </div>
         </div>
@@ -459,22 +459,19 @@ export default async function ArticleDetailPage({ params }: Props) {
           {renderFormattedContent(article.content)}
         </article>
 
-        {/* High-Converting Affiliate Product Callout Box */}
+        {/* Recommended Product Box */}
         {(affiliateProduct || article.affiliateProductUrl) && (
-          <div className="rounded-3xl bg-gradient-to-br from-[#FFF8F3] to-[#FFF1E8] border-2 border-orange-200 p-6 sm:p-8 shadow-md space-y-5">
-            <div className="flex items-center justify-between">
-              <span className="inline-flex items-center gap-1.5 bg-[#FF6B35] text-white text-[11px] sm:text-xs font-black uppercase tracking-wider px-3.5 py-1.5 rounded-full shadow-xs">
-                <Sparkles className="w-3.5 h-3.5" />
-                Featured Recommended Product
-              </span>
-              <span className="text-xs font-bold text-slate-500">
-                Prime Delivery Eligible
+          <div className="rounded-3xl bg-[#FFF9F5] border border-orange-200/80 p-5 sm:p-7 shadow-xs space-y-4">
+            <div className="flex items-center">
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#FF6B35] bg-white border border-orange-200 px-3 py-1 rounded-full shadow-2xs">
+                <Sparkles className="w-3.5 h-3.5 text-[#FF6B35]" />
+                Recommended Product
               </span>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center gap-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
               {affiliateProduct && (
-                <div className="w-32 h-32 sm:w-40 sm:h-40 shrink-0 rounded-2xl overflow-hidden bg-white border border-orange-100 shadow-xs">
+                <div className="w-24 h-24 sm:w-32 sm:h-32 shrink-0 rounded-2xl overflow-hidden bg-white border border-orange-100 shadow-2xs">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={
@@ -488,51 +485,51 @@ export default async function ArticleDetailPage({ params }: Props) {
                 </div>
               )}
 
-              <div className="flex-1 space-y-2 text-center sm:text-left">
-                <h3 className="font-standard font-bold text-lg sm:text-xl text-slate-900">
+              <div className="flex-1 min-w-0 space-y-1.5 text-left">
+                <h3 className="font-standard font-bold text-base sm:text-lg text-slate-900 leading-snug">
                   {affiliateProduct ? affiliateProduct.name : article.title}
                 </h3>
                 {affiliateProduct && (
-                  <div className="flex items-center justify-center sm:justify-start gap-2">
+                  <div className="flex flex-wrap items-center gap-2 text-xs">
                     <div className="flex text-amber-400">
                       {[...Array(5)].map((_, i) => (
                         <Star key={i} className="w-3.5 h-3.5 fill-current text-amber-400" />
                       ))}
                     </div>
-                    <span className="text-xs font-bold text-slate-700">
+                    <span className="font-semibold text-slate-700">
                       {affiliateProduct.rating} / 5.0
                     </span>
-                    <span className="text-xs text-slate-400">
-                      ({affiliateProduct.reviewCount} customer reviews)
+                    <span className="text-slate-400">
+                      ({affiliateProduct.reviewCount} reviews)
                     </span>
                   </div>
                 )}
                 {affiliateProduct && (
-                  <div className="text-xl font-black text-slate-900 pt-1">
+                  <div className="text-lg sm:text-xl font-bold text-slate-900 pt-0.5">
                     ${affiliateProduct.price.toFixed(2)}
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
+            <div className="pt-1 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <a
                 href={affLink}
                 target="_blank"
                 rel="sponsored nofollow noopener noreferrer"
-                className="w-full sm:flex-1 py-3.5 px-6 rounded-2xl bg-[#FF6B35] hover:bg-[#e04c00] text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-lg shadow-orange-500/25 transition-all hover:scale-[1.01]"
+                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#FF6B35] hover:bg-[#e04c00] text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-xs transition-colors"
               >
-                <span>{article.affiliateProductCtaText || 'Check Latest Price on Amazon'}</span>
+                <span>{article.affiliateProductCtaText || 'Check Price on Amazon'}</span>
                 <ExternalLink className="w-4 h-4" />
               </a>
 
               {affiliateProduct && affiliateProduct.type === 'real' && (
                 <Link
                   href={`/product/${affiliateProduct._id}`}
-                  className="w-full sm:w-auto py-3.5 px-6 rounded-2xl bg-white border border-slate-200 text-slate-800 hover:text-[#FF6B35] font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-colors"
+                  className="w-full sm:w-auto px-5 py-3 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-[#FF6B35] font-semibold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-colors"
                 >
                   <ShoppingBag className="w-4 h-4" />
-                  <span>View Full Product Specs</span>
+                  <span>View Product Specs</span>
                 </Link>
               )}
             </div>
