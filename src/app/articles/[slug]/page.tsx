@@ -351,6 +351,44 @@ export default async function ArticleDetailPage({ params }: Props) {
     ],
   };
 
+  // Automatically extract FAQ items for Google Rich Snippets
+  const faqItems: { question: string; answer: string }[] = [];
+  const articleLines = article.content.split('\n');
+  for (let i = 0; i < articleLines.length; i++) {
+    const l = articleLines[i].trim();
+    if ((l.startsWith('## ') || l.startsWith('### ')) && l.endsWith('?')) {
+      const q = l.replace(/^#+\s+/, '');
+      let ans = '';
+      for (let j = i + 1; j < articleLines.length; j++) {
+        const next = articleLines[j].trim();
+        if (next.startsWith('#') || next === '---') break;
+        if (next.length > 20 && !next.startsWith('|') && !next.startsWith('*') && !next.startsWith('-')) {
+          ans = next.replace(/\*\*(.*?)\*\*/g, '$1');
+          break;
+        }
+      }
+      if (q && ans) {
+        faqItems.push({ question: q, answer: ans });
+      }
+    }
+  }
+
+  const faqLd =
+    faqItems.length > 0
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: faqItems.map((item) => ({
+            '@type': 'Question',
+            name: item.question,
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: item.answer,
+            },
+          })),
+        }
+      : null;
+
   return (
     <div className="w-full bg-[#FCFBF9] min-h-screen py-6 sm:py-10 article-reader font-standard">
       {/* Schema.org Structured Data */}
@@ -362,6 +400,12 @@ export default async function ArticleDetailPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
+      {faqLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
+        />
+      )}
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         {/* Breadcrumb Navigation */}

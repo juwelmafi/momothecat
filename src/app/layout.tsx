@@ -124,8 +124,62 @@ export default async function RootLayout({
   const cookieCountry = cookieStore.get('user_country')?.value;
   const initialCountry = (cookieCountry || vercelCountry || 'US').toUpperCase();
 
+  const siteUrl =
+    settings.siteUrl ||
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    'https://momothecat.vercel.app';
+
+  const organizationSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': `${siteUrl}/#organization`,
+    name: settings.brandName || 'Momo - The Cat',
+    url: siteUrl,
+    logo: {
+      '@type': 'ImageObject',
+      url: settings.websiteLogo || `${siteUrl}/favicon.ico`,
+    },
+    sameAs: [
+      'https://www.instagram.com',
+      'https://www.facebook.com',
+      'https://twitter.com',
+    ],
+  };
+
+  const webSiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${siteUrl}/#website`,
+    url: siteUrl,
+    name: settings.brandName || 'Momo - The Cat',
+    description:
+      settings.metaDescription ||
+      'Fresh Flavoured Cat Food & Toys. Discover top-rated Amazon Prime essentials and handcrafted Momo Originals.',
+    publisher: {
+      '@id': `${siteUrl}/#organization`,
+    },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${siteUrl}/articles?search={search_term_string}`,
+      },
+      'query-input': 'required name=search_term_string',
+    },
+  };
+
   return (
     <html lang="en" className={`${fredoka.variable} ${readexPro.variable} ${inter.variable} scroll-smooth`}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteSchema) }}
+        />
+      </head>
       <body className="min-h-screen flex flex-col bg-white text-[#000000] antialiased selection:bg-[#FF6B35] selection:text-white">
         {settings.googleAnalyticsId && (
           <>

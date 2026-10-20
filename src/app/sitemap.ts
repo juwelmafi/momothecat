@@ -1,6 +1,5 @@
 import type { MetadataRoute } from 'next';
 import { getMergedProducts, getArticles, getStoreSettings } from '@/lib/store';
-import { CATEGORIES, ARTICLE_CATEGORIES } from '@/lib/initialData';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [settings, products, articles] = await Promise.all([
@@ -33,24 +32,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.85,
   }));
 
-  const productCategoryEntries: MetadataRoute.Sitemap = CATEGORIES.filter(
-    (c) => c !== 'All Products'
-  ).map((cat) => ({
-    url: `${siteUrl}/?category=${encodeURIComponent(cat)}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly',
-    priority: 0.6,
-  }));
-
-  const articleCategoryEntries: MetadataRoute.Sitemap = ARTICLE_CATEGORIES.filter(
-    (c) => c !== 'All Guides'
-  ).map((cat) => ({
-    url: `${siteUrl}/articles?category=${encodeURIComponent(cat)}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly',
-    priority: 0.6,
-  }));
-
   return [
     {
       url: siteUrl,
@@ -64,9 +45,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 0.9,
     },
-    ...articleCategoryEntries,
     ...articleEntries,
-    ...productCategoryEntries,
     ...productEntries,
   ];
 }

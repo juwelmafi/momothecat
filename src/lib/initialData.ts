@@ -372,11 +372,11 @@ export const INITIAL_SETTINGS: StoreSettings = {
 
   // SEO & Webmaster Fields
   siteUrl: 'https://momothecat.vercel.app',
-  metaTitle: 'Momo - The Cat | Amazon Affiliate Cat Store & Boutique',
+  metaTitle: 'Momo - The Cat | Premium Cat Essentials, Toys & Nutrition',
   metaDescription:
-    'Fresh Flavoured Cat Food & Toys. Discover top-rated Amazon Prime essentials and handcrafted Momo Originals.',
+    'Explore top-rated cat scratchers, interactive toys, orthopedic beds, and organic cat food curated for healthy, happy indoor felines.',
   metaKeywords:
-    'cat toys, cat food, cat scratchers, cat beds, Pettie pet theme, Amazon affiliate cat products, Momo the cat',
+    'cat toys, cat food, cat scratchers, cat beds, cat water fountain, indoor cat enrichment, cat health guides, Momo the cat',
   websiteFavicon:
     'https://petsdemos.wpenginepowered.com/pettie/wp-content/uploads/sites/4/2023/04/cropped-favicon-32x32.png',
   googleSiteVerification: '',
@@ -408,9 +408,9 @@ export const INITIAL_SETTINGS: StoreSettings = {
 
   // Hero Section
   heroSlide1Heading1: 'Fresh Flavoured',
-  heroSlide1Heading2: 'Dog & Cat Food',
+  heroSlide1Heading2: 'Organic Cat Food',
   heroSlide1Description:
-    'Nutritious organic meals crafted specifically for feline and canine longevity, shiny coats, and vitality.',
+    'Nutritious organic meals crafted specifically for feline longevity, shiny coats, digestive health, and everyday vitality.',
   heroSlide1Badge: 'GET 20% OFF',
   heroSlide1ButtonText: 'ORDER NOW',
 
